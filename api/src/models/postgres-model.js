@@ -34,6 +34,7 @@ Modele.init(
 
 let Category;
 let Brand;
+let Product;
 import("./postgres-category.js")
 	.then((module) => {
 		Category = module.default;
@@ -41,7 +42,7 @@ import("./postgres-category.js")
 		Modele.belongsTo(Category);
 	})
 	.catch((error) => {
-		console.error("Erreur lors de l'importation du modèle Modele :", error);
+		console.error("Erreur lors de l'importation du modèle Category :", error);
 	});
 
 import("./postgres-brand.js")
@@ -51,7 +52,18 @@ import("./postgres-brand.js")
 		Modele.belongsTo(Brand);
 	})
 	.catch((error) => {
-		console.error("Erreur lors de l'importation du modèle Modele :", error);
+		console.error("Erreur lors de l'importation du modèle Brand :", error);
 	});
+import("./postgres-product.js")
+	.then((module) => {
+		Product = module.default;
 
+		Modele.belongsToMany(Product, {
+			as: "products",
+			through: "Products_Models",
+		});
+	})
+	.catch((error) => {
+		console.error("Erreur lors de l'importation du modèle Product :", error);
+	});
 export default Modele;
