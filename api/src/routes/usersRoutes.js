@@ -104,7 +104,7 @@ export const deleteUser = async (req, res) => {
 
         const encryptionKey = generateEncryptionKey();
 
-        const anonymizedData = anonymizeUserData(user, encryptionKey);
+        const anonymizedData = anonymizeUserData(user.toJSON(), encryptionKey);
 
         await user.update(
             { ...anonymizedData, encryptionKey, disabled: true },
@@ -147,7 +147,7 @@ export const recoverUser = async (req, res) => {
         if (encryptionKey !== user.encryptionKey)
             throw new Error("Invalid encryption key");
 
-        const decryptedData = decryptUserData(user, encryptionKey);
+        const decryptedData = decryptUserData(user.toJSON(), encryptionKey);
 
         res.json({
             message: "User data recovered successfully",

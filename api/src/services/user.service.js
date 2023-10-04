@@ -16,7 +16,6 @@ const generateEncryptionKey = () => {
 const anonymizeUserData = (user, encryptionKey) => {
     const anonymizedData = {};
 
-    user = user.toJSON();
     for (const field in user) {
         if (fieldsToAnonymize.includes(field)) {
             const fieldValue = user[field];
@@ -32,7 +31,6 @@ const anonymizeUserData = (user, encryptionKey) => {
 const decryptUserData = (user, encryptionKey) => {
     const decryptedData = {};
 
-    user = user.toJSON();
     for (const field in user) {
         if (fieldsToAnonymize.includes(field)) {
             const fieldValue = user[field];
