@@ -3,7 +3,7 @@ import Model from "../models/postgres-model.js";
 export const getModels = async (req, res) => {
 	try {
 		const models = await Model.findAll({
-			include: ["Brand", "Category"],
+			include: ["Brand", "Category", "products"],
 		});
 		res.json(models);
 	} catch (error) {
@@ -16,6 +16,10 @@ export const getModels = async (req, res) => {
 export const createModel = async (req, res) => {
 	try {
 		const model = await Model.create(req.body);
+		for (const product of req.body.products) {
+			await model.addProducts(product.id);
+		}
+
 		res.json(model);
 	} catch (error) {
 		res.status(500).json({
@@ -66,6 +70,29 @@ export const deleteModel = async (req, res) => {
 	} catch (error) {
 		res.status(500).json({
 			error: `An error occurred while deleting the model : ${error}`,
+		});
+	}
+};
+
+export const getModel = async (req, res) => {
+	try {
+		const { id } = req.params;
+
+		if (!id) {
+			return res.status(400).json({ message: "Id parameter is missing" });
+		}
+
+		const model = await Model.findOne({
+			where: { id },
+			include: ["Brand", "Category", "products"],
+		});
+
+		if (!model) return res.status(404).json({ message: "Model not found" });
+
+		res.json(model);
+	} catch (error) {
+		res.status(500).json({
+			error: `An error occurred while retrieving the model : ${error}`,
 		});
 	}
 };

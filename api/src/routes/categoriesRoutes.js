@@ -16,6 +16,9 @@ export const getCategories = async (req, res) => {
 export const createCategory = async (req, res) => {
 	try {
 		const category = await Category.create(req.body);
+		for (const model of req.body.models) {
+			await category.addModels(model.id);
+		}
 		res.json(category);
 	} catch (error) {
 		res.status(500).json({

@@ -16,6 +16,9 @@ export const getProducts = async (req, res) => {
 export const createProduct = async (req, res) => {
 	try {
 		const product = await Product.create(req.body);
+		for (const model of req.body.models) {
+			await product.addModels(model.id);
+		}
 		res.json(product);
 	} catch (error) {
 		res.status(500).json({
@@ -66,6 +69,29 @@ export const deleteProduct = async (req, res) => {
 	} catch (error) {
 		res.status(500).json({
 			error: `An error occurred while deleting the product : ${error}`,
+		});
+	}
+};
+
+export const getProduct = async (req, res) => {
+	try {
+		const { id } = req.params;
+
+		if (!id) {
+			return res.status(400).json({ message: "Id parameter is missing" });
+		}
+
+		const product = await Product.findOne({
+			where: { id },
+			include: "models",
+		});
+
+		if (!product) return res.status(404).json({ message: "Product not found" });
+
+		res.json(product);
+	} catch (error) {
+		res.status(500).json({
+			error: `An error occurred while retrieving the product : ${error}`,
 		});
 	}
 };
