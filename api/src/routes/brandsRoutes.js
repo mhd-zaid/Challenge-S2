@@ -16,6 +16,9 @@ export const getBrands = async (req, res) => {
 export const createBrand = async (req, res) => {
 	try {
 		const brand = await Brand.create(req.body);
+		for (const model of req.body.models) {
+			await brand.addModels(model.id);
+		}
 		res.json(brand);
 	} catch (error) {
 		res.status(500).json({

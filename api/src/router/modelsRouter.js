@@ -4,11 +4,13 @@ import {
 	createModel,
 	updateModel,
 	deleteModel,
+	getModel,
 } from "../routes/modelsRoutes.js";
 
 const router = express.Router();
 
 router.get("/", getModels);
+router.get("/:id", getModel);
 router.post("/", createModel);
 router.put("/:id", updateModel);
 router.delete("/:id", deleteModel);
