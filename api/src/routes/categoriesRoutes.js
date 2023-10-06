@@ -1,4 +1,5 @@
 import Category from "../models/postgres-category.js";
+import CategoryMongodb from "../models/mongodb-category.js";
 
 export const getCategories = async (req, res) => {
 	try {
@@ -16,8 +17,11 @@ export const getCategories = async (req, res) => {
 export const createCategory = async (req, res) => {
 	try {
 		const category = await Category.create(req.body);
-		for (const model of req.body.models) {
-			await category.addModels(model.id);
+		await CategoryMongodb(req.body).save();
+		if (req.body.models !== undefined) {
+			for (const model of req.body.models) {
+				await category.addModels(model.id);
+			}
 		}
 		res.json(category);
 	} catch (error) {

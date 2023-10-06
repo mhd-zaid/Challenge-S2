@@ -12,6 +12,10 @@ import stats from "./src/router/statsRouter.js";
 import sequelize from "./src/config/sequelize-config.js";
 import mailTransporter from "./src/config/mail-config.js";
 import passwordRenewal from "./src/scripts/passwordRenewal.js";
+import mongodbProduct from "./src/models/mongodb-product.js";
+import mongodbModel from "./src/models/mongodb-model.js";
+import mongodbBrand from "./src/models/mongodb-brand.js";
+import mongodbCategory from "./src/models/mongodb-category.js";
 
 const app = express();
 

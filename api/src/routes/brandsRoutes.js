@@ -1,4 +1,5 @@
 import Brand from "../models/postgres-brand.js";
+import BrandMongodb from "../models/mongodb-brand.js";
 
 export const getBrands = async (req, res) => {
 	try {
@@ -16,8 +17,11 @@ export const getBrands = async (req, res) => {
 export const createBrand = async (req, res) => {
 	try {
 		const brand = await Brand.create(req.body);
-		for (const model of req.body.models) {
-			await brand.addModels(model.id);
+		await BrandMongodb(req.body).save();
+		if (req.body.models !== undefined) {
+			for (const model of req.body.models) {
+				await brand.addModels(model.id);
+			}
 		}
 		res.json(brand);
 	} catch (error) {

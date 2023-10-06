@@ -1,4 +1,5 @@
 import Product from "../models/postgres-product.js";
+import ProductMongodb from "../models/mongodb-product.js";
 
 export const getProducts = async (req, res) => {
 	try {
@@ -16,6 +17,7 @@ export const getProducts = async (req, res) => {
 export const createProduct = async (req, res) => {
 	try {
 		const product = await Product.create(req.body);
+		await ProductMongodb(req.body).save();
 		for (const model of req.body.models) {
 			await product.addModels(model.id);
 		}
