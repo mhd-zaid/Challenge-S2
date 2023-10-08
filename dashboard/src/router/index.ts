@@ -15,7 +15,7 @@ const router = createRouter({
     ]
 })
 
-router.beforeEach((to, from, next) => {
+/*router.beforeEach((to, from, next) => {
     const userStore = useUserStore();
     const isLoggedIn = userStore.isLoggedIn;
 
@@ -28,6 +28,6 @@ router.beforeEach((to, from, next) => {
     }
 
     next();
-});
+});*/
 
 export default router

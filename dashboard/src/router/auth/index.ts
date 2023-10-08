@@ -8,5 +8,10 @@ export const authRoutes = [
         path: '/register',
         name: 'register',
         component: () => import('../../views/auth/RegisterView.vue'),
+    },
+    {
+        path: '/profile',
+        name: 'profile',
+        component: () => import('../../views/auth/ProfileView.vue'),
     }
 ];

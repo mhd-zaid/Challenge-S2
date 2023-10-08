@@ -24,7 +24,6 @@ export const useUserStore = defineStore({
         async login(form: { email: string; password: string }) {
             try {
                 const response = await axios.post('http://localhost:3000/auth/login', form);
-
                 if (response.status === 200) {
                     this.user = response.data;
                     localStorage.setItem('token', response.data.token);
