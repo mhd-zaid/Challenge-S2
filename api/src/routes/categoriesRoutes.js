@@ -16,8 +16,9 @@ export const getCategories = async (req, res) => {
 
 export const createCategory = async (req, res) => {
 	try {
-		const category = await Category.create(req.body);
-		await CategoryMongodb(req.body).save();
+		const categoryMongodb = await CategoryMongodb(req.body).save();
+		const id = categoryMongodb._id;
+		const category = await Category.create({ id, ...req.body });
 		if (req.body.models !== undefined) {
 			for (const model of req.body.models) {
 				await category.addModels(model.id);

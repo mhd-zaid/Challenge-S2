@@ -16,8 +16,9 @@ export const getProducts = async (req, res) => {
 
 export const createProduct = async (req, res) => {
 	try {
-		const product = await Product.create(req.body);
-		await ProductMongodb(req.body).save();
+		const productMongoDB = await ProductMongodb(req.body).save();
+		const id = productMongoDB._id;
+		const product = await Product.create({ id, ...req.body });
 		for (const model of req.body.models) {
 			await product.addModels(model.id);
 		}

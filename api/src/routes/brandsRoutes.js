@@ -16,8 +16,9 @@ export const getBrands = async (req, res) => {
 
 export const createBrand = async (req, res) => {
 	try {
-		const brand = await Brand.create(req.body);
-		await BrandMongodb(req.body).save();
+		const brandMongo = await BrandMongodb(req.body).save();
+		const id = brandMongo._id.toString();
+		const brand = await Brand.create({ id, ...req.body });
 		if (req.body.models !== undefined) {
 			for (const model of req.body.models) {
 				await brand.addModels(model.id);
