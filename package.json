@@ -1,0 +1,18 @@
+{
+  "name": "challenge-s2",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "clean": "rm -rf api/node_modules; rm -rf dashboard/node_modules/; rm -rf client/node_modules; rm pnpm-lock.yaml"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "turbo": "^1.10.15"
+  },
+  "packageManager": "pnpm@6.30.1"
+}

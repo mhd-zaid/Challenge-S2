@@ -1,5 +1,6 @@
 import {defineStore} from "pinia";
 import axios from "axios";
+import router from "@/router";
 
 export interface User {
     id: number;
@@ -23,11 +24,11 @@ export const useUserStore = defineStore({
     actions: {
         async login(form: { email: string; password: string }) {
             try {
-                const response = await axios.post('http://localhost:3000/auth/login', form);
-                if (response.status === 200) {
-                    this.user = response.data;
-                    localStorage.setItem('token', response.data.token);
-                }
+                await axios.post('http://localhost:3000/auth/login', form).then((res) => {
+                    this.user = res.data;
+                    localStorage.setItem('token', res.data.token);
+                    router.push('/')
+                });
             } catch (e) {
                 console.error(e);
             }
