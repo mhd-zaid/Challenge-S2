@@ -21,7 +21,7 @@ export const sendEmail = async (email, subject, template) => {
 
 export const sendEmailConfirmation = async (email, token) => {
     try {
-        const confirmationLink = `http://localhost:3000/auth/validate?email=${email}&token=${token}`;
+        const confirmationLink = `http://localhost:3000/auth/confirm?email=${email}&authentificationToken=${token}`;
 
         const subject = "Confirmation de votre compte";
 
