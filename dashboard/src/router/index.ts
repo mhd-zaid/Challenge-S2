@@ -1,5 +1,5 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import HomeView from '../views/DashboardView.vue'
+import HomeView from '@/views/DashboardView.vue'
 import {authRoutes} from "@/router/auth";
 import {useUserStore} from "@/stores/user";
 
@@ -15,19 +15,15 @@ const router = createRouter({
     ]
 })
 
-/*router.beforeEach((to, from, next) => {
+router.beforeEach((to, from, next) => {
     const userStore = useUserStore();
     const isLoggedIn = userStore.isLoggedIn;
-
-    if (to.name !== 'login' && !isLoggedIn) {
+    if (to.name !== 'login' && !isLoggedIn)
         next({name: 'login'});
-    }
-
-    if (to.name === 'login' && isLoggedIn) {
+    else if (to.name === 'login' && isLoggedIn)
         next({name: 'dashboard'});
-    }
-
-    next();
-});*/
+    else
+        next();
+});
 
 export default router

@@ -16,8 +16,8 @@ export const useUserStore = defineStore({
     }),
 
     getters: {
-        isLoggedIn: (state) => !!state.user && localStorage.getItem('token'),
-        isAdmin: (state) => state.user?.role === 'admin',
+        isLoggedIn: (state) => !!localStorage.getItem('token'),
+        isAdmin: (state) => state.user?.role === 'ROLE_ADMIN',
     },
 
     actions: {
