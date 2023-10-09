@@ -33,6 +33,10 @@ Product.init(
 			type: DataTypes.STRING,
 			allowNull: false,
 		},
+		url: {
+			type: DataTypes.STRING,
+			allowNull: true,
+		},
 	},
 	{
 		sequelize,

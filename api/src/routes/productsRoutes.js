@@ -16,12 +16,25 @@ export const getProducts = async (req, res) => {
 
 export const createProduct = async (req, res) => {
 	try {
+		const file = req.files.image;
+		if (file) {
+			req.body.url = `../uploads/images/${file.name}`;
+		}
+		
+		file.mv(path, async (error) => {
+			if (error) {
+				console.error(error);
+				return res.status(500).json({ message: "Error uploading image" });
+			}
+		});
+
 		const productMongoDB = await ProductMongodb(req.body).save();
 		const id = productMongoDB._id;
 		const product = await Product.create({ id, ...req.body });
 		for (const model of req.body.models) {
 			await product.addModels(model.id);
 		}
+
 		res.json(product);
 	} catch (error) {
 		res.status(500).json({
@@ -33,6 +46,18 @@ export const createProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
 	try {
 		const { id } = req.params;
+		const file = req.files.image;
+		if (file) {
+			req.body.url = `../uploads/images/${file.name}`;
+		}
+		
+		file.mv(path, async (error) => {
+			if (error) {
+				console.error(error);
+				return res.status(500).json({ message: "Error uploading image" });
+			}
+		});
+
 		const productDataToUpdate = req.body;
 
 		if (!id) {
