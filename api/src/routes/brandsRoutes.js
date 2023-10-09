@@ -42,9 +42,10 @@ export const updateBrand = async (req, res) => {
 		}
 
 		const brand = await Brand.findOne({ where: { id } });
+		const BrandMongo = await BrandMongodb.findOne({ _id: id }); 
 
 		if (!brand) return res.status(404).json({ message: "Brand not found" });
-
+		await BrandMongo.updateOne(brandDataToUpdate);
 		await brand.update(brandDataToUpdate);
 		res.json({ message: "Brand updated successfully" });
 	} catch (error) {
@@ -63,11 +64,11 @@ export const deleteBrand = async (req, res) => {
 		}
 
 		const brand = await Brand.findOne({ where: { id } });
-
+		const brandMongo = await BrandMongodb.findOne({ _id: id });
 		if (!brand) return res.status(404).json({ message: "Brand not found" });
 
 		await brand.destroy();
-
+		await brandMongo.updateOne({ deletedAt: new Date() });
 		res.json({
 			message: "Brand deleted successfully",
 		});

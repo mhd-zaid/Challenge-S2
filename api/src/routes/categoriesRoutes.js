@@ -42,11 +42,13 @@ export const updateCategory = async (req, res) => {
 		}
 
 		const category = await Category.findOne({ where: { id } });
+		const categoryMongo = await CategoryMongodb.findOne({ _id: id });
 
 		if (!category)
 			return res.status(404).json({ message: "Category not found" });
 
 		await category.update(categoryDataToUpdate);
+		await categoryMongo.updateOne(categoryDataToUpdate);
 		res.json({ message: "Category updated successfully" });
 	} catch (error) {
 		res.status(500).json({
@@ -64,12 +66,13 @@ export const deleteCategory = async (req, res) => {
 		}
 
 		const category = await Category.findOne({ where: { id } });
+		const categoryMongo = await CategoryMongodb.findOne({ _id: id });
 
 		if (!category)
 			return res.status(404).json({ message: "Category not found" });
 
 		await category.destroy();
-
+		await categoryMongo.updateOne({ deletedAt: new Date() });
 		res.json({
 			message: "Category deleted successfully",
 		});

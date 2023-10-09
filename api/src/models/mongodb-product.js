@@ -13,6 +13,7 @@ const productSchema = new mongoose.Schema({
 			ref: "Model",
 		},
 	],
+	deletedAt: { type: Date, default: null },
 });
 
 const ProductMongoDB = mongoose.model("Product", productSchema);

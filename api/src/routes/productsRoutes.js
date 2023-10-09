@@ -40,10 +40,13 @@ export const updateProduct = async (req, res) => {
 		}
 
 		const product = await Product.findOne({ where: { id } });
+		const productMongo = await ProductMongodb.findOne({ _id: id });
 
 		if (!product) return res.status(404).json({ message: "Product not found" });
 
 		await product.update(productDataToUpdate);
+		await productMongo.updateOne(productDataToUpdate);
+
 		res.json({ message: "Product updated successfully" });
 	} catch (error) {
 		res.status(500).json({
@@ -61,11 +64,13 @@ export const deleteProduct = async (req, res) => {
 		}
 
 		const product = await Product.findOne({ where: { id } });
+		const productMongo = await ProductMongodb.findOne({ _id: id });
 
 		if (!product) return res.status(404).json({ message: "Product not found" });
 
 		await product.destroy();
-
+		await productMongo.updateOne({ deletedAt: Date.now() });
+		
 		res.json({
 			message: "Product deleted successfully",
 		});

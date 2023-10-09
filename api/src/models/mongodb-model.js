@@ -18,6 +18,7 @@ const modelesSchema = new mongoose.Schema({
 			ref: "Product",
 		},
 	],
+	deletedAt: { type: Date, default: null },
 });
 
 const ModelMongodb = mongoose.model("Model", modelesSchema);

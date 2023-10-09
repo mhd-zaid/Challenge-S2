@@ -41,10 +41,13 @@ export const updateModel = async (req, res) => {
 		}
 
 		const model = await Model.findOne({ where: { id } });
+		const modelMongo = await modelMongodb.findOne({ _id: id });
 
 		if (!model) return res.status(404).json({ message: "Model not found" });
 
 		await model.update(modelDataToUpdate);
+		await modelMongo.updateOne(modelDataToUpdate);
+
 		res.json({ message: "Model updated successfully" });
 	} catch (error) {
 		res.status(500).json({
@@ -62,11 +65,13 @@ export const deleteModel = async (req, res) => {
 		}
 
 		const model = await Model.findOne({ where: { id } });
+		const modelMongo = await ModelMongodb.findOne({ _id: id });
 
 		if (!model) return res.status(404).json({ message: "Model not found" });
 
 		await model.destroy();
-
+		await modelMongo.updateOne({ deletedAt: new Date() });
+		
 		res.json({
 			message: "Model deleted successfully",
 		});
