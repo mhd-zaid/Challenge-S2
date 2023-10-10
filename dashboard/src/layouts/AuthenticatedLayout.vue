@@ -4,23 +4,28 @@ import {Dialog, DialogPanel, TransitionChild, TransitionRoot} from '@headlessui/
 import {
   Bars3Icon,
   CalendarIcon,
-  ChartPieIcon,
   DocumentDuplicateIcon,
   FolderIcon,
   HomeIcon,
   UsersIcon,
   XMarkIcon,
+  UserIcon,
+  ArrowLeftOnRectangleIcon
 } from '@heroicons/vue/24/outline'
+import {useRouter} from "vue-router";
 
+const router = useRouter()
 const navigation = [
-  {name: 'Dashboard', href: '#', icon: HomeIcon, current: true},
-  {name: 'Team', href: '#', icon: UsersIcon, current: false},
-  {name: 'Projects', href: '#', icon: FolderIcon, current: false},
-  {name: 'Calendar', href: '#', icon: CalendarIcon, current: false},
-  {name: 'Documents', href: '#', icon: DocumentDuplicateIcon, current: false},
-  {name: 'Reports', href: '#', icon: ChartPieIcon, current: false},
+  {name: 'Dashboard', href: '/', icon: HomeIcon, current: router.currentRoute.value.path === '/'},
+  {name: 'Utilisateurs', href: '/users', icon: UsersIcon, current: router.currentRoute.value.path === '/users'},
+  {name: 'Products', href: '/products', icon: FolderIcon, current: router.currentRoute.value.path === '/products'},
+  {name: 'Catégories', href: '/categories', icon: CalendarIcon, current: router.currentRoute.value.path === '/categories'},
+  {name: 'Models', href: '/models', icon: DocumentDuplicateIcon, current: router.currentRoute.value.path === '/models'},
 ]
-
+const logout = () => {
+  localStorage.removeItem('token')
+  window.location.href = '/login'
+}
 const sidebarOpen = ref(false)
 </script>
 <template>
@@ -52,7 +57,8 @@ const sidebarOpen = ref(false)
               <!-- Sidebar component, swap this element with another sidebar if you like -->
               <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 pb-2 ring-1 ring-white/10">
                 <div class="flex h-16 shrink-0 items-center">
-                  <img class="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
+                  <img class="h-8 w-auto"
+                       src="https://sneakpeekdenim.com/cdn/shop/files/sneak_peek_logo_LG_2021_600x.png?v=1634595379"
                        alt="Your Company"/>
                 </div>
                 <nav class="flex flex-1 flex-col">
@@ -82,7 +88,8 @@ const sidebarOpen = ref(false)
       <!-- Sidebar component, swap this element with another sidebar if you like -->
       <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6">
         <div class="flex h-16 shrink-0 items-center">
-          <img class="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
+          <img class="h-8 w-auto"
+               src="https://sneakpeekdenim.com/cdn/shop/files/sneak_peek_logo_LG_2021_600x.png?v=1634595379"
                alt="Your Company"/>
         </div>
         <nav class="flex flex-1 flex-col">
@@ -98,14 +105,17 @@ const sidebarOpen = ref(false)
                 </li>
               </ul>
             </li>
-            <li class="-mx-6 mt-auto">
-              <a href="#"
-                 class="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-white hover:bg-gray-800">
-                <img class="h-8 w-8 rounded-full bg-gray-800"
-                     src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                     alt=""/>
-                <span class="sr-only">Your profile</span>
-                <span aria-hidden="true">Tom Cook</span>
+            <li class="mt-auto">
+              <a href="/profile"
+                 :class="[router.currentRoute.value.path === '/profile' ? 'bg-gray-800 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800', 'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold']">
+                <UserIcon class="h-6 w-6 shrink-0" aria-hidden="true"/>
+                User Name
+              </a>
+              <a type="button"
+                 @click="logout"
+                 class="flex items-center gap-x-4 py-3 px-2 text-sm font-semibold leading-6 text-white hover:bg-gray-800 cursor-pointer">
+                <ArrowLeftOnRectangleIcon class="h-6 w-6 shrink-0" aria-hidden="true"/>
+                Déconnexion
               </a>
             </li>
           </ul>
@@ -118,12 +128,13 @@ const sidebarOpen = ref(false)
         <span class="sr-only">Open sidebar</span>
         <Bars3Icon class="h-6 w-6" aria-hidden="true"/>
       </button>
-      <div class="flex-1 text-sm font-semibold leading-6 text-white">Dashboard</div>
-      <a href="#">
+      <div class="flex-1 text-sm font-semibold leading-6 text-white">{{
+          router.currentRoute.value.path === '/profile' ? 'Profile' : navigation.filter(x => x.current === true)[0].name
+        }}
+      </div>
+      <a href="/profile">
         <span class="sr-only">Your profile</span>
-        <img class="h-8 w-8 rounded-full bg-gray-800"
-             src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-             alt=""/>
+        <UserIcon class="h-6 w-6 shrink-0 text-white" aria-hidden="true"/>
       </a>
     </div>
 
