@@ -1,5 +1,7 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import HomeView from '@/views/DashboardView.vue'
+import ProductsView from '@/views/ProductsView.vue'
+import ProductsFormView from '@/views/ProductsFormView.vue'
 import {authRoutes} from "@/router/auth";
 import {CategoriesRoutes} from "@/router/categories";
 import {UserRoutes} from "@/router/users";
@@ -21,6 +23,32 @@ const router = createRouter({
                 requiresAuthentication: true,
             }
         },
+        {
+            path: '/products',
+            name: 'products',
+            component: ProductsView
+        },
+        {
+            path: '/products/create',
+            name: 'create-product',
+            component: ProductsFormView
+        },
+        {
+            path: '/products/:id',
+            name: 'product',
+            component: ProductsView
+        },
+        {
+            path: '/products/:id/edit',
+            name: 'edit-product',
+            component: ProductsFormView
+        },
+        {
+            path: '/products/:id/delete',
+            name: 'delete-product',
+            component: ProductsView
+        },
+       
     ]
 })
 router.beforeEach(async (to, from, next) => {

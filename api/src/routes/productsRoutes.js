@@ -1,5 +1,6 @@
 import Product from "../models/postgres-product.js";
 import ProductMongodb from "../models/mongodb-product.js";
+import mongoose from "mongoose";
 
 export const getProducts = async (req, res) => {
 	try {
@@ -16,20 +17,30 @@ export const getProducts = async (req, res) => {
 
 export const createProduct = async (req, res) => {
 	try {
-		const file = req.files.image;
+		const file = req.files !== undefined ? req.files.image : null;
 		if (file) {
 			req.body.url = `../uploads/images/${file.name}`;
+			file.mv(path, async (error) => {
+				if (error) {
+					console.error(error);
+					return res.status(500).json({ message: "Error uploading image" });
+				}
+			});
 		}
+		const models = req.body.models.map(model => new mongoose.Types.ObjectId(model.id));
 		
-		file.mv(path, async (error) => {
-			if (error) {
-				console.error(error);
-				return res.status(500).json({ message: "Error uploading image" });
-			}
-		});
-
-		const productMongoDB = await ProductMongodb(req.body).save();
-		const id = productMongoDB._id;
+		const productDataToCreate = {
+			name: req.body.name,
+			price: req.body.price,
+			vat: req.body.vat,
+			quantity: req.body.quantity,
+			size: req.body.size,
+			color: req.body.color,
+			url: req.body.url,
+			models: models,
+		};
+		const productMongoDB = await ProductMongodb(productDataToCreate).save();
+		const id = productMongoDB._id.toString();
 		const product = await Product.create({ id, ...req.body });
 		for (const model of req.body.models) {
 			await product.addModels(model.id);
