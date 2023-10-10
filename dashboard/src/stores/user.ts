@@ -1,6 +1,8 @@
 import {defineStore} from "pinia";
 import axios from "axios";
-import router from "@/router";
+import {useRouter} from "vue-router";
+
+const router = useRouter()
 
 export interface User {
     id: number;
@@ -14,36 +16,22 @@ export const useUserStore = defineStore({
     id: 'user',
     state: () => ({
         user: null as User | null,
+        token: "" as string,
     }),
 
     getters: {
-        isLoggedIn: (state) => !!localStorage.getItem('token'),
+        isLoggedIn: (state) => state.token !== "",
         isAdmin: (state) => state.user?.role === 'ROLE_ADMIN',
     },
 
     actions: {
-        async login(form: { email: string; password: string }) {
-            try {
-                await axios.post('http://localhost:3000/auth/login', form).then((res) => {
-                    this.user = res.data;
-                    localStorage.setItem('token', res.data.token);
-                    router.push('/')
-                });
-            } catch (e) {
-                console.error(e);
-            }
+        async setUser(user: User) {
+            this.user = user;
         },
 
-        async register(form: { email: string; password: string; confirmation_password: string, role: 'ADMIN' }) {
-            try {
-                const response = await axios.post('http://localhost:3000/auth/register', form);
-
-                if (response.status === 200) {
-                    this.user = response.data;
-                }
-            } catch (e) {
-                console.error(e);
-            }
+        async setToken(token: string) {
+            this.token = token;
+            localStorage.setItem('token', token);
         },
 
         async fetchUser() {

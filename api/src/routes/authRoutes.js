@@ -103,7 +103,7 @@ export const login = async (req, res) => {
         user.save();
 
         if (!user.isValidate)
-            return res.status(401).json({ message: "Email not confirmed" });
+            return res.status(401).json({message: "Email not confirmed"});
 
         const payload = {
             userId: user.id,
@@ -165,3 +165,11 @@ export const confirmEmail = async (req, res) => {
 export const logout = async (req, res) => {
     // Logique de déconnexion de l'utilisateur
 };
+
+export const getMe = async (req, res) => {
+    const user = await User.findOne({
+        where: {email: req.query.email},
+    })
+    if (!user) throw new Error(`Email "${req.user.email}" not found`);
+    res.json(user);
+}

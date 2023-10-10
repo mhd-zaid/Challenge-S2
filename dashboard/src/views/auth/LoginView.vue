@@ -2,22 +2,34 @@
 import GuestLayout from "@/layouts/GuestLayout.vue";
 import {reactive} from "vue";
 import {useUserStore} from "@/stores/user";
+import {useRouter} from "vue-router";
+import axios from "axios";
+import {showToast} from "@/utils/toast";
 
 const userStore = useUserStore()
-
 const state = reactive({
   form: {
     email: '',
     password: '',
   },
-  errors: {},
+  errors: "",
 })
-
+const router = useRouter()
 const submit = async () => {
   try {
-    await userStore.login(state.form)
+    await axios.post('http://localhost:3000/auth/login', state.form).then((res) => {
+      userStore.setUser(res.data);
+      userStore.setToken(res.data.token)
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('user', JSON.stringify(res.data));
+      showToast('Vous êtes connecté !', 'success')
+      setTimeout(() => {
+        router.push('/')
+      }, 1000)
+    });
   } catch (e: any) {
-    state.errors = e.response.data.errors
+    console.error(e);
+    showToast(e.response.data.message, 'error')
   }
 }
 
