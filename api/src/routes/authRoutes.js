@@ -193,9 +193,10 @@ export const logout = async (req, res) => {
 };
 
 export const getMe = async (req, res) => {
-    const user = await User.findOne({
-        where: {email: req.query.email},
-    })
-    if (!user) throw new Error(`Email "${req.user.email}" not found`);
-    res.json(user);
+	const userId = req.user.userId;
+	const user = await User.findOne({
+		where: { id: userId  },
+		attributes: { exclude: ["password"] },
+	});
+	res.json(user);
 }

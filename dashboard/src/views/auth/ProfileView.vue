@@ -16,23 +16,8 @@ import axiosInstance from '@/utils/axiosInstance'
 import UserProfileField from '@/components/UserProfileField.vue'
 import UserProfilePasswordFields from '@/components/UserProfilePasswordFields.vue'
 
-const fields = {
-  firstname: { name: 'firstname', label: 'Prénom' },
-  lastname: { name: 'lastname', label: 'Nom' },
-  email: { name: 'email', label: 'Email' },
-  phone: { name: 'phone', label: 'Téléphone' },
-  address: { name: 'address', label: 'Adresse' },
-  city: { name: 'city', label: 'Ville' },
-  postalCode: { name: 'postalCode', label: 'Code postal' }
-}
-
-const getUser = async () => {
-  const response = await axiosInstance.get('/users/6523c1c4f8c1e5c62f9e1691')
-  state.user = response.data
-}
-
 const state: { user: any; tabs: any[]; currentModifications: any } = reactive({
-  user: getUser(),
+  user: null,
   tabs: [
     { name: 'Compte', href: '#', current: true },
     { name: 'Mot de passe', href: '#', current: false },
@@ -49,15 +34,35 @@ const state: { user: any; tabs: any[]; currentModifications: any } = reactive({
   }
 })
 
+const fields = {
+  firstname: { name: 'firstname', label: 'Prénom' },
+  lastname: { name: 'lastname', label: 'Nom' },
+  email: { name: 'email', label: 'Email' },
+  phone: { name: 'phone', label: 'Téléphone' },
+  address: { name: 'address', label: 'Adresse' },
+  city: { name: 'city', label: 'Ville' },
+  postalCode: { name: 'postalCode', label: 'Code postal' }
+}
+
+const getUser = async () => {
+  try {
+    const response = await axiosInstance.get('/auth/me')
+    state.user = response.data
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 const changeTab = (tab: any) => {
   state.tabs.forEach((tab) => (tab.current = false))
   tab.current = true
 }
+getUser()
 </script>
 
 <template>
   <AuthenticatedLayout>
-    <main class="flex-1">
+    <main v-if="state.user" class="flex-1">
       <div class="relative px-6">
         <div class="pb-16 pt-4">
           <div class="px-4 sm:px-6 lg:px-0">
@@ -111,8 +116,8 @@ const changeTab = (tab: any) => {
                   </div>
                   <div class="mt-6">
                     <dl class="divide-y divide-gray-200">
-                      <UserProfileField :model="fields.firstname" v-model="state.user.firstname" />
-                      <UserProfileField :model="fields.lastname" v-model="state.user.lastname" />
+                      <UserProfileField :userId="state.user.id" :model="fields.firstname" v-model="state.user.firstname"/>
+                      <UserProfileField :userId="state.user.id" :model="fields.lastname" v-model="state.user.lastname" />
                     </dl>
                   </div>
                 </div>
@@ -129,11 +134,11 @@ const changeTab = (tab: any) => {
                   </div>
                   <div class="mt-6">
                     <dl class="divide-y divide-gray-200">
-                      <UserProfileField :model="fields.email" v-model="state.user.email" />
-                      <UserProfileField :model="fields.phone" v-model="state.user.phone" />
-                      <UserProfileField :model="fields.address" v-model="state.user.address" />
-                      <UserProfileField :model="fields.city" v-model="state.user.city" />
-                      <UserProfileField
+                      <UserProfileField :userId="state.user.id" :model="fields.email" v-model="state.user.email" />
+                      <UserProfileField :userId="state.user.id" :model="fields.phone" v-model="state.user.phone" />
+                      <UserProfileField :userId="state.user.id" :model="fields.address" v-model="state.user.address" />
+                      <UserProfileField :userId="state.user.id" :model="fields.city" v-model="state.user.city" />
+                      <UserProfileField :userId="state.user.id"
                         :model="fields.postalCode"
                         v-model="state.user.postalCode"
                       />
@@ -156,7 +161,7 @@ const changeTab = (tab: any) => {
                   </div>
                   <div class="mt-6">
                     <dl class="divide-y divide-gray-200">
-                      <UserProfilePasswordFields />
+                      <UserProfilePasswordFields :userId="state.user.id" />
                     </dl>
                   </div>
                 </div>
