@@ -136,6 +136,45 @@ export const updateUser = async (req, res) => {
 	}
 };
 
+export const updatePassword = async (req, res) => {
+	try {
+		const { id } = req.params;
+		const { oldPassword, newPassword } = req.body;
+
+		if (!id) throw new Error("Id parameter is missing");
+
+        const user = await User.findOne({ where: { id } });
+
+		if (!user) return res.status(404).json({ message: "User not found" });
+
+		if (!oldPassword || !newPassword)
+			throw new Error("Old password or new password is missing");
+
+		const isPasswordValid = await bcrypt.compare(
+			oldPassword,
+			user.password
+		);
+
+		if (!isPasswordValid)
+			return res.status(400).json({ message: "Invalid password" });
+
+		if (!isValidPassword(newPassword))
+			throw new Error(
+				"Password must contain at least 12 characters, 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character"
+			);
+
+		const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+		await user.update({ password: hashedPassword });
+
+		res.json({ message: "Password updated successfully" });
+	} catch (error) {
+		res.status(500).json({
+			error: `An error occurred while updating the password : ${error}`,
+		});
+	}
+};
+
 export const deleteUser = async (req, res) => {
 	try {
 		const { id } = req.params;
@@ -146,7 +185,7 @@ export const deleteUser = async (req, res) => {
 
 		if (!user) return res.status(404).json({ message: "User not found" });
 
-        const userMongo = await UserMongo.findOne({
+		const userMongo = await UserMongo.findOne({
 			_id: new Types.ObjectId(id),
 		});
 
@@ -159,10 +198,10 @@ export const deleteUser = async (req, res) => {
 			{ where: { id } }
 		);
 
-        userMongo.disabled = true;
-        userMongo.firstname = null;
-        userMongo.lastname = null;
-        await userMongo.save();
+		userMongo.disabled = true;
+		userMongo.firstname = null;
+		userMongo.lastname = null;
+		await userMongo.save();
 
 		const isEmailSent = await sendDeletedAccountEmail(
 			user.email,
