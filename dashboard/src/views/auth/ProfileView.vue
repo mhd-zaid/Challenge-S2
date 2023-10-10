@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Switch, SwitchGroup, SwitchLabel } from '@headlessui/vue'
 import {
   ArrowLeftOnRectangleIcon,
   BriefcaseIcon,
@@ -15,6 +14,7 @@ import { reactive } from 'vue'
 import axiosInstance from '@/utils/axiosInstance'
 import UserProfileField from '@/components/UserProfileField.vue'
 import UserProfilePasswordFields from '@/components/UserProfilePasswordFields.vue'
+import UserProfileSwitchField from '@/components/UserProfileSwitchField.vue'
 
 const state: { user: any; tabs: any[]; currentModifications: any } = reactive({
   user: null,
@@ -116,8 +116,16 @@ getUser()
                   </div>
                   <div class="mt-6">
                     <dl class="divide-y divide-gray-200">
-                      <UserProfileField :userId="state.user.id" :model="fields.firstname" v-model="state.user.firstname"/>
-                      <UserProfileField :userId="state.user.id" :model="fields.lastname" v-model="state.user.lastname" />
+                      <UserProfileField
+                        :userId="state.user.id"
+                        :model="fields.firstname"
+                        v-model="state.user.firstname"
+                      />
+                      <UserProfileField
+                        :userId="state.user.id"
+                        :model="fields.lastname"
+                        v-model="state.user.lastname"
+                      />
                     </dl>
                   </div>
                 </div>
@@ -134,11 +142,28 @@ getUser()
                   </div>
                   <div class="mt-6">
                     <dl class="divide-y divide-gray-200">
-                      <UserProfileField :userId="state.user.id" :model="fields.email" v-model="state.user.email" />
-                      <UserProfileField :userId="state.user.id" :model="fields.phone" v-model="state.user.phone" />
-                      <UserProfileField :userId="state.user.id" :model="fields.address" v-model="state.user.address" />
-                      <UserProfileField :userId="state.user.id" :model="fields.city" v-model="state.user.city" />
-                      <UserProfileField :userId="state.user.id"
+                      <UserProfileField
+                        :userId="state.user.id"
+                        :model="fields.email"
+                        v-model="state.user.email"
+                      />
+                      <UserProfileField
+                        :userId="state.user.id"
+                        :model="fields.phone"
+                        v-model="state.user.phone"
+                      />
+                      <UserProfileField
+                        :userId="state.user.id"
+                        :model="fields.address"
+                        v-model="state.user.address"
+                      />
+                      <UserProfileField
+                        :userId="state.user.id"
+                        :model="fields.city"
+                        v-model="state.user.city"
+                      />
+                      <UserProfileField
+                        :userId="state.user.id"
                         :model="fields.postalCode"
                         v-model="state.user.postalCode"
                       />
@@ -166,6 +191,23 @@ getUser()
                   </div>
                 </div>
               </div>
+
+              <!-- Notifications page -->
+              <div v-if="state.tabs[2].current">
+                <div class="mt-10 divide-y divide-gray-200">
+                  <div class="space-y-1">
+                    <h3 class="text-lg font-medium leading-6 text-gray-900">Notifications</h3>
+                    <p class="max-w-2xl text-sm text-gray-500">
+                      Définissez ici vos préférences de notifications.
+                    </p>
+                  </div>
+                  <div class="mt-6">
+                    <dl class="divide-y divide-gray-200">
+                      <UserProfileSwitchField v-for="i in 5" :id="i" />
+                    </dl>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -173,8 +215,6 @@ getUser()
     </main>
   </AuthenticatedLayout>
 </template>
-
-
 
 <!-- Photo -->
 <!-- <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:pt-5">
