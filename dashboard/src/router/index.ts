@@ -1,11 +1,17 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import HomeView from '@/views/DashboardView.vue'
 import {authRoutes} from "@/router/auth";
+import {CategoriesRoutes} from "@/router/categories";
+import {UserRoutes} from "@/router/users";
+import {ModelsRoutes} from "@/router/models";
 import {checkIfAuthenticate} from "@/utils/checkUserAuthentificated";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
+        ...CategoriesRoutes,
+        ...UserRoutes,
+        ...ModelsRoutes,
         ...authRoutes,
         {
             path: '/',
