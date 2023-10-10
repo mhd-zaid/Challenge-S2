@@ -1,11 +1,29 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue'
 import axiosInstance from '@/utils/axiosInstance'
+import {Bar} from 'vue-chartjs'
+import {Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale} from 'chart.js'
 import { reactive } from 'vue'
 
 const state = reactive({
   newUsersLast30Days: 0,
-  newUsersAugmentation: 0
+  newUsersAugmentation: 0,
+  chartData: {
+    labels: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Aout', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
+    datasets: [{
+      data: [40, 20, 12, 40, 20, 12, 40, 20, 12, 40, 50, 12],
+      label: 'Ventes',
+      backgroundColor: '#6366F1',
+      borderColor: '#6366F1',
+      borderWidth: 1,
+      barThickness: 20,
+      borderRadius: 4,
+      hoverBackgroundColor: '#4F46E5',
+    }]
+  },
+  chartOptions: {
+    responsive: true,
+  }
 })
 
 const getData = async () => {
@@ -32,6 +50,10 @@ const getData = async () => {
 }
 
 getData()
+
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
+
+
 </script>
 
 <template>
@@ -186,6 +208,26 @@ getData()
               </div>
             </div>
           </dd>
+        </div>
+      </dl>
+    </div>
+    <div class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
+      <dl>
+        <div class="relative overflow-hidden rounded-lg bg-white px-4 pb-12 pt-5 shadow sm:px-6 sm:pt-6">
+          <Bar
+              id="my-chart-id"
+              :options="state.chartOptions"
+              :data="state.chartData"
+          />
+        </div>
+      </dl>
+      <dl>
+        <div class="overflow-hidden rounded-lg bg-white px-4 pb-12 pt-5 shadow sm:px-6 sm:pt-6">
+          <Bar
+              id="my-chart-id"
+              :options="state.chartOptions"
+              :data="state.chartData"
+          />
         </div>
       </dl>
     </div>
