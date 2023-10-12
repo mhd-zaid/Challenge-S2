@@ -12,9 +12,9 @@ import {
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue'
 import { reactive } from 'vue'
 import axiosInstance from '@/utils/axiosInstance'
-import UserProfileField from '@/components/UserProfileField.vue'
-import UserProfilePasswordFields from '@/components/UserProfilePasswordFields.vue'
-import UserProfileSwitchField from '@/components/UserProfileSwitchField.vue'
+import UserProfileField from '@/components/profile/UserProfileField.vue'
+import UserProfilePasswordFields from '@/components/profile/UserProfilePasswordFields.vue'
+import UserProfileSwitchField from '@/components/profile/UserProfileSwitchField.vue'
 
 const state: { user: any; tabs: any[]; currentModifications: any } = reactive({
   user: null,
