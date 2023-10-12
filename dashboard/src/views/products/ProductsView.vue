@@ -42,7 +42,7 @@ onUnmounted(() => {
           </p>
         </div>
         <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-            <RouterLink to="create-product" class="font-semibold text-indigo-600 hover:text-indigo-500">
+            <RouterLink :to="{name : 'create-product'}" class="font-semibold text-indigo-600 hover:text-indigo-500">
             <button
                 type="button"
                 class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
@@ -79,6 +79,13 @@ onUnmounted(() => {
                   </td>
                   <td v-for="product in products" class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                     <div class="text-gray-900">{{ product.quantity }}</div>
+                  </td>
+                  <td
+                    class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0"
+                  >
+                    <a href="#" class="text-indigo-600 hover:text-indigo-900"
+                      >View</a
+                    >
                   </td>
                   <td
                     class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0"
