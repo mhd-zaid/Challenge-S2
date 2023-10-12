@@ -1,11 +1,10 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import HomeView from '@/views/DashboardView.vue'
-import ProductsView from '@/views/ProductsView.vue'
-import ProductsFormView from '@/views/ProductsFormView.vue'
 import {authRoutes} from "@/router/auth";
 import {CategoriesRoutes} from "@/router/categories";
 import {UserRoutes} from "@/router/users";
 import {ModelsRoutes} from "@/router/models";
+import { ProductsRoutes } from './products';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,6 +13,7 @@ const router = createRouter({
         ...UserRoutes,
         ...ModelsRoutes,
         ...authRoutes,
+        ...ProductsRoutes,
         {
             path: '/',
             name: 'dashboard',
