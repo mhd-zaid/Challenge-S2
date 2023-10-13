@@ -92,16 +92,16 @@ onUnmounted(() => {
                   <td
                     class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0"
                   >
-                    <a href="#" class="text-indigo-600 hover:text-indigo-900"
-                      >View</a
-                    >
+                    <RouterLink :to="{name : 'model', params: { id: model.id }}" class="text-indigo-600 hover:text-indigo-900"
+                      >View
+                    </RouterLink>
                   </td>
                   <td
                     class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0"
                   >
-                    <a href="#" class="text-indigo-600 hover:text-indigo-900"
-                      >Edit</a
-                    >
+                    <RouterLink :to="{name : 'edit-model', params: { id: model.id }}" class="text-indigo-600 hover:text-indigo-900"
+                      >Edit
+                    </RouterLink>
                   </td>
                   <td
                     class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0"

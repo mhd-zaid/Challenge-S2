@@ -21,7 +21,8 @@ const state = reactive({
 })
 
 const id = window.location.pathname.split('/').length > 2 ? window.location.pathname.split('/')[2] : null
-let submit = null
+let submit = null;
+
 if (!id ) {
   submit = async () => {
     try {
@@ -71,8 +72,16 @@ if (!id ) {
           <button
             type="submit"
             class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            v-if="!id"
           >
             Create
+          </button>
+          <button
+            type="submit"
+            class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            v-else
+          >
+            Update
           </button>
         </div>
       </form>

@@ -10,7 +10,7 @@ export const ModelsRoutes = [
     },
     {
         path: '/models/:id',
-        name: 'model-details',
+        name: 'model',
         component: () => import('@/views/models/ModelView.vue'),
         meta : {
             title: 'Model :id',

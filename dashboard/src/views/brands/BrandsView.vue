@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue'
 import axiosInstance from '@/utils/axiosInstance';
-import axios from "axios";
 import { ref,onMounted,onUnmounted } from 'vue';
 
 const brands = ref([]);

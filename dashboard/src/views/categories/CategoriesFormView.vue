@@ -4,6 +4,16 @@ import axiosInstance from '@/utils/axiosInstance';
 import axios from 'axios'
 import { reactive, ref } from 'vue'
 
+
+const category = async () => {
+  try {
+    const response = await axiosInstance.get(`/categories/${id}`)
+    state.form = response.data;
+  } catch (e: any) {
+    throw e;
+  }
+}
+
 const state = reactive({
   form: {
     name: '',
@@ -12,19 +22,36 @@ const state = reactive({
   errors: {},
 })
 
-const submit = async () => {
-  try {
-    await axiosInstance.post('/categories', state.form)
-    window.location.href = '/categories';
-  } catch (e: any) {
-    state.errors = e.response.data.errors
+const id = window.location.pathname.split('/').length > 2 ? window.location.pathname.split('/')[2] : null
+let submit = null;
+if(!id)
+{
+  submit = async () => {
+    try {
+      await axiosInstance.post('/categories', state.form)
+      window.location.href = '/categories';
+    } catch (e: any) {
+      state.errors = e.response.data.errors
+    }
+  }
+}else{
+  category();
+  submit = async () => {
+    try {
+      await axiosInstance.put(`/categories/${id}`, state.form)
+      window.location.href = '/categories';
+    } catch (e: any) {
+      state.errors = e.response.data.errors
+    }
   }
 }
+
 </script>
 
 <template>
   <AuthenticatedLayout>
-    <h3>Create category</h3>
+    <h3 v-if="!id">Create category</h3>
+    <h3 v-else>Edit Category {{ id }}</h3>
     <div>
       <form method="POST" class="space-y-6" @submit.prevent="submit">
         <div>
@@ -61,8 +88,16 @@ const submit = async () => {
           <button
             type="submit"
             class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            v-if="!id"
           >
             Create
+          </button>
+          <button
+            type="submit"
+            class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            v-else
+          >
+            Update
           </button>
         </div>
       </form>
