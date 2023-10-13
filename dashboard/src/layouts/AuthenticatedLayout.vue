@@ -68,11 +68,11 @@ const sidebarOpen = ref(false)
               </TransitionChild>
               <!-- Sidebar component, swap this element with another sidebar if you like -->
               <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 pb-2 ring-1 ring-white/10">
-                <div class="flex h-16 shrink-0 items-center">
+                <RouterLink to="dashboard" class="flex h-16 shrink-0 items-center mt-4">
                   <img class="h-8 w-auto"
                        src="/images/sneakpeak_logo_white.png"
                        alt="Your Company"/>
-                </div>
+                </RouterLink>
                 <nav class="flex flex-1 flex-col">
                   <ul role="list" class="flex flex-1 flex-col gap-y-7">
                     <li>
@@ -99,11 +99,11 @@ const sidebarOpen = ref(false)
     <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
       <!-- Sidebar component, swap this element with another sidebar if you like -->
       <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6">
-        <div class="flex h-16 shrink-0 items-center">
-          <img class="w-48 mt-6"
-               src="/images/sneakpeak_logo_white.png"
-               alt="Your Company"/>
-        </div>
+        <RouterLink to="dashboard" class="flex h-16 shrink-0 items-center mt-5">
+          <img class="h-8 w-auto"
+              src="/images/sneakpeak_logo_white.png"
+              alt="Your Company"/>
+        </RouterLink>
         <nav class="flex flex-1 flex-col">
           <ul role="list" class="flex flex-1 flex-col gap-y-7">
             <li>
