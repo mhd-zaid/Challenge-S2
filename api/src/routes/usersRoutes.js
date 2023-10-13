@@ -7,7 +7,7 @@ import {
 	generateEncryptionKey,
 	decryptUserData,
 } from "../services/user.service.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { generateAuthentificationToken } from "../services/auth.service.js";
 import { Types } from "mongoose";
 
@@ -143,7 +143,7 @@ export const updatePassword = async (req, res) => {
 
 		if (!id) throw new Error("Id parameter is missing");
 
-        const user = await User.findOne({ where: { id } });
+		const user = await User.findOne({ where: { id } });
 
 		if (!user) return res.status(404).json({ message: "User not found" });
 

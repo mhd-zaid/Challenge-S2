@@ -1,7 +1,7 @@
 import User from "../models/postgres-user.js";
 import UserMongo from "../models/mongodb-user.js";
 import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import {
     generateAuthentificationToken,
     isUserBlocked,
