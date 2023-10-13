@@ -6,10 +6,6 @@ defineComponent({
   name: 'MiniStatisticsCards',
 })
 const props = defineProps({
-  kind: {
-    type: String,
-    required: true
-  },
   icon: {
     required: true
   },
