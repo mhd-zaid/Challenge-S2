@@ -78,3 +78,24 @@ export const deleteBrand = async (req, res) => {
 		});
 	}
 };
+
+export const getBrand = async (req, res) => {
+	try {
+		const { id } = req.params;
+
+		if (!id) {
+			return res.status(400).json({ message: "Id parameter is missing" });
+		}
+
+		const brand = await Brand.findOne({
+			where: { id },
+			include: "models",
+		});
+		if (!brand) return res.status(404).json({ message: "Brand not found" });
+		res.json(brand);
+	} catch (error) {
+		res.status(500).json({
+			error: `An error occurred while retrieving the brand : ${error}`,
+		});
+	}
+}

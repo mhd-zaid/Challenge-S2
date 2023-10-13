@@ -4,6 +4,15 @@ import axiosInstance from '@/utils/axiosInstance';
 import axios from 'axios'
 import { reactive, ref } from 'vue'
 
+const brand = async () => {
+  try {
+    const response = await axiosInstance.get(`/brands/${id}`)
+    state.form = response.data;
+  } catch (e: any) {
+    throw e;
+  }
+}
+
 const state = reactive({
   form: {
     name: '',
@@ -11,19 +20,36 @@ const state = reactive({
   errors: {},
 })
 
-const submit = async () => {
-  try {
-    await axiosInstance.post('/brands', state.form)
-    window.location.href = '/brands';
-  } catch (e: any) {
-    state.errors = e.response.data.errors
+const id = window.location.pathname.split('/').length > 2 ? window.location.pathname.split('/')[2] : null
+let submit = null
+if (!id ) {
+  submit = async () => {
+    try {
+      await axiosInstance.post('/brands', state.form)
+      window.location.href = '/brands';
+    } catch (e: any) {
+      state.errors = e.response.data.errors
+    }
+  }
+}else{
+  brand();
+  submit = async () => {
+    try {
+      await axiosInstance.put(`/brands/${id}`, state.form)
+      window.location.href = '/brands';
+    } catch (e: any) {
+      state.errors = e.response.data.errors
+    }
   }
 }
+
 </script>
 
 <template>
   <AuthenticatedLayout>
-    <h3>Create brand</h3>
+    
+    <h3 v-if="!id">Create Brand</h3>
+    <h3 v-else>Edit Brand {{ id }}</h3>
     <div>
       <form method="POST" class="space-y-6" @submit.prevent="submit">
         <div>

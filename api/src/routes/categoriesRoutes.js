@@ -82,3 +82,26 @@ export const deleteCategory = async (req, res) => {
 		});
 	}
 };
+
+export const getCategory = async (req, res) => {
+	try {
+		const { id } = req.params;
+
+		if (!id) {
+			return res.status(400).json({ message: "Id parameter is missing" });
+		}
+
+		const category = await Category.findOne({
+			where: { id },
+			include: "models",
+		});
+		if (!category)
+			return res.status(404).json({ message: "Category not found" });
+
+		res.json(category);
+	} catch (error) {
+		res.status(500).json({
+			error: `An error occurred while retrieving the category : ${error}`,
+		});
+	}
+};

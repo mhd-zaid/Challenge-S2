@@ -22,7 +22,7 @@ export const BrandsRoutes = [
         name: 'brand',
         component: () => import('@/views/brands/BrandView.vue'),
         meta: {
-            title: 'Brand :id',
+            title: 'Brand',
             requiresAuthentication: true,
         }
     },
