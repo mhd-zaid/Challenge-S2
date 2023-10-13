@@ -47,6 +47,7 @@ const submit = async () => {
     })
 
     await axiosInstance.post('/products', body)
+    window.location.href = '/products'
   } catch (e: any) {
     state.errors = e.response.data.errors
   }
