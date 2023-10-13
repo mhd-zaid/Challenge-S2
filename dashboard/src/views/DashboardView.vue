@@ -17,12 +17,27 @@ import { reactive } from 'vue'
 const state = reactive({
   newUsersLast30Days: 0,
   newUsersAugmentation: 0,
-  chartData: {
+  userChartData: {
     labels: [],
     datasets: [
       {
-        data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        data: [],
         label: 'Nouvelles inscriptions',
+        backgroundColor: '#6366F1',
+        borderColor: '#6366F1',
+        borderWidth: 1,
+        barThickness: 20,
+        borderRadius: 4,
+        hoverBackgroundColor: '#4F46E5'
+      }
+    ]
+  },
+  orderChartData: {
+    labels: [],
+    datasets: [
+      {
+        data: [576, 893, 923, 1239, 748, 689, 908, 1389, 879, 1087, 1234, 1973],
+        label: 'Nouvelles commandes',
         backgroundColor: '#6366F1',
         borderColor: '#6366F1',
         borderWidth: 1,
@@ -38,13 +53,14 @@ const state = reactive({
 })
 
 let usersPerMonthKey = 0
+let orderPerMonthKey = 0
 
 const getData = async () => {
   try {
     // Users data
     const newUsersLastYear: any = await axiosInstance.get('/stats/registrations/last-year')
-    state.chartData.labels = newUsersLastYear.data.months
-    state.chartData.datasets[0].data = newUsersLastYear.data.newUsers
+    state.userChartData.labels = newUsersLastYear.data.months
+    state.userChartData.datasets[0].data = newUsersLastYear.data.newUsers
 
     const newUsersLast30Days: any = await axiosInstance.get('/stats/registrations/last-30-days')
     state.newUsersLast30Days = newUsersLast30Days.data
@@ -54,7 +70,11 @@ const getData = async () => {
     )
     state.newUsersAugmentation = newUsersLast30Days.data - newUsersBeforeLast30Days.data
 
+    // Orders data
+    state.orderChartData.labels = newUsersLastYear.data.months
+
     usersPerMonthKey++
+    orderPerMonthKey++
   } catch (error) {
     console.log(error)
   }
@@ -68,28 +88,52 @@ ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 <template>
   <AuthenticatedLayout>
     <div>
-      <h3 class="text-base font-semibold leading-6 text-gray-900">30 Derniers Jours</h3>
-      <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <h1 class="text-lg leading-6 font-semibold text-gray-900">Tableau de bord</h1>
+      <h4 class="mt-8 text-base font-medium leading-6 text-gray-900">30 derniers jours</h4>
+      <dl class="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         <DashIncreaseBlock
           :kind="'users'"
           label="Nouvelles inscriptions"
           :data="state.newUsersLast30Days"
           :increase="state.newUsersAugmentation"
         />
-        <DashIncreaseBlock :kind="'orders'" label="Nouvelles commandes" :data="1973" :increase="176" />
-        <DashIncreaseBlock :kind="'products'" label="Nouveaux produits" :data="212" :increase="32" />
+        <DashIncreaseBlock
+          :kind="'orders'"
+          label="Nouvelles commandes"
+          :data="1973"
+          :increase="176"
+        />
+        <DashIncreaseBlock
+          :kind="'products'"
+          label="Nouveaux produits"
+          :data="212"
+          :increase="32"
+        />
       </dl>
     </div>
-    <div class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
+    <h4 class="mt-10 text-base font-medium leading-6 text-gray-900">Dernière année</h4>
+    <div class="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2">
       <dl>
         <div
-          class="relative overflow-hidden rounded-lg bg-white px-4 pb-12 pt-5 shadow sm:px-6 sm:pt-6"
+          class="relative overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:px-6 sm:pt-6"
         >
           <Bar
             id="my-chart-id"
             :key="usersPerMonthKey"
             :options="state.chartOptions"
-            :data="state.chartData"
+            :data="state.userChartData"
+          />
+        </div>
+      </dl>
+      <dl>
+        <div
+          class="relative overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:px-6 sm:pt-6"
+        >
+          <Bar
+            id="my-chart-id"
+            :key="orderPerMonthKey"
+            :options="state.chartOptions"
+            :data="state.orderChartData"
           />
         </div>
       </dl>
