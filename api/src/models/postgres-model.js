@@ -7,8 +7,7 @@ class Modele extends Model {}
 Modele.init(
 	{
 		id: {
-			type: Sequelize.UUID,
-			defaultValue: Sequelize.UUIDV4,
+			type: DataTypes.STRING,
 			primaryKey: true,
 		},
 		name: {

@@ -4,6 +4,8 @@ import {authRoutes} from "@/router/auth";
 import {CategoriesRoutes} from "@/router/categories";
 import {UserRoutes} from "@/router/users";
 import {ModelsRoutes} from "@/router/models";
+import { ProductsRoutes } from './products';
+import { BrandsRoutes } from './brands';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,6 +14,8 @@ const router = createRouter({
         ...UserRoutes,
         ...ModelsRoutes,
         ...authRoutes,
+        ...ProductsRoutes,
+        ...BrandsRoutes,
         {
             path: '/',
             name: 'dashboard',
@@ -21,6 +25,7 @@ const router = createRouter({
                 requiresAuthentication: true,
             }
         },
+       
     ]
 })
 router.beforeEach(async (to, from, next) => {

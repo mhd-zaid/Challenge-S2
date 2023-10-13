@@ -1,17 +1,16 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue'
 import axiosInstance from '@/utils/axiosInstance';
-import axios from "axios";
 import { ref,onMounted,onUnmounted } from 'vue';
 
-const categories = ref([]);
+const brands = ref([]);
 const keys = ref([]);
 const abortController = new AbortController
-const getCategories = async () => {
+const getBrands = async () => {
   try {
-    const response = await axiosInstance.get('/categories')
+    const response = await axiosInstance.get('/brands')
     const data = response.data;
-    const keys = ["name","description"];
+    const keys = ["name"];
 
     return { keys,data};
   } catch (e: any) {
@@ -19,17 +18,17 @@ const getCategories = async () => {
   }
 }
 
-const deleteCategory = async (id: number) => {
+const deleteBrand = async (id: number) => {
     try {
-        await axiosInstance.delete(`/categories/${id}`)
+        await axiosInstance.delete(`/brands/${id}`)
     } catch (e: any) {
         throw e;
     }
 }
 
 onMounted(() => {
-  getCategories().then((res) => {
-        categories.value = res.data;
+  getBrands().then((res) => {
+        brands.value = res.data;
         keys.value = res.keys;
     })
 
@@ -46,18 +45,18 @@ onUnmounted(() => {
     <div class="px-4 sm:px-6 lg:px-8">
       <div class="sm:flex sm:items-center">
         <div class="sm:flex-auto">
-          <h1 class="text-base font-semibold leading-6 text-gray-900">Categories</h1>
+          <h1 class="text-base font-semibold leading-6 text-gray-900">Brands</h1>
           <p class="mt-2 text-sm text-gray-700">
-            A list of all the categories.
+            A list of all the brands.
           </p>
         </div>
         <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-            <RouterLink :to="{name : 'create-category'}" class="font-semibold text-indigo-600 hover:text-indigo-500">
+            <RouterLink :to="{name : 'create-brand'}" class="font-semibold text-indigo-600 hover:text-indigo-500">
             <button
                 type="button"
                 class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 >
-                Add category
+                Add brand
             </button>
             </RouterLink>
         </div>
@@ -80,39 +79,36 @@ onUnmounted(() => {
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-200 bg-white" >
-                <tr  v-if="categories.length !== 0" v-for="category in categories">
+                <tr  v-if="brands.length !== 0" v-for="brand in brands">
                   <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                    <div class="text-gray-900">{{ category.name }}</div>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                    <div class="text-gray-900">{{ category.description }}</div>
+                    <div class="text-gray-900">{{ brand.name }}</div>
                   </td>
                   <td
                     class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0"
                   >
-                    <RouterLink :to="{name : 'category', params: {id: category.id}}" class="text-indigo-600 hover:text-indigo-900"
+                  <RouterLink :to="{name : 'brand', params: { id: brand.id }}" class="text-indigo-600 hover:text-indigo-900"
                       >View
-                    </RouterLink >
-                  </td>
-                  <td
-                    class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0"
-                  >
-                    <RouterLink :to="{name : 'edit-category', params: {id: category.id}}" class="text-indigo-600 hover:text-indigo-900"
-                      >Edit
                     </RouterLink >
 
                   </td>
                   <td
                     class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0"
                   >
-                    <a href="" class="text-indigo-600 hover:text-indigo-900" @click="deleteCategory(category.id)"
+                    <RouterLink :to="{name : 'edit-brand', params: { id: brand.id }}" class="text-indigo-600 hover:text-indigo-900"
+                      >Edit
+                    </RouterLink >
+                  </td>
+                  <td
+                    class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0"
+                  >
+                    <a href="" class="text-indigo-600 hover:text-indigo-900" @click="deleteBrand(brand.id)"
                       >Delete</a
                     >
                   </td>
                 </tr>
 
                <div v-else>
-                    No data available, please add a category.
+                    No data available, please add a brand.
                </div>
               </tbody>
             </table>

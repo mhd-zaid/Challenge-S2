@@ -6,8 +6,7 @@ class Product extends Model {}
 Product.init(
 	{
 		id: {
-			type: DataTypes.UUID,
-			defaultValue: DataTypes.UUIDV4,
+			type: DataTypes.STRING,
 			primaryKey: true,
 		},
 		name: {
@@ -33,6 +32,10 @@ Product.init(
 		color: {
 			type: DataTypes.STRING,
 			allowNull: false,
+		},
+		url: {
+			type: DataTypes.STRING,
+			allowNull: true,
 		},
 	},
 	{
