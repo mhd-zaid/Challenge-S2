@@ -88,15 +88,12 @@ ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
       <dl class="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         <MiniStatisticsCard
             :icon="UserPlusIcon"
-            :kind="'users'"
             label="Nouvelles inscriptions"
             :data="state.newUsersLast30Days"
             :increase="state.newUsersAugmentation"
         />
-        <MiniStatisticsCard :icon="ShoppingBagIcon" :kind="'orders'" label="Nouvelles commandes" :data="1973"
-                            :increase="176"/>
-        <MiniStatisticsCard :icon="ArchiveBoxIcon" :kind="'products'" label="Nouveaux produits" :data="212"
-                            :increase="32"/>
+        <MiniStatisticsCard :icon="ShoppingBagIcon" label="Nouvelles commandes" :data="1973" :increase="176"/>
+        <MiniStatisticsCard :icon="ArchiveBoxIcon" label="Nouveaux produits" :data="212" :increase="32"/>
       </dl>
     </div>
     <h4 class="mt-10 text-base font-medium leading-6 text-gray-900">Dernière année</h4>
@@ -115,13 +112,13 @@ ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
       </dl>
       <dl>
         <div
-          class="relative overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:px-6 sm:pt-6"
+            class="relative overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:px-6 sm:pt-6"
         >
           <Bar
-            id="my-chart-id"
-            :key="orderPerMonthKey"
-            :options="state.chartOptions"
-            :data="state.orderChartData"
+              id="my-chart-id"
+              :key="orderPerMonthKey"
+              :options="state.chartOptions"
+              :data="state.orderChartData"
           />
         </div>
       </dl>

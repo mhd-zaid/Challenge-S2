@@ -14,11 +14,7 @@ const state = reactive({
 })
 
 const submit = async () => {
-  try {
-    await userStore.login(state.form)
-  } catch (e: any) {
-    state.errors = e.response.data.errors
-  }
+  console.log(state.form)
 }
 
 </script>
