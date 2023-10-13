@@ -53,18 +53,18 @@ export const getNewUsersLastYear = async (req, res) => {
 	try {
 		const currentDate = new Date();
 		const months = [
-			"Janvier",
-			"Février",
+			"Jan",
+			"Fév",
 			"Mars",
-			"Avril",
+			"Avr",
 			"Mai",
 			"Juin",
-			"Juillet",
+			"Juil",
 			"Août",
-			"Septembre",
-			"Octobre",
-			"Novembre",
-			"Décembre",
+			"Sept",
+			"Oct",
+			"Nov",
+			"Déc",
 		];
 		const lastMonths = [];
 		const newUsers = [];
