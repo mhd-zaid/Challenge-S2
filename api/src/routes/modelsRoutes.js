@@ -1,5 +1,6 @@
 import Model from "../models/postgres-model.js";
 import ModelMongodb from "../models/mongodb-model.js";
+import Product from "../models/postgres-product.js";
 
 export const getModels = async (req, res) => {
 	try {
@@ -19,9 +20,6 @@ export const createModel = async (req, res) => {
 		const modelMongodb = await ModelMongodb(req.body).save();
 		const id = modelMongodb._id.toString();
 		const model = await Model.create({ id, ...req.body });
-		for (const product of req.body.products) {
-			await model.addProducts(product.id);
-		}
 
 		res.json(model);
 	} catch (error) {
@@ -41,7 +39,7 @@ export const updateModel = async (req, res) => {
 		}
 
 		const model = await Model.findOne({ where: { id } });
-		const modelMongo = await modelMongodb.findOne({ _id: id });
+		const modelMongo = await ModelMongodb.findOne({ _id: id });
 
 		if (!model) return res.status(404).json({ message: "Model not found" });
 

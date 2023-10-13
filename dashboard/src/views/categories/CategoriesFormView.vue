@@ -22,7 +22,7 @@ const state = reactive({
   errors: {},
 })
 
-const id = window.location.pathname.split('/').length > 2 ? window.location.pathname.split('/')[2] : null
+const id = window.location.pathname.split('/').length > 3 ? window.location.pathname.split('/')[2] : null
 let submit = null;
 if(!id)
 {

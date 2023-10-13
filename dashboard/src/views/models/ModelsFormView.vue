@@ -11,7 +11,6 @@ const state = reactive({
     description: '',
     BrandId: '',
     CategoryId: '',
-    products: []
   },
   gender: [
     {
@@ -40,12 +39,34 @@ const init = async () => {
   }
 }
 
-const submit = async () => {
-  try {
-    await axiosInstance.post('/models', state.form)
-    window.location.href = '/models'
-  } catch (e: any) {
-    state.errors = e.response.data.errors
+const id = window.location.pathname.split('/').length > 3 ? window.location.pathname.split('/')[2] : null
+let submit = null
+if (!id) {
+  submit = async () => {
+    try {
+      await axiosInstance.post('/models', state.form)
+      window.location.href = '/models'
+    } catch (e: any) {
+      state.errors = e.response.data.errors
+    }
+  }
+} else {
+  const model = async () => {
+    try {
+      const response = await axiosInstance.get(`/models/${id}`,state.form)
+      state.form = response.data
+    } catch (e: any) {
+      throw e
+    }
+  }
+  model()
+  submit = async () => {
+    try {
+      await axiosInstance.put(`/models/${id}`, state.form)
+      window.location.href = '/models'
+    } catch (e: any) {
+      state.errors = e.response.data.errors
+    }
   }
 }
 
@@ -55,7 +76,8 @@ init()
 
 <template>
   <AuthenticatedLayout>
-    <h3>Create model</h3>
+    <h3 v-if="!id">Create model</h3>
+    <h3 v-else>Edit model {{ id }}</h3>
     <div>
       <form method="POST" class="space-y-6" @submit.prevent="submit">
         <div>
@@ -151,8 +173,16 @@ init()
           <button
             type="submit"
             class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            v-if="!id"
           >
             Create
+          </button>
+          <button
+            type="submit"
+            class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            v-else
+          >
+            Update
           </button>
         </div>
       </form>
