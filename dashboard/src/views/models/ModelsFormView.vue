@@ -4,6 +4,15 @@ import axiosInstance from '@/utils/axiosInstance'
 import axios from 'axios'
 import { reactive, ref } from 'vue'
 
+const model = async () => {
+  try {
+    const response = await axiosInstance.get(`/models/${id}`,state.form)
+    state.form = response.data
+  } catch (e: any) {
+    throw e
+  }
+}
+
 const state = reactive({
   form: {
     name: '',
@@ -51,14 +60,6 @@ if (!id) {
     }
   }
 } else {
-  const model = async () => {
-    try {
-      const response = await axiosInstance.get(`/models/${id}`,state.form)
-      state.form = response.data
-    } catch (e: any) {
-      throw e
-    }
-  }
   model()
   submit = async () => {
     try {

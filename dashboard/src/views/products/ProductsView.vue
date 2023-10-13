@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue'
-import axios from "axios";
+import axiosInstance from '@/utils/axiosInstance';
 import { ref,onMounted,onUnmounted } from 'vue';
 
 const products = ref([]);
@@ -8,7 +8,7 @@ const keys = ref([]);
 const abortController = new AbortController
 const getProducts = async () => {
   try {
-    const response = await axios.get('http://localhost:3000/products')
+    const response = await axiosInstance.get('/products')
     const data = response.data;
     const keys = ["name","price","quantity"];
 
@@ -16,6 +16,15 @@ const getProducts = async () => {
   } catch (e: any) {
     throw e;
   }
+}
+
+const deleteProduct = async (id: number) => {
+    try {
+      await axiosInstance.delete(`/products/${id}`)
+
+    } catch (e: any) {
+        throw e;
+    }
 }
 
 onMounted(() => {
@@ -97,7 +106,7 @@ onUnmounted(() => {
                   <td
                     class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0"
                   >
-                    <a href="#" class="text-indigo-600 hover:text-indigo-900"
+                    <a href="" class="text-indigo-600 hover:text-indigo-900" @click="deleteProduct(product.id)"
                       >Delete</a
                     >
                   </td>

@@ -18,17 +18,7 @@ export const getProducts = async (req, res) => {
 
 export const createProduct = async (req, res) => {
 	try {
-		const file = req.files !== undefined ? req.files.url : null;
-		if (file) {
-			req.body.url = `/images/${file.name}`;
-			file.mv("./src/uploads"+req.body.url, async (error) => {
-				if (error) {
-					console.error(error);
-					return res.status(500).json({ message: error });
-				}
-			});
-		}
-		req.body.models = JSON.parse(req.body.models);
+		
 		const models = req.body.models.map(model => new mongoose.Types.ObjectId(model.id));
 		
 		const productDataToCreate = {
@@ -59,19 +49,19 @@ export const createProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
 	try {
 		const { id } = req.params;
-		const file = req.files !== undefined ? req.files.url : null;
-		if (file) {
-			req.body.url = `/images/${file.name}`;
-			file.mv("./src/uploads"+req.body.url, async (error) => {
-				if (error) {
-					console.error(error);
-					return res.status(500).json({ message: error });
-				}
-			});
-		}
-		req.body.models = JSON.parse(req.body.models);
 
-		const productDataToUpdate = req.body;
+		const models = req.body.models.map(model => new mongoose.Types.ObjectId(model.id));
+
+		const productDataToUpdate = {
+			name: req.body.name,
+			price: req.body.price,
+			vat: req.body.vat,
+			quantity: req.body.quantity,
+			size: req.body.size,
+			color: req.body.color,
+			url: req.body.url,
+			models: models,
+		};
 
 		if (!id) {
 			return res.status(400).json({ message: "Id parameter is missing" });
@@ -82,7 +72,7 @@ export const updateProduct = async (req, res) => {
 
 		if (!product) return res.status(404).json({ message: "Product not found" });
 
-		await product.update(productDataToUpdate);
+		await product.update(req.body);
 		await productMongo.updateOne(productDataToUpdate);
 
 		res.json({ message: "Product updated successfully" });
@@ -138,6 +128,19 @@ export const getProduct = async (req, res) => {
 	} catch (error) {
 		res.status(500).json({
 			error: `An error occurred while retrieving the product : ${error}`,
+		});
+	}
+};
+
+export const uploadImage = async (req, res) => {
+	const file = req.files !== undefined ? req.files.image : null;
+	if (file) {
+		req.body.image = `/images/${file.name}`;
+		file.mv("./uploads"+req.body.image, async (error) => {
+			if (error) {
+				console.error(error);
+				return res.status(500).json({ message: error });
+			}
 		});
 	}
 };

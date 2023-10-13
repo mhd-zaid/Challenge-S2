@@ -4,6 +4,16 @@ import axiosInstance from '@/utils/axiosInstance'
 import axios from 'axios'
 import { reactive, ref } from 'vue'
 
+const product = async () => {
+  try {
+    const response = await axiosInstance.get(`/products/${id}`,state.form)
+    state.form = response.data
+    state.form.models = response.data.models[0].id
+  } catch (e: any) {
+    throw e
+  }
+}
+
 const state = reactive({
   form: {
     name: '',
@@ -12,11 +22,13 @@ const state = reactive({
     vat: '',
     size: '',
     color: '',
-    url: [],
-    models: []
+    url: '',
+    models: [] as any
   },
   errors: {},
-  models: [] as any
+  models: [] as any,
+  image: [] as any,
+  currentFile: '',
 })
 
 const init = async () => {
@@ -27,29 +39,52 @@ const init = async () => {
     throw e
   }
 }
+const id = window.location.pathname.split('/').length > 3 ? window.location.pathname.split('/')[2] : null
+let submit = null
 
-const submit = async () => {
-  try {
-    state.form.models = [{
-      id: state.form.models
-    }]
+if (!id) {
+  submit = async () => {
+    try {
+      state.form.models = [{
+        id: state.form.models
+      }]
 
-    const body = new FormData()
-    body.append('name', state.form.name)
-    body.append('price', state.form.price)
-    body.append('quantity', state.form.quantity)
-    body.append('vat', state.form.vat)
-    body.append('size', state.form.size)
-    body.append('color', state.form.color)
-    body.append('models', JSON.stringify(state.form.models))
-    state.form.url.forEach((fileItem) => {
-      body.append('url', fileItem.file)
-    })
+      const body = new FormData()
+      state.image.forEach((fileItem) => {
+        body.append('image', fileItem.file)
+        state.form.url = `/images/${fileItem.file.name}`
+      })
 
-    await axiosInstance.post('/products', body)
-    window.location.href = '/products'
-  } catch (e: any) {
-    state.errors = e.response.data.errors
+      await axiosInstance.post('/products', state.form)
+      await axiosInstance.post('/products/upload', body)
+      window.location.href = '/products'
+    } catch (e: any) {
+      console.log(e);
+      state.errors = e.response.data.errors
+    }
+  }
+}else{
+  product()
+  submit = async () => {
+    try {
+      state.form.models = [{
+        id: state.form.models
+      }]
+      if(state.form.url == ''){
+        
+      }
+      const body = new FormData()
+      state.image.forEach((fileItem) => {
+        body.append('image', fileItem.file)
+        state.form.url = `/images/${fileItem.file.name}`
+      })
+
+      await axiosInstance.put(`/products/${id}`, state.form)
+      await axiosInstance.post('/products/upload', body)
+      window.location.href = '/products'
+    } catch (e: any) {
+      state.errors = e.response.data.errors
+    }
   }
 }
 
@@ -58,7 +93,8 @@ init()
 
 <template>
   <AuthenticatedLayout>
-    <h3>Create product</h3>
+    <h3 v-if="!id">Create product</h3>
+    <h3 v-else>Edit product {{ id }}</h3>
     <div>
       <form method="POST" class="space-y-6" @submit.prevent="submit" enctype="multipart/form-data">
         <div>
@@ -165,15 +201,21 @@ init()
                 'block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
             }"
           >
-            <option v-for="model in state.models" :value="model.id">{{ model.name }}</option>
+            <option v-for="model in state.models" :value="model.id" v-if="state.form.models" selected>{{ model.name }}</option>
+            <option v-for="model in state.models" :value="model.id" v-else>{{ model.name }}</option>
 
           </FormKit>
 
         </div>
 
         <div>
+          <div v-if="state.form.url">
+            <img :src="'/src/uploads'+state.form.url"  alt="" />
+            <button >Supprimer l'image</button>
+          </div>
           <FormKit
-            v-model="state.form.url"
+            v-else
+            v-model="state.image"
             type="file"
             label="image"
             accept=".img,.png,.jpg,.jpeg"

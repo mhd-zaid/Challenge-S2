@@ -16,12 +16,14 @@ const getProduct = async () => {
   try {
     const response = await axiosInstance.get(`/products/${id}`);
     state.product = response.data
+    console.log(response.data)
   } catch (error) {
       console.log(error)
   }
 }
 
 getProduct();
+
 
 </script>
 <template>

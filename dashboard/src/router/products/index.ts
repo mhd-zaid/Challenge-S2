@@ -38,7 +38,7 @@ export const ProductsRoutes = [
   {
     path: '/products/:id/delete',
     name: 'delete-product',
-    component: import('@/views/products/ProductsFormView.vue'),
+    component: import('@/views/products/ProductsView.vue'),
     meta: {
       title: 'Delete Product',
       requiresAuthentication: true
