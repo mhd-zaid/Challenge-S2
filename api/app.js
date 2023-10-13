@@ -48,24 +48,25 @@ cron.schedule("0 0 * * *", async () => {
 
 // MongoDB
 try {
-	await mongoose.connect(process.env.MONGODB_URI);
-	console.log("Connected to MongoDB");
+	mongoose
+		.connect(process.env.MONGODB_URI)
+		.then(console.log("Connected to MongoDB"));
 } catch (e) {
 	console.error(`Error connecting to MongoDB: ${e}`);
 }
 
 // Sequelize
 try {
-	await sequelize.authenticate();
-	console.log("Connected to postgres");
+	sequelize.authenticate().then(console.log("Connected to postgres"));
 } catch (e) {
 	console.error(`Error connecting to postgres: ${e}`);
 }
 
-//mail
+// mail
 try {
-	await mailTransporter.verify();
-	console.log("SMTP server authentification succeed");
+	mailTransporter
+		.verify()
+		.then(console.log("SMTP server authentification succeed"));
 } catch (e) {
 	console.error(`Error connecting to mail: ${e}`);
 }
