@@ -1,6 +1,7 @@
 import Product from "../models/postgres-product.js";
 import ProductMongodb from "../models/mongodb-product.js";
 import mongoose from "mongoose";
+import { json } from "sequelize";
 
 export const getProducts = async (req, res) => {
 	try {
@@ -17,16 +18,17 @@ export const getProducts = async (req, res) => {
 
 export const createProduct = async (req, res) => {
 	try {
-		const file = req.files !== undefined ? req.files.image : null;
+		const file = req.files !== undefined ? req.files.url : null;
 		if (file) {
-			req.body.url = `../uploads/images/${file.name}`;
-			file.mv(path, async (error) => {
+			req.body.url = `/images/${file.name}`;
+			file.mv("./src/uploads"+req.body.url, async (error) => {
 				if (error) {
 					console.error(error);
-					return res.status(500).json({ message: "Error uploading image" });
+					return res.status(500).json({ message: error });
 				}
 			});
 		}
+		req.body.models = JSON.parse(req.body.models);
 		const models = req.body.models.map(model => new mongoose.Types.ObjectId(model.id));
 		
 		const productDataToCreate = {
@@ -57,17 +59,17 @@ export const createProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
 	try {
 		const { id } = req.params;
-		const file = req.files.image;
+		const file = req.files !== undefined ? req.files.url : null;
 		if (file) {
-			req.body.url = `../uploads/images/${file.name}`;
+			req.body.url = `/images/${file.name}`;
+			file.mv("./src/uploads"+req.body.url, async (error) => {
+				if (error) {
+					console.error(error);
+					return res.status(500).json({ message: error });
+				}
+			});
 		}
-		
-		file.mv(path, async (error) => {
-			if (error) {
-				console.error(error);
-				return res.status(500).json({ message: "Error uploading image" });
-			}
-		});
+		req.body.models = JSON.parse(req.body.models);
 
 		const productDataToUpdate = req.body;
 

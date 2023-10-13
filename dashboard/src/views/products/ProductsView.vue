@@ -70,14 +70,14 @@ onUnmounted(() => {
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-200 bg-white" >
-                <tr  v-if="products.length !== 0">
-                  <td v-for="product in products" class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                <tr  v-if="products.length !== 0" v-for="product in products">
+                  <td  class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                     <div class="text-gray-900">{{ product.name }}</div>
                   </td>
-                  <td v-for="product in products" class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                  <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                     <div class="text-gray-900">{{ product.price }}</div>
                   </td>
-                  <td v-for="product in products" class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                  <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                     <div class="text-gray-900">{{ product.quantity }}</div>
                   </td>
                   <td

@@ -1,16 +1,8 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue'
-import axios from "axios";
-import { reactive,ref } from 'vue';
-
-const models = reactive([]);
-try {
-  const response = await axios.get('http://localhost:3000/models')
-  models.values =  response.data;
-
-} catch (e: any) {
-  throw e;
-}
+import axiosInstance from '@/utils/axiosInstance'
+import axios from 'axios'
+import { reactive, ref } from 'vue'
 
 const state = reactive({
   form: {
@@ -20,25 +12,54 @@ const state = reactive({
     vat: '',
     size: '',
     color: '',
-    models: ref([]),
+    url: [],
+    models: []
   },
   errors: {},
+  models: [] as any
 })
+
+const init = async () => {
+  try {
+    const response = await axiosInstance.get('/models')
+    state.models = response.data
+  } catch (e: any) {
+    throw e
+  }
+}
 
 const submit = async () => {
   try {
-    
+    state.form.models = [{
+      id: state.form.models
+    }]
+
+    const body = new FormData()
+    body.append('name', state.form.name)
+    body.append('price', state.form.price)
+    body.append('quantity', state.form.quantity)
+    body.append('vat', state.form.vat)
+    body.append('size', state.form.size)
+    body.append('color', state.form.color)
+    body.append('models', JSON.stringify(state.form.models))
+    state.form.url.forEach((fileItem) => {
+      body.append('url', fileItem.file)
+    })
+
+    await axiosInstance.post('/products', body)
   } catch (e: any) {
     state.errors = e.response.data.errors
   }
 }
+
+init()
 </script>
 
 <template>
   <AuthenticatedLayout>
     <h3>Create product</h3>
     <div>
-      <form method="POST" class="space-y-6" @submit.prevent="submit">
+      <form method="POST" class="space-y-6" @submit.prevent="submit" enctype="multipart/form-data">
         <div>
           <FormKit
             v-model="state.form.name"
@@ -73,6 +94,7 @@ const submit = async () => {
           <FormKit
             v-model="state.form.vat"
             type="number"
+            number="float"
             label="vat"
             validation="required|vat"
             placeholder="0"
@@ -116,21 +138,6 @@ const submit = async () => {
 
         <div>
           <FormKit
-            v-model="state.form.size"
-            type="text"
-            label="size"
-            validation="required|size"
-            placeholder="size"
-            :classes="{
-              label: 'block text-sm font-medium leading-6 text-gray-900',
-              input:
-                'block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
-            }"
-          />
-        </div>
-
-        <div>
-          <FormKit
             v-model="state.form.color"
             type="text"
             label="color"
@@ -148,15 +155,28 @@ const submit = async () => {
           <FormKit
             v-model="state.form.models"
             type="select"
-            label="model"
-            validation="required|models"
-            placeholder="Select a model"
+            label="models"
+            validation="required|model"
+            placeholder="model"
             :classes="{
               label: 'block text-sm font-medium leading-6 text-gray-900',
               input:
                 'block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
             }"
-            :options=models
+          >
+            <option v-for="model in state.models" :value="model.id">{{ model.name }}</option>
+
+          </FormKit>
+
+        </div>
+
+        <div>
+          <FormKit
+            v-model="state.form.url"
+            type="file"
+            label="image"
+            accept=".img,.png,.jpg,.jpeg"
+            help="Select a image"
           />
         </div>
 
