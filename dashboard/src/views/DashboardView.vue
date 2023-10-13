@@ -13,6 +13,7 @@ import {
   LinearScale
 } from 'chart.js'
 import { reactive } from 'vue'
+import {ArchiveBoxIcon, ShoppingBagIcon, UserPlusIcon} from "@heroicons/vue/24/outline";
 
 const state = reactive({
   newUsersLast30Days: 0,
@@ -71,13 +72,14 @@ ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
       <h3 class="text-base font-semibold leading-6 text-gray-900">30 Derniers Jours</h3>
       <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         <DashIncreaseBlock
+          :icon="UserPlusIcon"
           :kind="'users'"
           label="Nouvelles inscriptions"
           :data="state.newUsersLast30Days"
           :increase="state.newUsersAugmentation"
         />
-        <DashIncreaseBlock :kind="'orders'" label="Nouvelles commandes" :data="1973" :increase="176" />
-        <DashIncreaseBlock :kind="'products'" label="Nouveaux produits" :data="212" :increase="32" />
+        <DashIncreaseBlock :icon="ShoppingBagIcon" :kind="'orders'" label="Nouvelles commandes" :data="1973" :increase="176" />
+        <DashIncreaseBlock :icon="ArchiveBoxIcon" :kind="'products'" label="Nouveaux produits" :data="212" :increase="32" />
       </dl>
     </div>
     <div class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">

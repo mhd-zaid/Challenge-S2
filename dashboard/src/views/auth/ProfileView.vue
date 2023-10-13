@@ -63,7 +63,7 @@ getUser()
 <template>
   <AuthenticatedLayout>
     <main v-if="state.user" class="flex-1">
-      <div class="relative px-6">
+      <div class="relative px-0 sm:px-6 ">
         <div class="pb-16 pt-4">
           <div class="px-4 sm:px-6 lg:px-0">
             <h1 class="text-3xl font-bold tracking-tight text-gray-900">Paramètres</h1>

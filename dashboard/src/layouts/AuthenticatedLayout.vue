@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref} from 'vue'
+import {computed, ref} from 'vue'
 import {Dialog, DialogPanel, TransitionChild, TransitionRoot} from '@headlessui/vue'
 import {
   Bars3Icon,
@@ -19,13 +19,25 @@ const navigation = [
   {name: 'Dashboard', href: '/', icon: HomeIcon, current: router.currentRoute.value.path === '/'},
   {name: 'Utilisateurs', href: '/users', icon: UsersIcon, current: router.currentRoute.value.path === '/users'},
   {name: 'Products', href: '/products', icon: FolderIcon, current: router.currentRoute.value.path === '/products'},
-  {name: 'Catégories', href: '/categories', icon: CalendarIcon, current: router.currentRoute.value.path === '/categories'},
+  {
+    name: 'Catégories',
+    href: '/categories',
+    icon: CalendarIcon,
+    current: router.currentRoute.value.path === '/categories'
+  },
   {name: 'Models', href: '/models', icon: DocumentDuplicateIcon, current: router.currentRoute.value.path === '/models'},
 ]
 const logout = () => {
   localStorage.removeItem('token')
+  localStorage.removeItem('user')
   window.location.href = '/login'
 }
+const user = JSON.parse(localStorage.getItem('user') || '{}')
+
+const fullName = computed(() => {
+  return `${user.firstname} ${user.lastname}`
+})
+
 const sidebarOpen = ref(false)
 </script>
 <template>
@@ -58,7 +70,7 @@ const sidebarOpen = ref(false)
               <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 pb-2 ring-1 ring-white/10">
                 <div class="flex h-16 shrink-0 items-center">
                   <img class="h-8 w-auto"
-                       src="https://sneakpeekdenim.com/cdn/shop/files/sneak_peek_logo_LG_2021_600x.png?v=1634595379"
+                       src="/images/sneakpeak_logo_white.png"
                        alt="Your Company"/>
                 </div>
                 <nav class="flex flex-1 flex-col">
@@ -88,8 +100,8 @@ const sidebarOpen = ref(false)
       <!-- Sidebar component, swap this element with another sidebar if you like -->
       <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6">
         <div class="flex h-16 shrink-0 items-center">
-          <img class="h-8 w-auto"
-               src="https://sneakpeekdenim.com/cdn/shop/files/sneak_peek_logo_LG_2021_600x.png?v=1634595379"
+          <img class="w-48 mt-6"
+               src="/images/sneakpeak_logo_white.png"
                alt="Your Company"/>
         </div>
         <nav class="flex flex-1 flex-col">
@@ -105,15 +117,15 @@ const sidebarOpen = ref(false)
                 </li>
               </ul>
             </li>
-            <li class="mt-auto">
+            <li class="mt-auto -mx-2">
               <a href="/profile"
                  :class="[router.currentRoute.value.path === '/profile' ? 'bg-gray-800 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800', 'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold']">
                 <UserIcon class="h-6 w-6 shrink-0" aria-hidden="true"/>
-                User Name
+                {{ fullName }}
               </a>
               <a type="button"
                  @click="logout"
-                 class="flex items-center gap-x-4 py-3 px-2 text-sm font-semibold leading-6 text-white hover:bg-gray-800 cursor-pointer">
+                 class="text-gray-400 hover:text-white hover:bg-gray-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
                 <ArrowLeftOnRectangleIcon class="h-6 w-6 shrink-0" aria-hidden="true"/>
                 Déconnexion
               </a>
@@ -129,7 +141,7 @@ const sidebarOpen = ref(false)
         <Bars3Icon class="h-6 w-6" aria-hidden="true"/>
       </button>
       <div class="flex-1 text-sm font-semibold leading-6 text-white">{{
-          router.currentRoute.value.path === '/profile' ? 'Profile' : navigation.filter(x => x.current === true)[0].name
+          router.currentRoute.value.meta?.title
         }}
       </div>
       <a href="/profile">

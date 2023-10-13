@@ -40,7 +40,7 @@ const submit = async () => {
     <div class="flex flex-1 flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
       <div class="mx-auto w-full max-w-sm lg:w-96">
         <div>
-          <img class="h-10 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+          <img class="h-10 w-auto" src="/images/sneakpeak_logo_black.png"
                alt="Your Company"/>
           <h2 class="mt-8 text-2xl font-bold leading-9 tracking-tight text-gray-900">Sign in to your account</h2>
           <p class="mt-2 text-sm leading-6 text-gray-500">
