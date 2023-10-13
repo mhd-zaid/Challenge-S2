@@ -1,4 +1,3 @@
-import crypto from "crypto";
 import cryptoJs from "crypto-js";
 import fieldsToAnonymize from "../lib/fieldsToAnonymize.js";
 
