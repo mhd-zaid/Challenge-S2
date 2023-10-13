@@ -3,10 +3,6 @@ import {ArrowUpIcon} from "@heroicons/vue/24/outline";
 
 
 const props = defineProps({
-  kind: {
-    type: String,
-    required: true
-  },
   icon :{
     type: Object,
     required: true
