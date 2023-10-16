@@ -115,7 +115,7 @@ onBeforeMount(async () => {
   } catch (error) {
     console.log(error)
   }
-}
+})
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 </script>
