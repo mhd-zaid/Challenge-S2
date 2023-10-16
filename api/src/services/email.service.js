@@ -1,8 +1,10 @@
 import mailTransporter from "../config/mail-config.js";
 import fs from "fs";
-import path from 'path';
+import { fileURLToPath } from "url";
+import path from "path";
 
-const __dirname = path.resolve(path.dirname(''));
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const sendEmail = async (email, subject, template) => {
     try {
