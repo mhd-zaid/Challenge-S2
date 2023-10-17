@@ -1,5 +1,6 @@
 import * as categoriesRoutes from "../routes/categoriesRoutes.js";
 
+jest.mock('../models/postgres-category.js');
 jest.mock("../routes/categoriesRoutes.js");
 
 const categories = [

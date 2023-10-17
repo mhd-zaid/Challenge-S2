@@ -1,5 +1,6 @@
 import * as productsRoutes from '../routes/productsRoutes.js';
 
+jest.mock('../models/postgres-product.js');
 jest.mock('../routes/productsRoutes.js');
 
 const products = [
