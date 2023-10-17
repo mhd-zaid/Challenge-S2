@@ -1,5 +1,7 @@
 import * as modelsRoutes from '../routes/modelsRoutes.js';
 
+jest.mock('../routes/modelsRoutes.js');
+
 const models = [
     {
         id: 1,

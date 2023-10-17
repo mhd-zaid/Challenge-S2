@@ -17,4 +17,4 @@ jobs:
         run: |
           cd api
           npm install
-          npx jest test
+          npm test

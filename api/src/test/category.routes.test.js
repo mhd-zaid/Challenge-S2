@@ -1,5 +1,7 @@
 import * as categoriesRoutes from "../routes/categoriesRoutes.js";
 
+jest.mock("../routes/categoriesRoutes.js");
+
 const categories = [
     {
         id: 1,
