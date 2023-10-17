@@ -1,10 +1,10 @@
-import * as modelsRoutes from '../routes/modelsRoutes.js';
-
-jest.spyOn(modelsRoutes,"getModels").mockReturnValue(jest.fn());
-jest.spyOn(modelsRoutes,"getModel").mockReturnValue(jest.fn());
-jest.spyOn(modelsRoutes,"createModel").mockReturnValue(jest.fn());
-jest.spyOn(modelsRoutes,"updateModel").mockReturnValue(jest.fn());
-jest.spyOn(modelsRoutes,"deleteModel").mockReturnValue(jest.fn());
+const modelsRoutes  =  jest.fn().mockReturnValue({
+    getModels: jest.fn(),
+    getModel: jest.fn(),
+    createModel: jest.fn(),
+    updateModel: jest.fn(),
+    deleteModel: jest.fn()
+});
 
 const models = [
     {
@@ -27,39 +27,39 @@ const models = [
 
 describe("getModels", () => {
     it("should get not deleted models", async () => {
-        jest.spyOn(modelsRoutes,"getModels").mockReturnValue(models);
+        jest.spyOn(modelsRoutes(),"getModels").mockReturnValue(models);
 
-        const mockModels = modelsRoutes.getModels();
+        const mockModels = modelsRoutes().getModels();
         expect(mockModels).toEqual(models);
     });
 });
 
 describe("getModel", () => {
     it("should get model by id", async () => {
-        jest.spyOn(modelsRoutes,"getModel").mockReturnValue(models[0]);
+        jest.spyOn(modelsRoutes(),"getModel").mockReturnValue(models[0]);
 
-        const mockModel = modelsRoutes.getModel(1);
+        const mockModel = modelsRoutes().getModel(1);
         expect(mockModel).toEqual(models[0]);
     });
 
     it("should throw error model not found", async () => {
-        jest.spyOn(modelsRoutes,"getModel").mockReturnValue(new Error("Model not found"));
+        jest.spyOn(modelsRoutes(),"getModel").mockReturnValue(new Error("Model not found"));
 
-        const mockModel = modelsRoutes.getModel(3);
+        const mockModel = modelsRoutes().getModel(3);
         expect(mockModel).toEqual(new Error("Model not found"));
     });
 
     it("should throw error brand not found", async () => {
         models[0].brandId = 10;
-        jest.spyOn(modelsRoutes,"getModel").mockReturnValue(new Error("Brand not found"));
-        const mockModel = modelsRoutes.getModel(1);
+        jest.spyOn(modelsRoutes(),"getModel").mockReturnValue(new Error("Brand not found"));
+        const mockModel = modelsRoutes().getModel(1);
         expect(mockModel).toEqual(new Error("Brand not found"));
     });
 
     it("should throw error model id missing", async () => {
-        jest.spyOn(modelsRoutes,"getModel").mockReturnValue(new Error("Model id missing"));
+        jest.spyOn(modelsRoutes(),"getModel").mockReturnValue(new Error("Model id missing"));
 
-        const mockModel = modelsRoutes.getModel();
+        const mockModel = modelsRoutes().getModel();
         expect(mockModel).toEqual(new Error("Model id missing"));
     });
 });
@@ -74,9 +74,9 @@ describe("createModel", () => {
             updatedAt: new Date(),
             deletedAt: null
         };
-        jest.spyOn(modelsRoutes,"createModel").mockReturnValue(model);
+        jest.spyOn(modelsRoutes(),"createModel").mockReturnValue(model);
 
-        const mockModel = modelsRoutes.createModel(model);
+        const mockModel = modelsRoutes().createModel(model);
         models.push(model);
 
         expect(mockModel).toEqual(model);
@@ -94,32 +94,32 @@ describe("updateModel", () => {
             updatedAt: new Date(),
             deletedAt: null
         };
-        jest.spyOn(modelsRoutes,"updateModel").mockReturnValue(models[0] = model);
+        jest.spyOn(modelsRoutes(),"updateModel").mockReturnValue(models[0] = model);
 
-        const mockModel = modelsRoutes.updateModel(model);
+        const mockModel = modelsRoutes().updateModel(model);
 
         expect(mockModel).toEqual(model);
         expect(models).toContain(model);
     });
 
     it("should throw error model not found", async () => {
-        jest.spyOn(modelsRoutes,"updateModel").mockReturnValue(new Error("Model not found"));
+        jest.spyOn(modelsRoutes(),"updateModel").mockReturnValue(new Error("Model not found"));
 
-        const mockModel = modelsRoutes.updateModel(3);
+        const mockModel = modelsRoutes().updateModel(3);
         expect(mockModel).toEqual(new Error("Model not found"));
     });
 
     it("should throw error brand not found", async () => {
         models[0].brandId = 10;
-        jest.spyOn(modelsRoutes,"updateModel").mockReturnValue(new Error("Brand not found"));
-        const mockModel = modelsRoutes.updateModel(1);
+        jest.spyOn(modelsRoutes(),"updateModel").mockReturnValue(new Error("Brand not found"));
+        const mockModel = modelsRoutes().updateModel(1);
         expect(mockModel).toEqual(new Error("Brand not found"));
     });
 
     it("should throw error model id missing", async () => {
-        jest.spyOn(modelsRoutes,"updateModel").mockReturnValue(new Error("Model id missing"));
+        jest.spyOn(modelsRoutes(),"updateModel").mockReturnValue(new Error("Model id missing"));
 
-        const mockModel = modelsRoutes.updateModel();
+        const mockModel = modelsRoutes().updateModel();
         expect(mockModel).toEqual(new Error("Model id missing"));
     });
 });
@@ -127,32 +127,32 @@ describe("updateModel", () => {
 describe("deleteModel", () => {
     it("should delete model", async () => {
         const date = new Date();
-        jest.spyOn(modelsRoutes,"deleteModel").mockReturnValue(models[1].deletedAt = date);
+        jest.spyOn(modelsRoutes(),"deleteModel").mockReturnValue(models[1].deletedAt = date);
 
-        const mockModel = modelsRoutes.deleteModel(2);
+        const mockModel = modelsRoutes().deleteModel(2);
         const filter = models.filter(model => model.id === 2);
         expect(mockModel).toEqual(date);
         expect(filter).not.toContain(mockModel);
     });
 
     it("should throw error model not found", async () => {
-        jest.spyOn(modelsRoutes,"deleteModel").mockReturnValue(new Error("Model not found"));
+        jest.spyOn(modelsRoutes(),"deleteModel").mockReturnValue(new Error("Model not found"));
 
-        const mockModel = modelsRoutes.deleteModel(3);
+        const mockModel = modelsRoutes().deleteModel(3);
         expect(mockModel).toEqual(new Error("Model not found"));
     });
 
     it("should throw error brand not found", async () => {
         models[0].brandId = 10;
-        jest.spyOn(modelsRoutes,"deleteModel").mockReturnValue(new Error("Brand not found"));
-        const mockModel = modelsRoutes.deleteModel(1);
+        jest.spyOn(modelsRoutes(),"deleteModel").mockReturnValue(new Error("Brand not found"));
+        const mockModel = modelsRoutes().deleteModel(1);
         expect(mockModel).toEqual(new Error("Brand not found"));
     });
 
     it("should throw error model id missing", async () => {
-        jest.spyOn(modelsRoutes,"deleteModel").mockReturnValue(new Error("Model id missing"));
+        jest.spyOn(modelsRoutes(),"deleteModel").mockReturnValue(new Error("Model id missing"));
 
-        const mockModel = modelsRoutes.deleteModel();
+        const mockModel = modelsRoutes().deleteModel();
         expect(mockModel).toEqual(new Error("Model id missing"));
     });
 });
