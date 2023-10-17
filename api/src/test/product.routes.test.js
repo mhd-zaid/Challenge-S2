@@ -1,7 +1,10 @@
 import * as productsRoutes from '../routes/productsRoutes.js';
 
-jest.mock('../models/postgres-product.js');
-jest.mock('../routes/productsRoutes.js');
+jest.spyOn(productsRoutes,"getProducts").mockReturnValue(jest.fn());
+jest.spyOn(productsRoutes,"getProduct").mockReturnValue(jest.fn());
+jest.spyOn(productsRoutes,"createProduct").mockReturnValue(jest.fn());
+jest.spyOn(productsRoutes,"updateProduct").mockReturnValue(jest.fn());
+jest.spyOn(productsRoutes,"deleteProduct").mockReturnValue(jest.fn());
 
 const products = [
     {

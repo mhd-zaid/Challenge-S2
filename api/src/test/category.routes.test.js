@@ -1,7 +1,10 @@
 import * as categoriesRoutes from "../routes/categoriesRoutes.js";
 
-jest.mock('../models/postgres-category.js');
-jest.mock("../routes/categoriesRoutes.js");
+jest.spyOn(categoriesRoutes,"getCategories").mockReturnValue(jest.fn());
+jest.spyOn(categoriesRoutes,"getCategory").mockReturnValue(jest.fn());
+jest.spyOn(categoriesRoutes,"createCategory").mockReturnValue(jest.fn());
+jest.spyOn(categoriesRoutes,"updateCategory").mockReturnValue(jest.fn());
+jest.spyOn(categoriesRoutes,"deleteCategory").mockReturnValue(jest.fn());
 
 const categories = [
     {

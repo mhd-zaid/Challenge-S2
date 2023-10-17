@@ -1,7 +1,10 @@
 import * as modelsRoutes from '../routes/modelsRoutes.js';
 
-jest.mock('../models/postgres-model.js');
-jest.mock('../routes/modelsRoutes.js');
+jest.spyOn(modelsRoutes,"getModels").mockReturnValue(jest.fn());
+jest.spyOn(modelsRoutes,"getModel").mockReturnValue(jest.fn());
+jest.spyOn(modelsRoutes,"createModel").mockReturnValue(jest.fn());
+jest.spyOn(modelsRoutes,"updateModel").mockReturnValue(jest.fn());
+jest.spyOn(modelsRoutes,"deleteModel").mockReturnValue(jest.fn());
 
 const models = [
     {
