@@ -34,6 +34,20 @@ describe("getCategory", () => {
         const mockCategory = categoriesRoutes.getCategory(1);
         expect(mockCategory).toEqual(categories[0]);
     });
+
+    it("should throw error category not found", async () => {
+        jest.spyOn(categoriesRoutes,"getCategory").mockReturnValue(new Error("Category not found"));
+
+        const mockCategory = categoriesRoutes.getCategory(3);
+        expect(mockCategory).toEqual(new Error("Category not found"));
+    });
+
+    it("should throw error category id missing", async () => {
+        jest.spyOn(categoriesRoutes,"getCategory").mockReturnValue(new Error("Category id missing"));
+
+        const mockCategory = categoriesRoutes.getCategory();
+        expect(mockCategory).toEqual(new Error("Category id missing"));
+    });
 });
 
 describe("createCategory", () => {
@@ -69,6 +83,20 @@ describe("updateCategory", () => {
         const mockCategory = categoriesRoutes.updateCategory(category);
         expect(mockCategory).toEqual(category);
     });
+
+    it("should throw error category not found", async () => {
+        jest.spyOn(categoriesRoutes,"updateCategory").mockReturnValue(new Error("Category not found"));
+
+        const mockCategory = categoriesRoutes.updateCategory(3);
+        expect(mockCategory).toEqual(new Error("Category not found"));
+    });
+
+    it("should throw error category id missing", async () => {
+        jest.spyOn(categoriesRoutes,"updateCategory").mockReturnValue(new Error("Category id missing"));
+
+        const mockCategory = categoriesRoutes.updateCategory();
+        expect(mockCategory).toEqual(new Error("Category id missing"));
+    });
 });
 
 describe("deleteCategory", () => {
@@ -80,5 +108,19 @@ describe("deleteCategory", () => {
         const filter = categories.filter(category => category.id === 2);
         expect(mockCategory).toEqual(date);
         expect(filter).not.toContain(mockCategory);
+    });
+
+    it("should throw error category not found", async () => {
+        jest.spyOn(categoriesRoutes,"deleteCategory").mockReturnValue(new Error("Category not found"));
+
+        const mockCategory = categoriesRoutes.deleteCategory(3);
+        expect(mockCategory).toEqual(new Error("Category not found"));
+    });
+
+    it("should throw error category id missing", async () => {
+        jest.spyOn(categoriesRoutes,"deleteCategory").mockReturnValue(new Error("Category id missing"));
+
+        const mockCategory = categoriesRoutes.deleteCategory();
+        expect(mockCategory).toEqual(new Error("Category id missing"));
     });
 });

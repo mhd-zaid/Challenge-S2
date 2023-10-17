@@ -34,6 +34,20 @@ describe("getBrand", () => {
         const mockBrand = brandsRoutes.getBrand(1);
         expect(mockBrand).toEqual(brands[0]);
     });
+
+    it("should throw error brand not found", async () => {
+        jest.spyOn(brandsRoutes,"getBrand").mockReturnValue(new Error("Brand not found"));
+
+        const mockBrand = brandsRoutes.getBrand(3);
+        expect(mockBrand).toEqual(new Error("Brand not found"));
+    });
+
+    it("should throw error brand id missing", async () => {
+        jest.spyOn(brandsRoutes,"getBrand").mockReturnValue(new Error("Brand id missing"));
+
+        const mockBrand = brandsRoutes.getBrand();
+        expect(mockBrand).toEqual(new Error("Brand id missing"));
+    });
 });
 
 describe("createBrand", () => {
@@ -71,6 +85,20 @@ describe("updateBrand", () => {
         expect(mockBrand).toEqual(brand);
         expect(brands).toContain(brand);
     });
+
+    it("should throw error brand not found", async () => {
+        jest.spyOn(brandsRoutes,"updateBrand").mockReturnValue(new Error("Brand not found"));
+
+        const mockBrand = brandsRoutes.updateBrand(3);
+        expect(mockBrand).toEqual(new Error("Brand not found"));
+    });
+
+    it("should throw error brand id missing", async () => {
+        jest.spyOn(brandsRoutes,"updateBrand").mockReturnValue(new Error("Brand id missing"));
+
+        const mockBrand = brandsRoutes.updateBrand();
+        expect(mockBrand).toEqual(new Error("Brand id missing"));
+    });
 });
 
 describe("deleteBrand", () => {
@@ -82,5 +110,18 @@ describe("deleteBrand", () => {
         const filter = brands.filter(brand => brand.id === 2);
         expect(mockBrand).toEqual(date);
         expect(filter).not.toContain(mockBrand);
+    });
+    it("should throw error brand not found", async () => {
+        jest.spyOn(brandsRoutes,"deleteBrand").mockReturnValue(new Error("Brand not found"));
+
+        const mockBrand = brandsRoutes.deleteBrand(3);
+        expect(mockBrand).toEqual(new Error("Brand not found"));
+    });
+
+    it("should throw error brand id missing", async () => {
+        jest.spyOn(brandsRoutes,"deleteBrand").mockReturnValue(new Error("Brand id missing"));
+
+        const mockBrand = brandsRoutes.deleteBrand();
+        expect(mockBrand).toEqual(new Error("Brand id missing"));
     });
 });
