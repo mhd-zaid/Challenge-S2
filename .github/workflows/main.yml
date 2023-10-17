@@ -17,4 +17,5 @@ jobs:
         run: |
           cd api
           npm install
+          npm audit fix
           npm test
