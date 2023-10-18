@@ -1,5 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/sequelize-config.js";
+import Modele from "./postgres-model.js";
 
 class Product extends Model {}
 
@@ -46,18 +47,9 @@ Product.init(
 	}
 );
 
-let Modele;
-import("./postgres-model.js")
-	.then((module) => {
-		Modele = module.default;
-
-		Product.belongsToMany(Modele, {
-			as: "models",
-			through: "Products_Models",
-		});
-	})
-	.catch((error) => {
-		console.error("Erreur lors de l'importation du modèle Modele :", error);
-	});
+Product.belongsToMany(Modele, {
+	as: "models",
+	through: "Products_Models",
+});
 
 export default Product;
