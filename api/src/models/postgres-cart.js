@@ -1,5 +1,7 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/sequelize-config.js";
+import Product from "./postgres-product.js";
+import User from "./postgres-user.js"; 
 
 class Cart extends Model {}
 
@@ -18,29 +20,12 @@ Cart.init(
 	}
 );
 
-let User;
-let Product;
-import("./postgres-user.js")
-	.then((module) => {
-		User = module.default;
+Cart.belongsTo(User);
 
-		Cart.belongsTo(User);
-	})
-	.catch((error) => {
-		console.error("Erreur lors de l'importation du modèle User :", error);
+Cart.belongsToMany(Product, {
+	as: "products",
+	through: "Carts_Products",
 	});
-
-import("./postgres-product.js")
-	.then((module) => {
-		Product = module.default;
-
-		Cart.belongsToMany(Product, {
-			as: "products",
-			through: "Carts_Products",
-		});
-	})
-	.catch((error) => {
-		console.error("Erreur lors de l'importation du modèle Product :", error);
-	});
+	  
 
 export default Cart;
