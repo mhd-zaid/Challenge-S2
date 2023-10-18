@@ -28,6 +28,7 @@ const state: { user: any; tabs: any[]; currentModifications: any } = reactive({
     lastname: false,
     email: false,
     phone: false,
+    birthdate: false,
     address: false,
     city: false,
     postalCode: false
@@ -39,6 +40,7 @@ const fields = {
   lastname: { name: 'lastname', label: 'Nom' },
   email: { name: 'email', label: 'Email' },
   phone: { name: 'phone', label: 'Téléphone' },
+  birthdate: { name: 'birthdate', label: 'Date de naissance' },
   address: { name: 'address', label: 'Adresse' },
   city: { name: 'city', label: 'Ville' },
   postalCode: { name: 'postalCode', label: 'Code postal' }
@@ -151,6 +153,11 @@ getUser()
                         :userId="state.user.id"
                         :model="fields.phone"
                         v-model="state.user.phone"
+                      />
+                      <UserProfileField
+                        :userId="state.user.id"
+                        :model="fields.birthdate"
+                        v-model="state.user.birthdate"
                       />
                       <UserProfileField
                         :userId="state.user.id"

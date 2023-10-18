@@ -144,18 +144,6 @@ ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
           :data="state.newOrdersLast30Days"
           :increase="state.newOrdersAugmentation"
         />
-        <MiniStatisticsCard
-          :icon="ShoppingBagIcon"
-          label="Nouvelles commandes"
-          :data="1973"
-          :increase="176"
-        />
-        <MiniStatisticsCard
-          :icon="ArchiveBoxIcon"
-          label="Nouveaux produits"
-          :data="212"
-          :increase="32"
-        />
       </dl>
     </div>
     <h4 class="mt-10 text-base font-medium leading-6 text-gray-900">Dernière année</h4>

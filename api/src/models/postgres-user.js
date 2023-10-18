@@ -31,6 +31,10 @@ User.init(
 			type: DataTypes.DATE,
 			allowNull: true,
 		},
+		birthdate: {
+			type: DataTypes.DATE,
+			allowNull: false,
+		},
 		role: {
 			type: DataTypes.ENUM(
 				"ROLE_ADMIN",

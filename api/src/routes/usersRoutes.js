@@ -6,6 +6,7 @@ import {
 	anonymizeUserData,
 	generateEncryptionKey,
 	decryptUserData,
+	isUserMajor,
 } from "../services/user.service.js";
 import bcrypt from "bcryptjs";
 import { generateAuthentificationToken } from "../services/auth.service.js";
@@ -40,12 +41,15 @@ export const getUser = async (req, res) => {
 
 export const createUser = async (req, res) => {
 	try {
-		const { firstname, lastname, email, password, role } = req.body;
+		const { firstname, lastname, email, password, role, birthdate } =
+			req.body;
 
-		if (!(firstname && lastname && email && password && role))
+		if (!(firstname && lastname && email && password && birthdate))
 			throw new Error("Invalid arguments");
 
 		if (!isValidPassword(password)) throw new Error("Invalid password");
+		if (!isUserMajor(birthdate))
+			throw new Error("User must have 18 years old or more");
 
 		const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -124,6 +128,13 @@ export const updateUser = async (req, res) => {
 			userDataToUpdate.password = hashedPassword;
 			userDataToUpdate.passwordUpdatedAt = new Date();
 		}
+
+		if (userDataToUpdate.birthdate) {
+			// Check if birthdate is updated and if it is, check if user is major
+			if (!isUserMajor(userDataToUpdate.birthdate))
+				throw new Error("User must be major");
+		}
+
 		await user.update(userDataToUpdate);
 		Object.assign(userMongo, userDataToUpdate);
 		await userMongo.save();
