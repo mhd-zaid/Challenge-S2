@@ -47,6 +47,7 @@ Product.init(
 );
 
 let Modele;
+let Cart;
 import("./postgres-model.js")
 	.then((module) => {
 		Modele = module.default;
@@ -59,5 +60,15 @@ import("./postgres-model.js")
 	.catch((error) => {
 		console.error("Erreur lors de l'importation du modèle Modele :", error);
 	});
+import("./postgres-cart.js")
+	.then((module) => {
+		Cart = module.default;
 
+		Product.belongsToMany(Cart, {
+			through: "Carts_Products",
+		});
+	})
+	.catch((error) => {
+		console.error("Erreur lors de l'importation du modèle Cart :", error);
+	});
 export default Product;
