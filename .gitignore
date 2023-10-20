@@ -1,3 +1,9 @@
-mongo
-mysql
-front/node_modules
+db_data
+node_modules
+.vscode
+.idea
+/client/node_modules
+/client/package-lock.json
+/dashboard/node_modules
+/dashboard/package-lock.json
+.env.local
