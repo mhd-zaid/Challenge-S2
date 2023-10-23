@@ -5,7 +5,9 @@ import {
     logout,
     confirmEmail,
     getMe,
-    checkEmail
+    checkEmail,
+    requestPasswordReset,
+    resetPassword,
 } from "../routes/authRoutes.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 
@@ -13,10 +15,11 @@ const router = express.Router();
 
 router.post("/register", register);
 router.post("/login", login);
-router.post("/logout", authMiddleware, logout);
 router.get("/confirm", confirmEmail);
 router.get("/me", authMiddleware, getMe);
 router.get("/check-email", checkEmail);
+router.post("/request-password-reset", requestPasswordReset);
+router.post("/reset-password", resetPassword);
 
 
 export default router;

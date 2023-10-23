@@ -25,5 +25,14 @@ export const authRoutes = [
             title: 'Profile',
             requiresAuthentication: true,
         }
+    },
+    {
+        path: '/password-reset',
+        name: 'password-reset',
+        component: () => import('../../views/auth/PasswordResetView.vue'),
+        meta : {
+            title: 'Password Reset',
+            requiresAuthentication: false,
+        }
     }
 ];

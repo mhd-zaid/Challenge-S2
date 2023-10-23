@@ -1,53 +1,65 @@
 <script setup lang="ts">
 import GuestLayout from '@/layouts/GuestLayout.vue'
 import { reactive } from 'vue'
-import { useUserStore } from '@/stores/user'
 import { useRoute, useRouter } from 'vue-router'
 import axiosInstance from '@/utils/axiosInstance'
 
-const userStore = useUserStore()
 const state = reactive({
   form: {
     email: '',
     password: ''
   },
-  errors: ''
+  errors: '',
+  isEmailSent: false
 })
+
 const router = useRouter()
 const route = useRoute()
 
-const isRegistered = route.query.registered === 'true'
-const isConfirmed = route.query.email_confirmed === 'true'
-const isPasswordReset = route.query.password_reset === 'true'
+let updatingPassword =
+  route.query.email !== undefined &&
+  route.query.email !== '' &&
+  route.query.token !== undefined &&
+  route.query.token !== ''
 
 const getErrorMessage = (error: any) => {
   if (error.response) {
-    if (error.response.data.message === 'Email not found')
-      return "Aucun compte n'est associé à cet email"
-    if (error.response.data.message.includes('User is temporarily blocked'))
-      return 'Votre compte a été bloqué temporairement'
-    if (error.response.data.message === 'Invalid credentials') return 'Mot de passe incorrect'
-    if (error.response.data.message === 'Email not confirmed')
-      return 'Veuillez confirmer votre adresse e-mail'
+    if (
+      error.response.data.error.includes('Invalid token') ||
+      error.response.data.error.includes('Email')
+    )
+      return 'Une erreur est survenue, veuillez vérifier que vous avez cliqué sur le dernier lien reçu par email'
+    if (error.response.data.error.includes('Invalid password'))
+      return 'Le mot de passe doit contenir au moins 12 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial'
   }
-  return ''
+  return 'Une erreur est survenue'
 }
 
 const submit = async () => {
   try {
-    axiosInstance
-      .post('/auth/login', state.form)
-      .then((res) => {
-        userStore.setUser(res.data)
-        userStore.setToken(res.data.token)
-        localStorage.setItem('token', res.data.token)
-        localStorage.setItem('user', JSON.stringify(res.data))
-        // showToast('Vous êtes connecté !', 'success')
-        router.push('/')
-      })
-      .catch((error) => {
-        state.errors = getErrorMessage(error)
-      })
+    if (!updatingPassword) {
+      axiosInstance
+        .post('/auth/request-password-reset', state.form)
+        .then(() => {
+          state.isEmailSent = true
+        })
+        .catch((error) => {
+          state.errors = getErrorMessage(error)
+        })
+    } else {
+      axiosInstance
+        .post('/auth/reset-password', {
+          email: route.query.email,
+          token: route.query.token,
+          password: state.form.password
+        })
+        .then(() => {
+          router.push('/login?password_reset=true')
+        })
+        .catch((error) => {
+          state.errors = getErrorMessage(error)
+        })
+    }
   } catch (e: any) {
     console.error(e)
   }
@@ -63,25 +75,15 @@ const submit = async () => {
         <div>
           <img class="h-10 w-auto" src="assets/images/sneakpeak_logo_black.png" alt="Sneak Peak" />
           <h2 class="mt-8 text-2xl font-bold leading-9 tracking-tight text-gray-900">
-            Connectez-vous à votre compte
+            Mot de passe oublié
           </h2>
           <p class="mt-2 text-sm leading-6 text-gray-500">
-            Vous n'êtes pas encore inscrit ?
-            {{ ' ' }}
-            <RouterLink to="register" class="font-semibold text-indigo-600 hover:text-indigo-500"
-              >Inscrivez-vous ici</RouterLink
-            >
+            Vérifie ton adresse e-mail et saisis un nouveau mot de passe.
           </p>
         </div>
         <div>
-          <div v-if="isRegistered && !state.errors.length" class="text-green-600 my-5">
-            Vous avez bien été inscrit. Veuillez confirmer votre email puis vous connecter.
-          </div>
-          <div v-if="isConfirmed && !state.errors.length" class="text-green-600 my-5">
-            Votre email a bien été confirmé. Veuillez vous connecter.
-          </div>
-          <div v-if="isPasswordReset && !state.errors.length" class="text-green-600 my-5">
-            Votre mot de passe a bien été modifié. Veuillez vous connecter.
+          <div v-if="state.isEmailSent" class="text-green-600 my-5">
+            Un email a été envoyé à votre adresse email pour réinitialiser votre mot de passe.
           </div>
           <div class="my-5">
             <small v-if="state.errors.length" class="text-red-600">{{ state.errors }}</small>
@@ -89,7 +91,7 @@ const submit = async () => {
 
           <div>
             <form method="POST" class="space-y-6" @submit.prevent="submit">
-              <div>
+              <div v-if="!updatingPassword">
                 <label for="email" class="block text-sm font-medium leading-6 text-gray-900"
                   >Email</label
                 >
@@ -103,17 +105,16 @@ const submit = async () => {
                   required
                 />
               </div>
-
-              <div>
+              <div v-else>
                 <label for="password" class="block text-sm font-medium leading-6 text-gray-900"
-                  >Mot de passe</label
+                  >Nouveau mot de passe</label
                 >
                 <input
                   v-model="state.form.password"
                   type="password"
                   id="password"
                   name="password"
-                  placeholder="Mot de passe"
+                  placeholder="Nouveau mot de passe"
                   class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   required
                 />
@@ -121,8 +122,8 @@ const submit = async () => {
 
               <div class="flex items-center justify-end">
                 <div class="text-sm leading-6">
-                  <a href="password-reset" class="font-semibold text-indigo-600 hover:text-indigo-500"
-                    >Mot de passe oublié ?</a
+                  <a href="login" class="font-semibold text-indigo-600 hover:text-indigo-500"
+                    >Retour à la connexion</a
                   >
                 </div>
               </div>
@@ -132,7 +133,7 @@ const submit = async () => {
                   type="submit"
                   class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 >
-                  Se connecter
+                  Réinitialiser le mot de passe
                 </button>
               </div>
             </form>

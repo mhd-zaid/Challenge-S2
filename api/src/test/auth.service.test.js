@@ -1,16 +1,16 @@
-import { generateAuthentificationToken, isUserBlocked } from "../services/auth.service";
+import { generateToken, isUserBlocked } from "../services/auth.service";
 
-describe("generateAuthentificationToken", () => {
+describe("generateToken", () => {
     it("should generate a token with 6 characters", () => {
-        const token = generateAuthentificationToken();
+        const token = generateToken();
 
         expect(token).toHaveLength(6);
         expect(/^[0-9A-Z]+$/.test(token)).toBe(true);
     });
 
     it("should generate a different token on each call", () => {
-        const token1 = generateAuthentificationToken();
-        const token2 = generateAuthentificationToken();
+        const token1 = generateToken();
+        const token2 = generateToken();
 
         expect(token1).not.toEqual(token2);
     });

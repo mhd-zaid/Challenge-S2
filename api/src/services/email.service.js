@@ -111,3 +111,28 @@ export const sendDeletedAccountEmail = async (email, encryptionKey) => {
         console.error(`Error sending deleted account email : ${error}`);
     }
 };
+
+export const sendResetPasswordEmail = async (email, passwordResetToken) => {
+    try {
+        const htmlTemplate = fs.readFileSync(
+            path.join(__dirname, "../templates/reset-password.html"),
+            "utf8"
+        );
+
+        // TODO: replace with frontend url
+        const passwordResetLink = `http://localhost:5174/password-reset?email=${email}&token=${passwordResetToken}`;
+
+        const subject = "Réinitialisation de votre mot de passe";
+
+        const template = htmlTemplate.replace(
+            "{{passwordResetLink}}",
+            passwordResetLink
+        );
+
+        await sendEmail(email, subject, template);
+
+        return true;
+    } catch (error) {
+        console.error(`Error sending reset password email : ${error}`);
+    }
+}

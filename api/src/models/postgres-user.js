@@ -31,6 +31,10 @@ User.init(
 			type: DataTypes.DATE,
 			allowNull: true,
 		},
+		passwordResetToken: {
+			type: DataTypes.STRING,
+			allowNull: true,
+		},
 		birthdate: {
 			type: DataTypes.DATE,
 			allowNull: false,
