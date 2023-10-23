@@ -2,7 +2,6 @@ import express from "express";
 import {
     register,
     login,
-    logout,
     confirmEmail,
     getMe,
     checkEmail,
