@@ -2,7 +2,6 @@
 import GuestLayout from '@/layouts/GuestLayout.vue'
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { showToast } from '@/utils/toast'
 import { z } from 'zod'
 import axiosInstance from '@/utils/axiosInstance'
 
@@ -84,10 +83,8 @@ const submit = async () => {
     axiosInstance
       .post('/auth/register', state.form)
       .then((res) => {
-        showToast('Votre inscription a bien été pris en compte !', 'success')
-        setTimeout(() => {
-          router.push('/login?registered=true')
-        }, 1000)
+        // showToast('Votre inscription a bien été pris en compte !', 'success')
+        router.push('/login?registered=true')
       })
       .catch((error) => {
         state.errors = error.response.data.message
@@ -136,7 +133,7 @@ const submit = async () => {
                   v-model="state.form.firstname"
                   type="text"
                   placeholder="Prénom"
-                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder-text-gray-400 focus-ring-2 focus-ring-inset focus-ring-indigo-600 sm-text-sm sm-leading-6"
+                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   required
                 />
               </div>
@@ -150,7 +147,7 @@ const submit = async () => {
                   v-model="state.form.lastname"
                   type="text"
                   placeholder="Nom"
-                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder-text-gray-400 focus-ring-2 focus-ring-inset focus-ring-indigo-600 sm-text-sm sm-leading-6"
+                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   required
                 />
               </div>
@@ -163,7 +160,7 @@ const submit = async () => {
                   id="birthdate"
                   v-model="state.form.birthdate"
                   type="date"
-                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 pr-2 ring-inset ring-gray-300 placeholder-text-gray-400 focus-ring-2 focus-ring-inset focus-ring-indigo-600 sm-text-sm sm-leading-6"
+                  class="block w-full px-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   required
                 />
               </div>
@@ -177,7 +174,7 @@ const submit = async () => {
                   v-model="state.form.email"
                   type="email"
                   placeholder="exemple@gmail.com"
-                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder-text-gray-400 focus-ring-2 focus-ring-inset focus-ring-indigo-600 sm-text-sm sm-leading-6"
+                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   required
                 />
               </div>
@@ -191,7 +188,7 @@ const submit = async () => {
                   v-model="state.form.password"
                   type="password"
                   placeholder="Mot de passe"
-                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder-text-gray-400 focus-ring-2 focus-ring-inset focus-ring-indigo-600 sm-text-sm sm-leading-6"
+                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   required
                 />
               </div>

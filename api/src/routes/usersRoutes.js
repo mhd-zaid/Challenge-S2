@@ -9,7 +9,7 @@ import {
 	isUserMajor,
 } from "../services/user.service.js";
 import bcrypt from "bcryptjs";
-import { generateAuthentificationToken } from "../services/auth.service.js";
+import { generateToken } from "../services/auth.service.js";
 import { Types } from "mongoose";
 
 export const getUsers = async (req, res) => {
@@ -59,7 +59,7 @@ export const createUser = async (req, res) => {
 
 		if (existingUser) throw new Error(`Email "${email}" is already taken`);
 
-		const authentificationToken = generateAuthentificationToken();
+		const authentificationToken = generateToken();
 
 		const userMongo = await UserMongo.create({
 			firstname,
@@ -204,6 +204,11 @@ export const deleteUser = async (req, res) => {
 
 		const anonymizedData = anonymizeUserData(user.toJSON(), encryptionKey);
 
+		const isEmailSent = await sendDeletedAccountEmail(
+			user.email,
+			encryptionKey
+		);
+
 		await user.update(
 			{ ...anonymizedData, encryptionKey, disabled: true },
 			{ where: { id } }
@@ -213,11 +218,6 @@ export const deleteUser = async (req, res) => {
 		userMongo.firstname = null;
 		userMongo.lastname = null;
 		await userMongo.save();
-
-		const isEmailSent = await sendDeletedAccountEmail(
-			user.email,
-			encryptionKey
-		);
 
 		res.json({
 			message: isEmailSent

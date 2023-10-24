@@ -2,13 +2,11 @@ import User from "../models/postgres-user.js";
 import UserMongo from "../models/mongodb-user.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import {
-	generateAuthentificationToken,
-	isUserBlocked,
-} from "../services/auth.service.js";
+import { generateToken, isUserBlocked } from "../services/auth.service.js";
 import {
 	sendEmailConfirmation,
 	sendBlockedAccountEmail,
+	sendResetPasswordEmail,
 } from "../services/email.service.js";
 import { isValidPassword, isUserMajor } from "../services/user.service.js";
 import { Types } from "mongoose";
@@ -16,7 +14,7 @@ import { Types } from "mongoose";
 export const register = async (req, res) => {
 	try {
 		const { firstname, lastname, email, password, role, birthdate } =
-            req.body;
+			req.body;
 
 		if (!(firstname && lastname && email && password && birthdate))
 			throw new Error("Invalid arguments");
@@ -33,7 +31,7 @@ export const register = async (req, res) => {
 
 		if (existingUser) throw new Error(`Email "${email}" is already taken`);
 
-		const authentificationToken = generateAuthentificationToken();
+		const authentificationToken = generateToken();
 
 		const newMongoUser = await UserMongo.create({
 			firstname,
@@ -48,7 +46,7 @@ export const register = async (req, res) => {
 			firstname,
 			lastname,
 			email,
-            birthdate: new Date(birthdate),
+			birthdate: new Date(birthdate),
 			password: hashedPassword,
 			role,
 			authentificationToken,
@@ -88,8 +86,7 @@ export const login = async (req, res) => {
 
 		const user = await User.findOne({ where: { email } });
 
-		if (!user)
-			return res.status(401).json({ message: "Email not found" });
+		if (!user) return res.status(401).json({ message: "Email not found" });
 
 		if (isUserBlocked(user)) {
 			const isEmailSent = await sendBlockedAccountEmail(email);
@@ -149,21 +146,21 @@ export const login = async (req, res) => {
 };
 
 export const checkEmail = async (req, res) => {
-    try {
-        const { email } = req.query;
+	try {
+		const { email } = req.query;
 
-        const user = await User.findOne({
-            where: { email },
-        });
+		const user = await User.findOne({
+			where: { email },
+		});
 
-        res.json({
-            message: user ? "Email already taken" : "Email available",
-        });
-    } catch (error) {
-        res.status(500).json({
-            error: `An error occurred while checking the email : ${error}`,
-        });
-    }
+		res.json({
+			message: user ? "Email already taken" : "Email available",
+		});
+	} catch (error) {
+		res.status(500).json({
+			error: `An error occurred while checking the email : ${error}`,
+		});
+	}
 };
 
 export const confirmEmail = async (req, res) => {
@@ -199,9 +196,8 @@ export const confirmEmail = async (req, res) => {
 		mongoUserToFind.isValidate = true;
 		await mongoUserToFind.save();
 
-		res.json({
-			message: "Email confirmed successfully",
-		});
+		// TODO: change the real url
+		res.redirect("http://localhost:5174/login?email_confirmed=true");
 	} catch (error) {
 		res.status(500).json({
 			error: `An error occurred while validating the email : ${error}`,
@@ -209,8 +205,65 @@ export const confirmEmail = async (req, res) => {
 	}
 };
 
-export const logout = async (req, res) => {
-	// Logique de déconnexion de l'utilisateur
+export const requestPasswordReset = async (req, res) => {
+	try {
+		const { email } = req.body;
+
+		const user = await User.findOne({
+			where: { email },
+		});
+
+		if (!user) throw new Error(`Email "${email}" not found`);
+
+		const passwordResetToken = generateToken();
+
+		const isEmailSent = await sendResetPasswordEmail(
+			email,
+			passwordResetToken
+		);
+
+		await user.update({ passwordResetToken }, { where: { email } });
+
+		res.json({
+			message: isEmailSent ? "Email sent successfully" : "Email not sent",
+		});
+	} catch (error) {
+		res.status(500).json({
+			error: `An error occurred while resetting the password : ${error}`,
+		});
+	}
+};
+
+export const resetPassword = async (req, res) => {
+	try {
+		const { email, token, password } = req.body;
+
+		const user = await User.findOne({
+			where: { email },
+		});
+		if (!user) throw new Error(`Email "${email}" not found`);
+
+		if (user.passwordResetToken !== token) throw new Error("Invalid token");
+
+		if (!isValidPassword(password)) throw new Error("Invalid password");
+
+		const hashedPassword = await bcrypt.hash(password, 10);
+
+		await user.update(
+			{
+				password: hashedPassword,
+				passwordResetToken: null,
+				passwordUpdatedAt: new Date(),
+			},
+			{ where: { email } }
+		);
+		
+		res.json({ message: "Password updated successfully" });
+	} catch (error) {
+		res.status(500).json({
+			error: `An error occurred while resetting the password : ${error}`,
+		});
+	}
 };
 
 export const getMe = async (req, res) => {

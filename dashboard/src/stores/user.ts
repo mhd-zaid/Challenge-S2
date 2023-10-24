@@ -1,8 +1,8 @@
 import {defineStore} from "pinia";
 import axios from "axios";
-import {useRouter} from "vue-router";
+// import {useRouter} from "vue-router";
 
-const router = useRouter()
+// const router = useRouter()
 
 export interface User {
     id: number;
