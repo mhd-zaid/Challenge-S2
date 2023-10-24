@@ -2,10 +2,11 @@
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
 import axiosInstance from "@/utils/axiosInstance";
 import { reactive } from "vue";
+import type {CategoryType} from "@/types/CategoryTypes";
 
 const id = window.location.pathname.split("/")[2];
 const state = reactive({
-category: {},
+category: {} as CategoryType,
 })
 
 const getCategory = async () => {
@@ -70,6 +71,6 @@ getCategory();
         </tr>
       </tbody>
     </table>
-    
+
   </AuthenticatedLayout>
 </template>

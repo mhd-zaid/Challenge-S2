@@ -35,13 +35,4 @@ export const BrandsRoutes = [
             requiresAuthentication: true,
         }
     },
-    {
-        path: '/brands/:id/delete',
-        name: 'delete-brand',
-        component: () => import('@/views/categories/BrandsView.vue'),
-        meta: {
-            title: 'Delete Brand',
-            requiresAuthentication: true,
-        }
-    }
 ];
