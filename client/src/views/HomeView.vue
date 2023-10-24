@@ -1,46 +1,42 @@
 <script setup lang="ts">
-import LayoutComponent from "../layout/LayoutComponent.vue";
-import CategorySection from "../sections/home/CategorySection.vue";
-import FeaturedSection from "../sections/home/FeaturedSection.vue";
-import FavoriteSection from "../sections/home/FavoriteSection.vue";
-import CtaSection from "../sections/home/CtaSection.vue";
-import HeroSection from "@/sections/home/HeroSection.vue";
+import LayoutComponent from '../layout/LayoutComponent.vue'
+import CategorySection from '../sections/home/CategorySection.vue'
+import FeaturedSection from '../sections/home/FeaturedSection.vue'
+import FavoriteSection from '../sections/home/FavoriteSection.vue'
+import CtaSection from '../sections/home/CtaSection.vue'
+import HeroSection from '@/sections/home/HeroSection.vue'
 
 const favorites = [
   {
     id: 1,
-    name: 'Black Basic Tee',
-    price: '$32',
+    name: "Nike Air Force 1 '07",
+    price: '119,99',
     href: '#',
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/home-page-03-favorite-01.jpg',
-    imageAlt: "Model wearing women's black cotton crewneck tee.",
+    imageSrc: '/images/b7d9211c-26e7-431a-ac24-b0540fb3c00f.webp'
   },
   {
     id: 2,
-    name: 'Off-White Basic Tee',
-    price: '$32',
+    name: "Nike Air Force 1 '07 LV8",
+    price: '129,99',
     href: '#',
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/home-page-03-favorite-02.jpg',
-    imageAlt: "Model wearing women's off-white cotton crewneck tee.",
+    imageSrc: '/images/b3546974-0d23-4657-a8a7-8d6abc9fc5e8.webp'
   },
   {
     id: 3,
-    name: 'Mountains Artwork Tee',
-    price: '$36',
+    name: 'Nike Dunk Low Retro',
+    price: '119,99',
     href: '#',
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/home-page-03-favorite-03.jpg',
-    imageAlt:
-        "Model wearing women's burgundy red crewneck artwork tee with small white triangle overlapping larger black triangle.",
-  },
+    imageSrc: '/images/d01ef37b-c14a-4edd-8787-534f5732294c.webp'
+  }
 ]
 </script>
 
 <template>
   <LayoutComponent>
-      <HeroSection/>
-      <CategorySection/>
-      <FeaturedSection/>
-      <FavoriteSection :favorites="favorites"/>
-      <CtaSection/>
+    <HeroSection />
+    <CategorySection />
+    <FeaturedSection />
+    <FavoriteSection :favorites="favorites" />
+    <CtaSection />
   </LayoutComponent>
 </template>
