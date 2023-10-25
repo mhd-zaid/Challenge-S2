@@ -15,8 +15,6 @@ const props = defineProps({
   },
 })
 
-console.log(props.id)
-
 const state = reactive({
   form: {
     name: '',
@@ -41,7 +39,6 @@ const state = reactive({
 })
 
 watch(() => props.id, async () => {
-  console.log(props.id)
   if (props.id) {
     try {
       const response = await axiosInstance.get(`/models/${props.id}`)
@@ -90,7 +87,7 @@ init()
 </script>
 
 <template>
-  <ODrawer :open="props.open" @closeDrawer="emit('closeCreationDrawer')"
+  <ODrawer :open="props.open" @closeDrawer="!props.id ? emit('closeCreationDrawer') : emit('closeUpdatingDrawer')"
            :title="!props.id ? 'Create model' : `Update model ${ props.id }`">
     <div>
       <form method="POST" class="space-y-6" @submit.prevent="!props.id ? submitCreation() : submitUpdating()">

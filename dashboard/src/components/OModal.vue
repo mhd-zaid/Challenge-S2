@@ -59,7 +59,7 @@ const emit = defineEmits(['closeModal', 'confirm'])
                         class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:col-start-2"
                         @click="emit('confirm')">
                   {{ props.confirmButton }}
-                </button>s
+                </button>
                 <button type="button"
                         class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
                         @click="emit('closeModal')" ref="cancelButtonRef">Cancel

@@ -45,10 +45,8 @@ const submit = async () => {
         // showToast('Vous êtes connecté !', 'success')
         router.push('/')
       })
-      .catch((error) => {
-        state.errors = getErrorMessage(error)
-      })
   } catch (e: any) {
+    state.errors = getErrorMessage(e)
     console.error(e)
   }
 }
