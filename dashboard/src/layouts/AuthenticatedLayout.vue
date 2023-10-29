@@ -18,7 +18,7 @@ const router = useRouter()
 const navigation = [
   {name: 'Dashboard', href: '/', icon: HomeIcon, current: router.currentRoute.value.path === '/'},
   {name: 'Utilisateurs', href: '/users', icon: UsersIcon, current: router.currentRoute.value.path === '/users'},
-  {name: 'Products', href: '/products', icon: FolderIcon, current: router.currentRoute.value.path === '/products'},
+  {name: 'Produits', href: '/products', icon: FolderIcon, current: router.currentRoute.value.path === '/products'},
   {
     name: 'Catégories',
     href: '/categories',
@@ -26,6 +26,7 @@ const navigation = [
     current: router.currentRoute.value.path === '/categories'
   },
   {name: 'Models', href: '/models', icon: DocumentDuplicateIcon, current: router.currentRoute.value.path === '/models'},
+  {name: "Marques", href: '/brands', icon: DocumentDuplicateIcon, current: router.currentRoute.value.path === '/brands'},
 ]
 const logout = () => {
   localStorage.removeItem('token')
@@ -101,8 +102,8 @@ const sidebarOpen = ref(false)
       <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6">
         <RouterLink to="dashboard" class="flex h-16 shrink-0 items-center mt-5">
           <img class="h-8 w-auto"
-              src="/images/sneakpeak_logo_white.png"
-              alt="Your Company"/>
+               src="/images/sneakpeak_logo_white.png"
+               alt="Your Company"/>
         </RouterLink>
         <nav class="flex flex-1 flex-col">
           <ul role="list" class="flex flex-1 flex-col gap-y-7">
