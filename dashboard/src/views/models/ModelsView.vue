@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue'
 import axiosInstance from '@/utils/axiosInstance';
-import ModelsFormView from "@/views/models/ModelsFormView.vue";
+import ModelsSidebarForm from "@/views/models/ModelsSidebarForm.vue";
 import OModal from "@/components/OModal.vue";
 import OTable from "@/components/OTable.vue";
 import {onUnmounted, reactive} from "vue";
@@ -99,8 +99,8 @@ getModels()
               @updateRow="openUpdatingDrawer"
               @showRow="((row: any) => router.push({name : 'model', params: { id : row.id}}))"/>
     </div>
-    <ModelsFormView v-if="state.openCreation" :open="state.openCreation" @closeCreationDrawer="closeCreationDrawer"/>
-    <ModelsFormView :open="state.openUpdating" :id="state.selectedId" @closeUpdatingDrawer="closeUpdatingDrawer"/>
+    <ModelsSidebarForm v-if="state.openCreation" :open="state.openCreation" @closeCreationDrawer="closeCreationDrawer"/>
+    <ModelsSidebarForm :open="state.openUpdating" :id="state.selectedId" @closeUpdatingDrawer="closeUpdatingDrawer"/>
     <OModal v-if="state.openConfirmation" :open="state.openConfirmation" @closeModal="state.openConfirmation = false"
             @confirm="deleteModel(state.selectedId)" title="Delete model"
             content="Are you sure you want to delete this model?" confirmButton="Delete"/>

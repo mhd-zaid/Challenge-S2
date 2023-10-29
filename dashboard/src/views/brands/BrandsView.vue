@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue'
 import axiosInstance from '@/utils/axiosInstance';
-import {ref, onMounted, onUnmounted, reactive} from 'vue';
+import {onMounted, onUnmounted, reactive} from 'vue';
 import OTable from "@/components/OTable.vue";
 import OModal from "@/components/OModal.vue";
-import ModelsFormView from "@/views/models/ModelsFormView.vue";
 import {useRouter} from "vue-router";
-import BrandsFormView from "@/views/brands/BrandsFormView.vue";
+import BrandsSidebarForm from "@/views/brands/BrandsSidebarForm.vue";
 
 const router = useRouter()
 const state = reactive({
@@ -96,8 +95,8 @@ onUnmounted(() => {
       <OTable :rows="state.rows" :columns="state.columns" @deleteRow="OpenConfirmationModal"
               @updateRow="openUpdatingDrawer"
               @showRow="((row: any) => router.push({name : 'brand', params: { id : row.id}}))"/>
-      <BrandsFormView v-if="state.openCreation" :open="state.openCreation" @closeCreationDrawer="closeCreationDrawer"/>
-      <BrandsFormView :open="state.openUpdating" :id="state.selectedId" @closeUpdatingDrawer="closeUpdatingDrawer"/>
+      <BrandsSidebarForm v-if="state.openCreation" :open="state.openCreation" @closeCreationDrawer="closeCreationDrawer"/>
+      <BrandsSidebarForm :open="state.openUpdating" :id="state.selectedId" @closeUpdatingDrawer="closeUpdatingDrawer"/>
       <OModal v-if="state.openConfirmation" :open="state.openConfirmation" @closeModal="state.openConfirmation = false"
               @confirm="deleteBrand(state.selectedId)" title="Supprimer la marque"
               confirmButton="Supprimer" content="Êtes-vous sûr de vouloir supprimer cette marque ?"/>

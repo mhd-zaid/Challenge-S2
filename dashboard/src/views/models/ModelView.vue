@@ -2,8 +2,9 @@
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
 import axiosInstance from "@/utils/axiosInstance";
 import { reactive } from "vue";
-
-const id = window.location.pathname.split("/")[2];
+import {useRouter} from "vue-router";
+const router = useRouter();
+const id = router.currentRoute.value.params.id;
 const state = reactive({
 model: {
   Category: {
@@ -87,6 +88,6 @@ getModel();
         </tr>
       </tbody>
     </table>
-    
+
   </AuthenticatedLayout>
 </template>

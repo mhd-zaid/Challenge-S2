@@ -11,7 +11,7 @@ export const CategoriesRoutes = [
     {
         path: '/categories/create',
         name: 'create-category',
-        component: import('@/views/categories/CategoriesFormView.vue'),
+        component: import('@/views/categories/CategoriesSidebarForm.vue'),
         meta: {
           title: 'Create Category',
           requiresAuthentication: true
@@ -29,7 +29,7 @@ export const CategoriesRoutes = [
     {
         path: '/categories/:id/edit',
         name: 'edit-category',
-        component: () => import('@/views/categories/CategoriesFormView.vue'),
+        component: () => import('@/views/categories/CategoriesSidebarForm.vue'),
         meta: {
             title: 'Edit Category :id',
             requiresAuthentication: true,

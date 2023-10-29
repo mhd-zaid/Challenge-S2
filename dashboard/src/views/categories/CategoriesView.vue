@@ -5,7 +5,7 @@ import {onMounted, onUnmounted, reactive} from 'vue';
 import OTable from "@/components/OTable.vue";
 import {useRouter} from "vue-router";
 import OModal from "@/components/OModal.vue";
-import CategoriesFormView from "@/views/categories/CategoriesFormView.vue";
+import CategoriesSidebarForm from "@/views/categories/CategoriesSidebarForm.vue";
 
 const router = useRouter()
 const state = reactive({
@@ -94,9 +94,9 @@ onUnmounted(() => {
               @updateRow="openUpdatingDrawer"
               @showRow="((row: any) => router.push({name : 'category', params: { id : row.id}}))"/>
     </div>
-    <CategoriesFormView v-if="state.openCreation" :open="state.openCreation"
+    <CategoriesSidebarForm v-if="state.openCreation" :open="state.openCreation"
                         @closeCreationDrawer="closeCreationDrawer"/>
-    <CategoriesFormView :open="state.openUpdating" :id="state.selectedId" @closeUpdatingDrawer="closeUpdatingDrawer"/>
+    <CategoriesSidebarForm :open="state.openUpdating" :id="state.selectedId" @closeUpdatingDrawer="closeUpdatingDrawer"/>
     <OModal v-if="state.openConfirmation" :open="state.openConfirmation" @closeModal="state.openConfirmation = false"
             @confirm="deleteCategory(state.selectedId)" title="Supprimer une catégorie"
             confirmButton="Supprimer" content="Êtes-vous sûr de vouloir supprimer cette catégorie ?"/>
