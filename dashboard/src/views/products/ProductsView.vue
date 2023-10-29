@@ -1,37 +1,51 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue'
 import axiosInstance from '@/utils/axiosInstance';
-import { ref,onMounted,onUnmounted } from 'vue';
+import {onMounted, onUnmounted, reactive} from 'vue';
+import OTable from "@/components/OTable.vue";
+import {useRouter} from "vue-router";
+import OModal from "@/components/OModal.vue";
 
-const products = ref([]);
-const keys = ref([]);
+const router = useRouter()
+const state = reactive({
+  columns: {},
+  rows: [],
+  openConfirmation: false,
+  openUpdating: false,
+  selectedId: "",
+  openCreation: false
+})
 const abortController = new AbortController
 const getProducts = async () => {
   try {
-    const response = await axiosInstance.get('/products')
-    const data = response.data;
-    const keys = ["name","price","quantity"];
-
-    return { keys,data};
+    await axiosInstance.get('/products').then((res) => {
+      state.columns = Object.keys(res.data[0]).splice(1, 6)
+      state.rows = res.data
+    })
   } catch (e: any) {
     throw e;
   }
 }
 
-const deleteProduct = async (id: number) => {
-    try {
-      await axiosInstance.delete(`/products/${id}`)
+const deleteProduct = async (id: string) => {
+  try {
+    await axiosInstance.delete(`/products/${id}`).then(() => {
+      state.openConfirmation = false
+      state.selectedId = ""
+      getProducts()
+    })
+  } catch (e: any) {
+    throw e;
+  }
+}
 
-    } catch (e: any) {
-        throw e;
-    }
+const OpenConfirmationModal = (product: any) => {
+  state.openConfirmation = true
+  state.selectedId = product.id
 }
 
 onMounted(() => {
-    getProducts().then((res) => {
-        products.value = res.data;
-        keys.value = res.keys;
-    })
+  getProducts()
 })
 
 onUnmounted(() => {
@@ -42,84 +56,31 @@ onUnmounted(() => {
 
 <template>
   <AuthenticatedLayout>
-    <div class="px-4 sm:px-6 lg:px-8">
+    <div class="px-4">
       <div class="sm:flex sm:items-center">
         <div class="sm:flex-auto">
-          <h1 class="text-base font-semibold leading-6 text-gray-900">Products</h1>
+          <h1 class="text-base font-semibold leading-6 text-gray-900">Produits</h1>
           <p class="mt-2 text-sm text-gray-700">
-            A list of all the products.
+            Liste des produits
           </p>
         </div>
         <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-            <RouterLink :to="{name : 'create-product'}" class="font-semibold text-indigo-600 hover:text-indigo-500">
+          <RouterLink :to="{name : 'create-product'}" class="font-semibold text-indigo-600 hover:text-indigo-500">
             <button
                 type="button"
-                class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                >
-                Add product
+                class="block rounded-md bg-gray-800 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            >
+              Ajouter un produit
             </button>
-            </RouterLink>
+          </RouterLink>
         </div>
       </div>
-      <div class="mt-8 flow-root">
-        <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-            <table class="min-w-full divide-y divide-gray-300" >
-              <thead>
-                <tr>
-                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900" v-for="key in keys">
-                    {{key}}
-                  </th>
-                  <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0">
-                    <span class="sr-only">Edit</span>
-                  </th>
-                  <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0">
-                    <span class="sr-only">Delete</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-gray-200 bg-white" >
-                <tr  v-if="products.length !== 0" v-for="product in products">
-                  <td  class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                    <div class="text-gray-900">{{ product.name }}</div>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                    <div class="text-gray-900">{{ product.price }}</div>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                    <div class="text-gray-900">{{ product.quantity }}</div>
-                  </td>
-                  <td
-                    class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0"
-                  >
-                    <RouterLink :to="{name : 'product', params: { id: product.id }}" class="text-indigo-600 hover:text-indigo-900"
-                      >View
-                    </RouterLink>
-                  </td>
-                  <td
-                    class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0"
-                  >
-                    <RouterLink :to="{name : 'edit-product', params: { id: product.id }}" class="text-indigo-600 hover:text-indigo-900"
-                      >Edit
-                    </RouterLink>
-                  </td>
-                  <td
-                    class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0"
-                  >
-                    <a href="" class="text-indigo-600 hover:text-indigo-900" @click="deleteProduct(product.id)"
-                      >Delete</a
-                    >
-                  </td>
-                </tr>
-
-               <div v-else>
-                    No data available, please add a product.
-               </div>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+      <OTable :rows="state.rows" :columns="state.columns" @deleteRow="OpenConfirmationModal"
+              @updateRow="((row: any) => router.push({name : 'edit-product', params: { id : row.id}}))"
+              @showRow="((row: any) => router.push({name : 'product', params: { id : row.id}}))"/>
     </div>
+    <OModal v-if="state.openConfirmation" :open="state.openConfirmation" @closeModal="state.openConfirmation = false"
+            @confirm="deleteProduct(state.selectedId)" title="Supprimer un produit"
+            confirmButton="Supprimer" content="Êtes-vous sûr de vouloir supprimer ce produit ?"/>
   </AuthenticatedLayout>
 </template>

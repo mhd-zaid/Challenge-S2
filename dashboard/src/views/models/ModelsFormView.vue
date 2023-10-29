@@ -88,7 +88,7 @@ init()
 
 <template>
   <ODrawer :open="props.open" @closeDrawer="!props.id ? emit('closeCreationDrawer') : emit('closeUpdatingDrawer')"
-           :title="!props.id ? 'Create model' : `Update model ${ props.id }`">
+           :title="!props.id ? 'Ajout d\'un nouveau model' : `Modifier le model ${ props.id }`">
     <div>
       <form method="POST" class="space-y-6" @submit.prevent="!props.id ? submitCreation() : submitUpdating()">
         <div>
@@ -185,7 +185,7 @@ init()
               type="submit"
               class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           >
-            {{ !props.id ? 'Create' : 'Update ' }}
+            {{ !props.id ? 'Crée' : 'Modifier ' }}
           </button>
         </div>
       </form>
