@@ -8,6 +8,7 @@ const productSchema = new mongoose.Schema({
 	size: { type: String, required: true },
 	color: { type: String, required: true },
 	url: { type: String, required: false },
+	sku: { type: String, required: true },
 	models: [
 		{
 			type: mongoose.Schema.Types.ObjectId,

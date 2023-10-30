@@ -26,7 +26,7 @@ Payment.init(
 	}
 );
 
-Payment.belongsTo(Payment);
+Payment.belongsTo(Order);
 	  
 
 export default Payment;

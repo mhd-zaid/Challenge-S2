@@ -24,7 +24,19 @@ Cart.belongsTo(User);
 
 Cart.belongsToMany(Product, {
 	as: "products",
-	through: "Carts_Products",
+	through:{
+		model: "Cart_Product",
+		scope: {
+			quantity: {
+				type: DataTypes.INTEGER,
+				allowNull: false,
+			},
+			product_version_id: {
+				type: DataTypes.STRING,
+				allowNull: false,
+			}
+		}
+	}
 	});
 	  
 

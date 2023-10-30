@@ -27,20 +27,9 @@ Order.init(
 	}
 );
 
-Order.belongsTo(User);
-
-Order.belongsToMany(Product, {
-	as: "products",
-	through:{
-		model: "Orders_Products",
-		unique: false,
-		scope: {
-			ProductVersionId: {
-				type: DataTypes.STRING,
-				allowNull: false,
-			}
-		}
-	}
+Order.belongsToMany(User, {
+	as: "users",
+	through: "User_Order",
 	});
 	  
 
