@@ -19,6 +19,10 @@ Order.init(
 			type: DataTypes.STRING,
 			allowNull: false,
 		},
+		date: {
+			type: DataTypes.DATE,
+			defaultValue: Date.now,
+		},
 	},
 	{
 		sequelize,
@@ -27,9 +31,23 @@ Order.init(
 	}
 );
 
-Order.belongsToMany(User, {
-	as: "users",
-	through: "User_Order",
+Order.belongsTo(User);
+
+Order.belongsToMany(Product, {
+	as: "products",
+	through: {
+		model: "Order_Product",
+		scope: {
+			quantity: {
+				type: DataTypes.INTEGER,
+				allowNull: false,
+			},
+			productVersionId: {
+				type: DataTypes.STRING,
+				allowNull: false,
+			},
+		},
+	},
 	});
 	  
 
