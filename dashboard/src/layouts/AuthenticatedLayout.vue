@@ -16,7 +16,7 @@ import {useRouter} from "vue-router";
 
 const router = useRouter()
 const navigation = [
-  {name: 'Dashboard', href: '/', icon: HomeIcon, current: router.currentRoute.value.path === '/'},
+  {name: 'Tableau de bord', href: '/', icon: HomeIcon, current: router.currentRoute.value.path === '/'},
   {name: 'Utilisateurs', href: '/users', icon: UsersIcon, current: router.currentRoute.value.path === '/users'},
   {name: 'Produits', href: '/products', icon: FolderIcon, current: router.currentRoute.value.path === '/products'},
   {
@@ -25,7 +25,7 @@ const navigation = [
     icon: CalendarIcon,
     current: router.currentRoute.value.path === '/categories'
   },
-  {name: 'Models', href: '/models', icon: DocumentDuplicateIcon, current: router.currentRoute.value.path === '/models'},
+  {name: 'Modèles', href: '/models', icon: DocumentDuplicateIcon, current: router.currentRoute.value.path === '/models'},
   {name: "Marques", href: '/brands', icon: DocumentDuplicateIcon, current: router.currentRoute.value.path === '/brands'},
 ]
 const logout = () => {
@@ -72,7 +72,7 @@ const sidebarOpen = ref(false)
                 <RouterLink to="dashboard" class="flex h-16 shrink-0 items-center mt-4">
                   <img class="h-8 w-auto"
                        src="/images/sneakpeak_logo_white.png"
-                       alt="Your Company"/>
+                       alt="Sneak Peak"/>
                 </RouterLink>
                 <nav class="flex flex-1 flex-col">
                   <ul role="list" class="flex flex-1 flex-col gap-y-7">
@@ -126,7 +126,7 @@ const sidebarOpen = ref(false)
               </a>
               <a type="button"
                  @click="logout"
-                 class="text-gray-400 hover:text-white hover:bg-gray-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
+                 class="mb-5 text-gray-400 cursor-pointer hover:text-white hover:bg-gray-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
                 <ArrowLeftOnRectangleIcon class="h-6 w-6 shrink-0" aria-hidden="true"/>
                 Déconnexion
               </a>

@@ -7,9 +7,12 @@ export const getLastMonths = async (req, res) => {
 		const currentDate = new Date();
 		const lastMonths = [];
 		for (let i = 0; i < 12; i++) {
-			const date = new Date(currentDate);
-			date.setMonth(date.getMonth() - i);
-			lastMonths.push(months[date.getMonth()]);
+			const month = currentDate.getMonth() - i;
+			if (month < 0) {
+				lastMonths.push(months[month + 12]);
+			} else {
+				lastMonths.push(months[month]);
+			}
 		}
 		res.status(200).json(lastMonths.reverse());
 	} catch (error) {
@@ -73,18 +76,14 @@ export const getNewUsersBeforeLast30Days = async (req, res) => {
 export const getNewUsersLastYear = async (req, res) => {
 	try {
 		const currentDate = new Date();
-		const lastMonths = [];
 		const newUsers = [];
 		for (let i = 0; i < 12; i++) {
-			const date = new Date(
-				currentDate.setMonth(currentDate.getMonth() - i)
-			);
-			const startDate = new Date(date.getFullYear(), date.getMonth(), 1);
-			const endDate = new Date(
-				date.getFullYear(),
-				date.getMonth() + 1,
-				0
-			);
+			let month = currentDate.getMonth() - i;
+			if (month < 0) {
+				month = month + 12;
+			}
+			const startDate = new Date(currentDate.getFullYear(), month, 1);
+			const endDate = new Date(currentDate.getFullYear(), month + 1, 0);
 			endDate.setHours(23, 59, 59, 999);
 			const query = {
 				createdAt: {
@@ -93,7 +92,6 @@ export const getNewUsersLastYear = async (req, res) => {
 				},
 			};
 			const users = await User.find(query).countDocuments();
-			lastMonths.push(months[date.getMonth()]);
 			newUsers.push(users);
 		}
 		res.status(200).json(newUsers.reverse());
@@ -188,20 +186,15 @@ export const getNewProductsBeforeLast30Days = async (req, res) => {
 export const getNewProductsLastYear = async (req, res) => {
 	try {
 		const currentDate = new Date();
-		const lastYear = new Date();
-		lastYear.setFullYear(currentDate.getFullYear() - 1);
-		const lastMonths = [];
-		const totalAddedQuantities = [];
+		const newProducts = [];
 
-		for (let i = 1; i <= 12; i++) {
-			const startDate = new Date(lastYear);
-			startDate.setMonth(lastYear.getMonth() + i);
-			startDate.setDate(1);
-			startDate.setHours(0, 0, 0, 0);
-
-			const endDate = new Date(startDate);
-			endDate.setMonth(startDate.getMonth() + 1);
-			endDate.setDate(0);
+		for (let i = 0; i < 12; i++) {
+			let month = currentDate.getMonth() - i;
+			if (month < 0) {
+				month = month + 12;
+			}
+			const startDate = new Date(currentDate.getFullYear(), month, 1);
+			const endDate = new Date(currentDate.getFullYear(), month + 1, 0);
 			endDate.setHours(23, 59, 59, 999);
 
 			const result = await ProductHistory.aggregate([
@@ -219,13 +212,12 @@ export const getNewProductsLastYear = async (req, res) => {
 				},
 			]);
 
-			lastMonths.push(months[startDate.getMonth()]);
-			totalAddedQuantities.push(
+			newProducts.push(
 				result.length > 0 ? result[0].totalQuantityAdded : 0
 			);
 		}
 
-		res.status(200).json(totalAddedQuantities);
+		res.status(200).json(newProducts.reverse());
 	} catch (error) {
 		res.status(500).json({
 			error: `An error occurred while retrieving the total added quantities for the last year: ${error}`,
