@@ -28,6 +28,12 @@ export const createOrder = async (req, res) => {
 
 		const cart = await Cart.findOne({ where: { userId: userId.id } });
 		for (const product of cart.products) {
+			orderMongo.products.push({
+				productId: product.product.id,
+				quantity: product.quantity,
+				productVersionId: product.productVersionId,
+			});
+			
 			await order.addProduct(product.product, {
 				through: {
 					quantity: product.quantity,
