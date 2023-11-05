@@ -37,7 +37,10 @@ const submit = async () => {
   try {
     axiosInstance
       .post('/auth/login', state.form)
-      .then((res) => {
+      .catch((error) => {
+        state.errors = getErrorMessage(error)
+      })
+      .then((res: any) => {
         userStore.setUser(res.data)
         userStore.setToken(res.data.token)
         localStorage.setItem('token', res.data.token)
@@ -46,7 +49,6 @@ const submit = async () => {
         router.push('/')
       })
   } catch (e: any) {
-    state.errors = getErrorMessage(e)
     console.error(e)
   }
 }

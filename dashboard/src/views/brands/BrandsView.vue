@@ -74,7 +74,7 @@ onUnmounted(() => {
 
 <template>
   <AuthenticatedLayout>
-    <div class="px-4 sm:px-6 lg:px-8">
+    <div class="px-4">
       <div class="sm:flex sm:items-center">
         <div class="sm:flex-auto">
           <h1 class="text-base font-semibold leading-6 text-gray-900">Marques</h1>
@@ -86,7 +86,7 @@ onUnmounted(() => {
           <button
               @click="state.openCreation = true"
               type="button"
-              class="block rounded-md bg-gray-900 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           >
             Ajouter une marque
           </button>

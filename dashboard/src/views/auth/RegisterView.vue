@@ -2,8 +2,8 @@
 import GuestLayout from '@/layouts/GuestLayout.vue'
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { z } from 'zod'
 import axiosInstance from '@/utils/axiosInstance'
+import { userSchema } from '@/schemas/userSchema'
 
 const state: any = reactive({
   form: {
@@ -17,55 +17,6 @@ const state: any = reactive({
 })
 
 const router = useRouter()
-
-const userSchema = z.object({
-  firstname: z.string().min(2, 'Le prénom doit avoir au moins 2 caractères'),
-  lastname: z.string().min(2, 'Le nom doit avoir au moins 2 caractères'),
-  birthdate: z.string().refine((birthdate) => {
-    const dateRegex = /^\d{4}-\d{2}-\d{2}$/
-    if (!dateRegex.test(birthdate)) {
-      return false
-    }
-
-    const today = new Date()
-    const birthdateDate = new Date(birthdate)
-    const age = today.getFullYear() - birthdateDate.getFullYear()
-
-    return age >= 18
-  }, 'Vous devez être majeur pour vous inscrire'),
-
-  email: z.string().email('Veuillez entrer une adresse e-mail valide'),
-  password: z
-    .string()
-    .min(12, 'Le mot de passe doit avoir au moins 12 caractères')
-    .refine((password) => {
-      if (password.length < 12) {
-        return 'Le mot de passe doit avoir au moins 12 caractères'
-      }
-
-      if (!/[A-Za-z]/.test(password)) {
-        return 'Le mot de passe doit contenir au moins une lettre'
-      }
-
-      if (!/[A-Z]/.test(password)) {
-        return 'Le mot de passe doit contenir au moins une majuscule'
-      }
-
-      if (!/[a-z]/.test(password)) {
-        return 'Le mot de passe doit contenir au moins une minuscule'
-      }
-
-      if (!/\d/.test(password)) {
-        return 'Le mot de passe doit contenir au moins un chiffre'
-      }
-
-      if (!/[!@#$%^&*]/.test(password)) {
-        return 'Le mot de passe doit contenir au moins un caractère spécial'
-      }
-
-      return true
-    })
-})
 
 const submit = async () => {
   try {

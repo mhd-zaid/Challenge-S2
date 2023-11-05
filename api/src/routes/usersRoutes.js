@@ -74,6 +74,7 @@ export const createUser = async (req, res) => {
 			firstname,
 			lastname,
 			email,
+			birthdate: new Date(birthdate),
 			password: hashedPassword,
 			role,
 			authentificationToken,
@@ -106,9 +107,11 @@ export const updateUser = async (req, res) => {
 
 		if (userDataToUpdate.email) {
 			// Check if email is updated and if it is, check if it is already taken
-			const existingUser = await User.findOne({
-				where: { email: userDataToUpdate.email },
-			});
+			const existingUser =
+				user.email !== userDataToUpdate.email &&
+				(await User.findOne({
+					where: { email: userDataToUpdate.email },
+				}));
 			if (existingUser)
 				throw new Error(
 					`Email "${userDataToUpdate.email}" is already taken`
@@ -133,6 +136,46 @@ export const updateUser = async (req, res) => {
 			// Check if birthdate is updated and if it is, check if user is major
 			if (!isUserMajor(userDataToUpdate.birthdate))
 				throw new Error("User must be major");
+		}
+
+		if (userDataToUpdate.role) {
+			if (
+				userDataToUpdate.role !== "ROLE_ADMIN" &&
+				userDataToUpdate.role !== "ROLE_STORE_KEEPER" &&
+				userDataToUpdate.role !== "ROLE_USER"
+			)
+				throw new Error("Invalid role");
+		}
+
+		if (userDataToUpdate.isValidate) {
+			if (
+				userDataToUpdate.isValidate !== true &&
+				userDataToUpdate.isValidate !== false
+			)
+				throw new Error("Invalid isValidate value");
+		}
+
+		if (userDataToUpdate.disabled) {
+			if (
+				userDataToUpdate.disabled !== true &&
+				userDataToUpdate.disabled !== false
+			)
+				throw new Error("Invalid disabled value");
+		}
+
+		if (userDataToUpdate.firstname) {
+			if (userDataToUpdate.firstname.length < 2)
+				throw new Error("Firstname must contain at least 2 characters");
+		}
+
+		if (userDataToUpdate.lastname) {
+			if (userDataToUpdate.lastname.length < 2)
+				throw new Error("Lastname must contain at least 2 characters");
+		}
+
+		if (userDataToUpdate.loginAttempts) {
+			if (userDataToUpdate.loginAttempts < 0)
+				throw new Error("Login attempts must be positive");
 		}
 
 		await user.update(userDataToUpdate);

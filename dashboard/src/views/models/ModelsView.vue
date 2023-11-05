@@ -77,7 +77,7 @@ getModels()
 
 <template>
   <AuthenticatedLayout>
-    <div class="px-2">
+    <div class="px-4">
       <div class="sm:flex sm:items-center">
         <div class="sm:flex-auto">
           <h1 class="text-base font-semibold leading-6 text-gray-900">Modèles</h1>

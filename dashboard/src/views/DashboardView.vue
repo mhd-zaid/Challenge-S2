@@ -122,7 +122,7 @@ ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 
 <template>
   <AuthenticatedLayout>
-    <div>
+    <div px-4>
       <h1 class="text-lg leading-6 font-semibold text-gray-900">Tableau de bord</h1>
       <h4 class="mt-8 text-base font-medium leading-6 text-gray-900">30 derniers jours</h4>
       <dl class="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">

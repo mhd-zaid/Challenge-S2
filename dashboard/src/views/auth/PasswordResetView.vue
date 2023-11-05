@@ -24,10 +24,8 @@ let updatingPassword =
 
 const getErrorMessage = (error: any) => {
   if (error.response) {
-    if (
-      error.response.data.error.includes('Invalid token') ||
-      error.response.data.error.includes('Email')
-    )
+    if (error.response.data.error.includes('Email')) return "Aucun compte n'est associé à cet email"
+    if (error.response.data.error.includes('Invalid token'))
       return 'Une erreur est survenue, veuillez vérifier que vous avez cliqué sur le dernier lien reçu par email'
     if (error.response.data.error.includes('Invalid password'))
       return 'Le mot de passe doit contenir au moins 12 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial'
