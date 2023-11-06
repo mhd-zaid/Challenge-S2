@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue'
 import axiosInstance from '@/utils/axiosInstance'
-import { Bar } from 'vue-chartjs'
+import {Bar} from 'vue-chartjs'
 import MiniStatisticsCard from '@/components/dashboard/MiniStatisticsCard.vue'
 import {
   BarElement,
@@ -12,8 +12,8 @@ import {
   Title,
   Tooltip
 } from 'chart.js'
-import { onBeforeMount, reactive } from 'vue'
-import { ArchiveBoxIcon, ShoppingBagIcon, UserPlusIcon } from '@heroicons/vue/24/outline'
+import {onBeforeMount, reactive} from 'vue'
+import {ArchiveBoxIcon, ShoppingBagIcon, UserPlusIcon} from '@heroicons/vue/24/outline'
 
 const state = reactive({
   newUsersLast30Days: 0,
@@ -28,11 +28,11 @@ const state = reactive({
       {
         data: [],
         label: 'Nouvelles inscriptions',
-        backgroundColor: '#374151',
+        backgroundColor: '#FF7A5C',
         borderWidth: 1,
         barThickness: 20,
         borderRadius: 4,
-        hoverBackgroundColor: '#1F2937'
+        hoverBackgroundColor: '#FF7A5C'
       }
     ]
   },
@@ -42,12 +42,11 @@ const state = reactive({
       {
         data: [],
         label: 'Nouveaux produits',
-        backgroundColor: '#6366F1',
-        borderColor: '#6366F1',
+        backgroundColor: '#00ADB5',
         borderWidth: 1,
         barThickness: 20,
         borderRadius: 4,
-        hoverBackgroundColor: '#4F46E5'
+        hoverBackgroundColor: '#00ADB5'
       }
     ]
   },
@@ -57,12 +56,11 @@ const state = reactive({
       {
         data: [576, 893, 923, 1239, 748, 689, 908, 1389, 879, 1087, 1234, 1973],
         label: 'Nouvelles commandes',
-        backgroundColor: '#d97706',
-        borderColor: '#d97706',
+        backgroundColor: '#457B9D',
         borderWidth: 1,
         barThickness: 20,
         borderRadius: 4,
-        hoverBackgroundColor: '#b45309'
+        hoverBackgroundColor: '#457B9D'
       }
     ]
   },
@@ -127,22 +125,22 @@ ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
       <h4 class="mt-8 text-base font-medium leading-6 text-gray-900">30 derniers jours</h4>
       <dl class="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         <MiniStatisticsCard
-          :icon="UserPlusIcon"
-          label="Nouvelles inscriptions"
-          :data="state.newUsersLast30Days"
-          :increase="state.newUsersAugmentation"
+            :icon="UserPlusIcon"
+            label="Nouvelles inscriptions"
+            :data="state.newUsersLast30Days"
+            :increase="state.newUsersAugmentation"
         />
         <MiniStatisticsCard
-          :icon="ArchiveBoxIcon"
-          label="Nouveaux produits"
-          :data="state.newProductsLast30Days"
-          :increase="state.newProductsAugmentation"
+            :icon="ArchiveBoxIcon"
+            label="Nouveaux produits"
+            :data="state.newProductsLast30Days"
+            :increase="state.newProductsAugmentation"
         />
         <MiniStatisticsCard
-          :icon="ShoppingBagIcon"
-          label="Nouvelles commandes"
-          :data="state.newOrdersLast30Days"
-          :increase="state.newOrdersAugmentation"
+            :icon="ShoppingBagIcon"
+            label="Nouvelles commandes"
+            :data="state.newOrdersLast30Days"
+            :increase="state.newOrdersAugmentation"
         />
       </dl>
     </div>
@@ -151,30 +149,30 @@ ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
       <dl>
         <div class="relative overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:px-6 sm:pt-6">
           <Bar
-            id="my-chart-id"
-            :key="usersPerMonthKey"
-            :options="state.chartOptions"
-            :data="state.userChartData"
+              id="my-chart-id"
+              :key="usersPerMonthKey"
+              :options="state.chartOptions"
+              :data="state.userChartData"
           />
         </div>
       </dl>
       <dl>
         <div class="relative overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:px-6 sm:pt-6">
           <Bar
-            id="my-chart-id"
-            :key="productsPerMonthKey"
-            :options="state.chartOptions"
-            :data="state.productChartData"
+              id="my-chart-id"
+              :key="productsPerMonthKey"
+              :options="state.chartOptions"
+              :data="state.productChartData"
           />
         </div>
       </dl>
       <dl>
         <div class="relative overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:px-6 sm:pt-6">
           <Bar
-            id="my-chart-id"
-            :key="ordersPerMonthKey"
-            :options="state.chartOptions"
-            :data="state.orderChartData"
+              id="my-chart-id"
+              :key="ordersPerMonthKey"
+              :options="state.chartOptions"
+              :data="state.orderChartData"
           />
         </div>
       </dl>

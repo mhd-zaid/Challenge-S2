@@ -90,7 +90,7 @@ const sidebarOpen = ref(false)
           leave-from="opacity-100"
           leave-to="opacity-0"
         >
-          <div class="fixed inset-0 bg-gray-900/80" />
+          <div class="fixed inset-0 bg-primary/80" />
         </TransitionChild>
 
         <div class="fixed inset-0 flex">
@@ -122,7 +122,7 @@ const sidebarOpen = ref(false)
               </TransitionChild>
               <!-- Sidebar component, swap this element with another sidebar if you like -->
               <div
-                class="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 pb-2 ring-1 ring-white/10"
+                class="flex grow flex-col gap-y-5 overflow-y-auto bg-primary px-6 pb-2 ring-1 ring-white/10"
               >
                 <RouterLink to="dashboard" class="flex h-16 shrink-0 items-center mt-4">
                   <img class="h-8 w-auto" src="/images/sneakpeak_logo_white.png" alt="Sneak Peak" />
@@ -136,8 +136,8 @@ const sidebarOpen = ref(false)
                             :href="item.href"
                             :class="[
                               item.current
-                                ? 'bg-gray-800 text-white'
-                                : 'text-gray-400 hover:text-white hover:bg-gray-800',
+                                ? 'bg-primary-light text-white'
+                                : 'text-secondary-light hover:text-white hover:bg-primary-light',
                               'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
                             ]"
                           >
@@ -163,7 +163,7 @@ const sidebarOpen = ref(false)
     <!-- Static sidebar for desktop -->
     <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
       <!-- Sidebar component, swap this element with another sidebar if you like -->
-      <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6">
+      <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-primary px-6">
         <RouterLink to="dashboard" class="flex h-16 shrink-0 items-center mt-5">
           <img class="h-8 w-auto" src="/images/sneakpeak_logo_white.png" alt="Your Company" />
         </RouterLink>
@@ -176,8 +176,8 @@ const sidebarOpen = ref(false)
                     :href="item.href"
                     :class="[
                       item.current
-                        ? 'bg-gray-800 text-white'
-                        : 'text-gray-400 hover:text-white hover:bg-gray-800',
+                        ? 'bg-primary-light text-white'
+                        : 'text-secondary-light hover:text-gray-200 hover:bg-primary-light',
                       'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
                     ]"
                   >
@@ -192,8 +192,8 @@ const sidebarOpen = ref(false)
                 href="/profile"
                 :class="[
                   router.currentRoute.value.path === '/profile'
-                    ? 'bg-gray-800 text-white'
-                    : 'text-gray-400 hover:text-white hover:bg-gray-800',
+                    ? 'bg-primary-light text-white'
+                    : 'text-secondary-light hover:text-gray-200 hover:bg-primary-light',
                   'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
                 ]"
               >
@@ -203,7 +203,7 @@ const sidebarOpen = ref(false)
               <a
                 type="button"
                 @click="logout"
-                class="mb-5 text-gray-400 cursor-pointer hover:text-white hover:bg-gray-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                class="mb-5 text-secondary-light cursor-pointer hover:text-white hover:bg-primary-light group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
               >
                 <ArrowLeftOnRectangleIcon class="h-6 w-6 shrink-0" aria-hidden="true" />
                 Déconnexion
@@ -215,11 +215,11 @@ const sidebarOpen = ref(false)
     </div>
 
     <div
-      class="sticky top-0 z-40 flex items-center gap-x-6 bg-gray-900 px-4 py-4 shadow-sm sm:px-6 lg:hidden"
+      class="sticky top-0 z-40 flex items-center gap-x-6 bg-primary px-4 py-4 shadow-sm sm:px-6 lg:hidden"
     >
       <button
         type="button"
-        class="-m-2.5 p-2.5 text-gray-400 lg:hidden"
+        class="-m-2.5 p-2.5 text-secondary-light lg:hidden"
         @click="sidebarOpen = true"
       >
         <span class="sr-only">Ouvrir la barre</span>

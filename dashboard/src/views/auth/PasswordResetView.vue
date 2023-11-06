@@ -99,7 +99,7 @@ const submit = async () => {
                   id="email"
                   name="email"
                   placeholder="exemple@gmail.com"
-                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   required
                 />
               </div>
@@ -113,14 +113,14 @@ const submit = async () => {
                   id="password"
                   name="password"
                   placeholder="Nouveau mot de passe"
-                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   required
                 />
               </div>
 
               <div class="flex items-center justify-end">
                 <div class="text-sm leading-6">
-                  <a href="login" class="font-semibold text-indigo-600 hover:text-indigo-500"
+                  <a href="login" class="font-semibold text-gray-900 hover:text-gray-700"
                     >Retour à la connexion</a
                   >
                 </div>
@@ -129,7 +129,7 @@ const submit = async () => {
               <div>
                 <button
                   type="submit"
-                  class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  class="flex w-full justify-center rounded-md bg-primary px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-primary-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 >
                   Réinitialiser le mot de passe
                 </button>

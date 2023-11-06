@@ -1,14 +1,4 @@
 <script setup lang="ts">
-import {
-  ArrowLeftOnRectangleIcon,
-  BriefcaseIcon,
-  ChatBubbleOvalLeftEllipsisIcon,
-  CogIcon,
-  DocumentMagnifyingGlassIcon,
-  HomeIcon,
-  QuestionMarkCircleIcon,
-  UsersIcon
-} from '@heroicons/vue/24/outline'
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue'
 import { reactive } from 'vue'
 import axiosInstance from '@/utils/axiosInstance'
@@ -78,7 +68,7 @@ getUser()
                 <select
                   id="selected-tab"
                   name="selected-tab"
-                  class="mt-1 block w-full rounded-md border-0 py-2 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-purple-500 sm:text-sm sm:leading-6"
+                  class="mt-1 block w-full rounded-md border-0 py-2 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-secondary sm:text-sm sm:leading-6"
                   @change="changeTab(state.tabs.find((tab) => tab.name === ($event.target as HTMLSelectElement).value))"
                 >
                   <option v-for="tab in state.tabs" :key="tab.name" :value="tab.name" :selected="tab.current">
@@ -96,7 +86,7 @@ getUser()
                       @click="changeTab(tab)"
                       :class="[
                         tab.current
-                          ? 'border-purple-500 text-purple-600'
+                          ? 'border-secondary text-secondary'
                           : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700',
                         'whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium'
                       ]"
@@ -238,14 +228,14 @@ getUser()
                           <span class="ml-4 flex flex-shrink-0 items-start space-x-4">
                             <button
                               type="button"
-                              class="rounded-md bg-white font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                              class="rounded-md bg-white font-medium text-secondary hover:text-secondary focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2"
                             >
                               Modifier
                             </button>
                             <span class="text-gray-300" aria-hidden="true">|</span>
                             <button
                               type="button"
-                              class="rounded-md bg-white font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                              class="rounded-md bg-white font-medium text-secondary hover:text-secondary focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2"
                             >
                               Remove
                             </button>
@@ -263,7 +253,7 @@ getUser()
                           <span class="ml-4 flex-shrink-0">
                             <button
                               type="button"
-                              class="rounded-md bg-white font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                              class="rounded-md bg-white font-medium text-secondary hover:text-secondary focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2"
                             >
                               Modifier
                             </button>
@@ -278,7 +268,7 @@ getUser()
                           <span class="ml-4 flex-shrink-0">
                             <button
                               type="button"
-                              class="rounded-md bg-white font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                              class="rounded-md bg-white font-medium text-secondary hover:text-secondary focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2"
                             >
                               Modifier
                             </button>
@@ -294,14 +284,14 @@ getUser()
                           <span class="ml-4 flex flex-shrink-0 items-start space-x-4">
                             <button
                               type="button"
-                              class="rounded-md bg-white font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                              class="rounded-md bg-white font-medium text-secondary hover:text-secondary focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2"
                             >
                               Modifier
                             </button>
                             <span class="text-gray-300" aria-hidden="true">|</span>
                             <button
                               type="button"
-                              class="rounded-md bg-white font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                              class="rounded-md bg-white font-medium text-secondary hover:text-secondary focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2"
                             >
                               Remove
                             </button>
@@ -321,8 +311,8 @@ getUser()
                           <Switch
                             v-model="automaticTimezoneEnabled"
                             :class="[
-                              automaticTimezoneEnabled ? 'bg-purple-600' : 'bg-gray-200',
-                              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 sm:ml-auto'
+                              automaticTimezoneEnabled ? 'bg-secondary' : 'bg-gray-200',
+                              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 sm:ml-auto'
                             ]"
                           >
                             <span
@@ -348,8 +338,8 @@ getUser()
                           <Switch
                             v-model="autoUpdateApplicantDataEnabled"
                             :class="[
-                              autoUpdateApplicantDataEnabled ? 'bg-purple-600' : 'bg-gray-200',
-                              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 sm:ml-auto'
+                              autoUpdateApplicantDataEnabled ? 'bg-secondary' : 'bg-gray-200',
+                              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 sm:ml-auto'
                             ]"
                           >
                             <span
