@@ -15,7 +15,7 @@ export const createPayment = async (req, res) => {
 			storeItems.set(item.id, {
 				name: product.name,
 				price: product.price * 100,
-				quantity: product.quantity,
+				quantity: item.quantity,
 				size: product.size,
 				color: product.color,
 				vat: product.vat,
@@ -41,8 +41,8 @@ export const createPayment = async (req, res) => {
 				color: storeItem.color,
 			  }
 			}),
-			success_url: 'http://localhost:3000/payment/success',
-			cancel_url: 'http://localhost:3000/payment/failed',
+			success_url: 'http://localhost:3000/payments/success?paymentId='+order.id,
+			cancel_url: 'http://localhost:3000/payments/failed?paymentId='+order.id,
 			client_reference_id: JSON.stringify({
 			  orderId: order.id,
 			  items: products,
@@ -67,7 +67,7 @@ export const createPayment = async (req, res) => {
 
 export const getPayment = async (req, res) => {
 	try {
-		const { id } = req.params;
+		const { id } = req.params.paymentId;
 		const payment = await Payment.findOne({ where: { id: id } });
 		return res.json(payment);
 	}
@@ -80,7 +80,7 @@ export const getPayment = async (req, res) => {
 
 export const getStripeSession = async (req, res) => {
 	try {
-		const { id } = req.params;
+		const { id } = req.params.paymentId
 		const payment = await Payment.findOne({ where: { id: id } });
 		const session = await stripe.checkout.sessions.retrieve(payment.stripePaymentId);
 		return res.json(session);
@@ -94,8 +94,8 @@ export const getStripeSession = async (req, res) => {
 
 export const stripeSuccess = async (req, res) => {
 	try {
-		const { id } = req.params;
-		const payment = await Payment.findOne({ where: { id: id } });
+		const { orderId } = req.params
+		const payment = await Payment.findOne({ where: { orderId: orderId } });
 		const session = await stripe.checkout.sessions.retrieve(payment.stripePaymentId);
 		if (session.payment_status === "paid") {
 			payment.status = "paid";
@@ -103,13 +103,8 @@ export const stripeSuccess = async (req, res) => {
 			const Order = await Order.findOne({ where: { id: payment.orderId } });
 			Order.status = "paid";
 			await Order.save();
-			//remove products quantity from stock
-			//Revoir la bdd il y a un problème on ne sais pas la quantité de chaque produit
 
 			return res.json({ message: "Payment succeed" });
-		}
-		else {
-			return res.json({ message: "Payment failed" });
 		}
 	}
 	catch (error) {
@@ -121,8 +116,8 @@ export const stripeSuccess = async (req, res) => {
 
 export const stripeFailed = async (req, res) => {
 	try {
-		const { id } = req.params;
-		const payment = await Payment.findOne({ where: { id: id } });
+		const { orderId } = req.params
+		const payment = await Payment.findOne({ where: { orderId: orderId } });
 		payment.status = "failed";
 		await payment.save();
 		return res.json({ message: "Payment failed" });
@@ -133,3 +128,16 @@ export const stripeFailed = async (req, res) => {
 		});
 	}
 }
+
+export const getPayments = async (req, res) => {
+	try {
+		const payments = await Payment.findAll();
+		return res.json(payments);
+	}
+	catch (error) {
+		res.status(500).json({
+			error: `An error occurred while getting the payments : ${error}`,
+		});
+	}
+}
+
