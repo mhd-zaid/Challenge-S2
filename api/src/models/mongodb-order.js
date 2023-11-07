@@ -8,17 +8,7 @@ const orderSchema = new mongoose.Schema({
 		type: mongoose.Schema.Types.String, 
 		ref: "User" 
 	},
-	quantity: { type: Number, required: true },
-	products: [
-		{
-			product: {
-				type: mongoose.Schema.Types.String,
-				ref: "Product",
-			},
-			quantity: { type: Number, required: true },
-			productVersionId: { type: String, required: true },
-		},
-	],
+	products: {type: Array, required: true},
 });
 
 const OrderMongodb = mongoose.model("Order", orderSchema);

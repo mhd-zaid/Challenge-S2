@@ -11,10 +11,10 @@ import {
 const router = express.Router();
 
 router.get("/", getPayments);
-router.get("/:session", getStripeSession);
+router.get("/session/:session", getStripeSession);
 router.get("/:id", getPayment);
 router.post("/", createPayment);
-router.put("/sucess", stripeSuccess);
-router.put("/failed", stripeFailed);
+router.put("/sucess/:id", stripeSuccess);
+router.put("/failed/:id", stripeFailed);
 
 export default router;

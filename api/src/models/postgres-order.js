@@ -32,7 +32,9 @@ Order.init(
 	}
 );
 
-Order.belongsTo(User);
+Order.belongsTo(User, {
+	as: "user",
+});
 
 Order.belongsToMany(Product, {
 	as: "products",

@@ -1,6 +1,8 @@
 import Model from "../models/postgres-model.js";
 import ModelMongodb from "../models/mongodb-model.js";
-import Product from "../models/postgres-product.js";
+import CategoryMongodb from "../models/mongodb-category.js";
+import BrandMongodb from "../models/mongodb-brand.js";
+import { ObjectId } from "mongodb";
 
 export const getModels = async (req, res) => {
 	try {
@@ -17,7 +19,17 @@ export const getModels = async (req, res) => {
 
 export const createModel = async (req, res) => {
 	try {
-		const modelMongodb = await ModelMongodb(req.body).save();
+		const brandMongo = await BrandMongodb.findOne({ _id: new ObjectId(req.body.BrandId) });
+		const categoryMongo = await CategoryMongodb.findOne({ _id: new ObjectId(req.body.CategoryId) });
+
+		const modelMongodb = await ModelMongodb({
+			name: req.body.name,
+			gender: req.body.gender,
+			description: req.body.description,
+			category: categoryMongo,
+			brand: brandMongo,
+			products: [],
+		}).save();
 		const id = modelMongodb._id.toString();
 		const model = await Model.create({ id, ...req.body });
 

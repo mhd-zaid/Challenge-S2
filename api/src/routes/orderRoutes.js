@@ -3,6 +3,9 @@ import OrderMongodb from "../models/mongodb-order.js";
 import User from "../models/postgres-user.js";
 import ProductMongoDB from "../models/mongodb-product.js";
 import ModelMongodb from "../models/mongodb-model.js";
+import BrandMongodb from "../models/mongodb-brand.js";
+import CategoryMongodb from "../models/mongodb-category.js";
+import { ObjectId } from "mongodb";
 
 export const createOrder = async (req, res) => {
 	try {
@@ -14,34 +17,34 @@ export const createOrder = async (req, res) => {
 				.status(400)
 				.json({ message: "userId, or deliveryAddress is missing" });
 		}
-
 		const orderMongo = await OrderMongodb({
 			status: "payment pending",
 			deliveryAddress,
-			user: userId.id,
+			user: user.id,
+			products: products,
 		}).save();
 
 		const order = await Order.create({
 			id: orderMongo._id.toString(),
 			status: "payment pending",
+			userId: user.id,
 			deliveryAddress,
 		});
-
 		
+
 		for (const product of products) {
-			const mongoProduct = await ProductMongoDB.findOne({ where: { _id: product.id } });
-			const mongoModel = await ModelMongodb.findOne({ where: { id: product.models[0]._id } });
-			const brand_version_id = mongoModel.brand.__v;
-			const category_version_id = mongoModel.category.__v;
-			orderMongo.products.push(mongoProduct);
-			
-			await order.addProduct(product, {
+			const mongoProduct = await ProductMongoDB.findOne({ _id: new ObjectId(product.id)});
+			const mongoModel = await ModelMongodb.findOne({_id: mongoProduct.models[0] });
+			const mongoBrand = await BrandMongodb.findOne({_id: mongoModel.brand });
+			const mongocategory = await CategoryMongodb.findOne({_id: mongoModel.category });
+
+			await order.addProduct(product.id,{
 				through: {
 					quantity: product.quantity,
 					product_version_id: mongoProduct.__v,
-					brand_version_id: brand_version_id,
+					brand_version_id: mongoBrand.__v,
 					model_version_id: mongoModel.__v,
-					category_version_id: category_version_id
+					category_version_id: mongocategory.__v,
 				},
 			});
 		}
@@ -57,15 +60,15 @@ export const createOrder = async (req, res) => {
 
 export const getUserOrders = async (req, res) => {
 	try {
-		const { userId } = req.params;
-		const user = await User.findOne({ where: { id: userId } });
+		const { id } = req.params;
+		const user = await User.findOne({ where: { id: id } });
 
 		if (!user) {
 			return res.status(400).json({ message: "userId is missing" });
 		}
 
 		const orders = await Order.findAll({
-			where: { userId: userId },
+			where: { user: user },
 			include: "products",
 		});
 
@@ -80,10 +83,11 @@ export const getUserOrders = async (req, res) => {
 
 export const getOrder = async (req, res) => {
 	try {
-		const { orderId } = req.params;
+		const { id } = req.params;
+
 		const order = await Order.findOne({
-			where: { id: orderId },
-			include: "products",
+			where: { id: id },
+			include: ["products", "user"]
 		});
 
 		if (!order) {
@@ -113,9 +117,9 @@ export const getOrders = async (req, res) => {
 
 export const updateOrder = async (req, res) => {
 	try {
-		const { orderId } = req.params;
+		const { id } = req.params;
 		const { status } = req.body;
-		const order = await Order.findOne({ where: { id: orderId } });
+		const order = await Order.findOne({ where: { id: id } });
 
 		if (!order) {
 			return res.status(400).json({ message: "orderId is missing" });

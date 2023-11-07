@@ -1,24 +1,25 @@
 import Payment from "../models/postgres-payment.js";
 import Order from "../models/postgres-order.js";
-import Product from "../models/postgres-product.js";
+import User from "../models/postgres-user.js"
+import stripe from "../config/stripe-config.js";
 
 export const createPayment = async (req, res) => {
 	try {
 		const { orderId } = req.body;
 		const status = "unpaid";
-		const order = Order.findOne({ where: { id: orderId } });
+		const order = await Order.findOne({ where: { id: orderId }, include: "products" });
 		const products = order.products;
 		const storeItems = new Map([]);
+		const user = await User.findOne({where : {id : order.userId}});
 		
 		products.map(item => {
-			const product = Product.findOne({ where: { id: item.id } });
 			storeItems.set(item.id, {
-				name: product.name,
-				price: product.price * 100,
-				quantity: item.quantity,
-				size: product.size,
-				color: product.color,
-				vat: product.vat,
+				name: item.name,
+				price: item.price * 100,
+				quantity: item.Orders_Products.quantity,
+				size: item.size,
+				color: item.color,
+				vat: item.vat,
 			});
 		});
 
@@ -29,24 +30,30 @@ export const createPayment = async (req, res) => {
 			  const storeItem = storeItems.get(item.id);
 			  return {
 				price_data: {
-				  currency: "eur",
-				  product_data: {
-					name: storeItem.name,
-				  },
-				  unit_amount: storeItem.price + (storeItem.price * storeItem.vat),
-
+					currency: "eur",
+				  	product_data: {
+						name: storeItem.name,
+						metadata: {
+							size: storeItem.size,
+							color: storeItem.color,
+						}
+					},
+					unit_amount: parseInt(storeItem.price * (1 + parseFloat(storeItem.vat) )),
 				},
 				quantity: storeItem.quantity,
-				size: storeItem.size,
-				color: storeItem.color,
-			  }
+			}
 			}),
-			success_url: 'http://localhost:3000/payments/success?paymentId='+order.id,
-			cancel_url: 'http://localhost:3000/payments/failed?paymentId='+order.id,
-			client_reference_id: JSON.stringify({
-			  orderId: order.id,
-			  items: products,
-			}),
+			success_url: 'http://localhost:3000/payments/success/'+order.id,
+			cancel_url: 'http://localhost:3000/payments/failed/'+order.id,
+			expires_at :  Math.floor((Date.now() / 1000) + (30 * 60)),
+			metadata: {
+				deliveryAdress: order.deliveryAddress,
+				customer_address: user.address + ' - ' + user.city + ' ' +  user.postcode,
+				customer_email: user.email,
+				customer_firstName: user.firstname,
+				customer_lastName: user.lastname,
+				customer_phone: user.phone
+			}
 		  });
 
 		  const payment = await Payment.create({
@@ -80,8 +87,8 @@ export const getPayment = async (req, res) => {
 
 export const getStripeSession = async (req, res) => {
 	try {
-		const { id } = req.params.paymentId
-		const payment = await Payment.findOne({ where: { id: id } });
+
+		const payment = await Payment.findOne({ where: { id: req.params.session } });
 		const session = await stripe.checkout.sessions.retrieve(payment.stripePaymentId);
 		return res.json(session);
 	}
@@ -94,8 +101,8 @@ export const getStripeSession = async (req, res) => {
 
 export const stripeSuccess = async (req, res) => {
 	try {
-		const { orderId } = req.params
-		const payment = await Payment.findOne({ where: { orderId: orderId } });
+		const { id } = req.query
+		const payment = await Payment.findOne({ where: { orderId: id } });
 		const session = await stripe.checkout.sessions.retrieve(payment.stripePaymentId);
 		if (session.payment_status === "paid") {
 			payment.status = "paid";
@@ -116,8 +123,8 @@ export const stripeSuccess = async (req, res) => {
 
 export const stripeFailed = async (req, res) => {
 	try {
-		const { orderId } = req.params
-		const payment = await Payment.findOne({ where: { orderId: orderId } });
+		const { id } = req.query
+		const payment = await Payment.findOne({ where: { orderId: id } });
 		payment.status = "failed";
 		await payment.save();
 		return res.json({ message: "Payment failed" });

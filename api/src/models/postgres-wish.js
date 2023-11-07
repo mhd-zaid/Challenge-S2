@@ -8,8 +8,10 @@ class Wish extends Model {}
 Wish.init(
 	{
 		id: {
-			type: DataTypes.STRING,
+			type: DataTypes.UUID,
+			allowNull: false,
 			primaryKey: true,
+			defaultValue: DataTypes.UUIDV4,
 		},
 	},
 	{

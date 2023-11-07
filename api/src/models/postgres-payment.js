@@ -7,8 +7,10 @@ class Payment extends Model {}
 Payment.init(
 	{
 		id: {
-			type: DataTypes.STRING,
+			type: DataTypes.UUID,
+			allowNull: false,
 			primaryKey: true,
+			defaultValue: DataTypes.UUIDV4,
 		},
 		status: {
 			type: DataTypes.STRING,
