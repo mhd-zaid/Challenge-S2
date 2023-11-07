@@ -53,7 +53,7 @@ export const createOrder = async (req, res) => {
 	}
 	catch (error) {
 		res.status(500).json({
-			error: `An error occurred while creating the order : ${error}`,
+			message: `An error occurred while creating the order : ${error.message}`,
 		});
 	}
 }
@@ -76,7 +76,7 @@ export const getUserOrders = async (req, res) => {
 	}
 	catch (error) {
 		res.status(500).json({
-			error: `An error occurred while retrieving the orders : ${error}`,
+			message: `An error occurred while retrieving the orders : ${error.message}`,
 		});
 	}
 }
@@ -98,7 +98,7 @@ export const getOrder = async (req, res) => {
 	}
 	catch (error) {
 		res.status(500).json({
-			error: `An error occurred while retrieving the order : ${error}`,
+			message: `An error occurred while retrieving the order : ${error.message}`,
 		});
 	}
 }
@@ -110,7 +110,7 @@ export const getOrders = async (req, res) => {
 	}
 	catch (error) {
 		res.status(500).json({
-			error: `An error occurred while retrieving the orders : ${error}`,
+			message: `An error occurred while retrieving the orders : ${error.message}`,
 		});
 	}
 }
@@ -132,7 +132,7 @@ export const updateOrder = async (req, res) => {
 	}
 	catch (error) {
 		res.status(500).json({
-			error: `An error occurred while updating the order : ${error}`,
+			message: `An error occurred while updating the order : ${error.message}`,
 		});
 	}
 }

@@ -10,7 +10,7 @@ export const getUserWish = async (req, res) => {
 		res.json(wish);
 	} catch (error) {
 		res.status(500).json({
-			error: `An error occurred while retrieving the wish : ${error}`,
+			message: `An error occurred while retrieving the wish : ${error.message}`,
 		});
 	}
 };
@@ -37,7 +37,7 @@ export const addProductToWish = async (req, res) => {
 		res.json({ message: "Product added to wish successfully" });
 	} catch (error) {
 		res.status(500).json({
-			error: `An error occurred while adding the product to the wish : ${error}`,
+			message: `An error occurred while adding the product to the wish : ${error.message}`,
 		});
 	}
 };
@@ -64,7 +64,7 @@ export const deleteProductFromWish = async (req, res) => {
 		res.json({ message: "Product deleted from wish successfully" });
 	} catch (error) {
 		res.status(500).json({
-			error: `An error occurred while deleting the product from the wish : ${error}`,
+			message: `An error occurred while deleting the product from the wish : ${error.message}`,
 		});
 	}
 };

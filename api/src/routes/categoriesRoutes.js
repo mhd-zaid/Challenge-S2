@@ -9,7 +9,7 @@ export const getCategories = async (req, res) => {
 		res.json(categories);
 	} catch (error) {
 		res.status(500).json({
-			error: `An error occurred while retrieving the categories : ${error}`,
+			message: `An error occurred while retrieving the categories : ${error.message}`,
 		});
 	}
 };
@@ -27,7 +27,7 @@ export const createCategory = async (req, res) => {
 		res.json(category);
 	} catch (error) {
 		res.status(500).json({
-			error: `An error occurred while creating the category : ${error}`,
+			message: `An error occurred while creating the category : ${error.message}`,
 		});
 	}
 };
@@ -52,7 +52,7 @@ export const updateCategory = async (req, res) => {
 		res.json({ message: "Category updated successfully" });
 	} catch (error) {
 		res.status(500).json({
-			error: `An error occurred while updating the category : ${error}`,
+			message: `An error occurred while updating the category : ${error.message}`,
 		});
 	}
 };
@@ -78,7 +78,7 @@ export const deleteCategory = async (req, res) => {
 		});
 	} catch (error) {
 		res.status(500).json({
-			error: `An error occurred while deleting the category : ${error}`,
+			message: `An error occurred while deleting the category : ${error.message}`,
 		});
 	}
 };
@@ -101,7 +101,7 @@ export const getCategory = async (req, res) => {
 		res.json(category);
 	} catch (error) {
 		res.status(500).json({
-			error: `An error occurred while retrieving the category : ${error}`,
+			message: `An error occurred while retrieving the category : ${error.message}`,
 		});
 	}
 };
