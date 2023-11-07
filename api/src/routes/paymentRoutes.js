@@ -67,7 +67,7 @@ export const createPayment = async (req, res) => {
 	}
 	catch (error) {
 		res.status(500).json({
-			error: `An error occurred while creating the payment : ${error}`,
+			message: `An error occurred while creating the payment : ${error.message}`,
 		});
 	}
 }
@@ -80,7 +80,7 @@ export const getPayment = async (req, res) => {
 	}
 	catch (error) {
 		res.status(500).json({
-			error: `An error occurred while getting the payment : ${error}`,
+			message: `An error occurred while getting the payment : ${error.message}`,
 		});
 	}
 }
@@ -94,7 +94,7 @@ export const getStripeSession = async (req, res) => {
 	}
 	catch (error) {
 		res.status(500).json({
-			error: `An error occurred while getting the payment url : ${error}`,
+			message: `An error occurred while getting the payment url : ${error.message}`,
 		});
 	}
 }
@@ -116,7 +116,7 @@ export const stripeSuccess = async (req, res) => {
 	}
 	catch (error) {
 		res.status(500).json({
-			error: `An error occurred while getting the payment url : ${error}`,
+			message: `An error occurred while getting the payment url : ${error.message}`,
 		});
 	}
 }
@@ -131,7 +131,7 @@ export const stripeFailed = async (req, res) => {
 	}
 	catch (error) {
 		res.status(500).json({
-			error: `An error occurred while getting the payment url : ${error}`,
+			message: `An error occurred while getting the payment url : ${error.message}`,
 		});
 	}
 }
@@ -143,7 +143,7 @@ export const getPayments = async (req, res) => {
 	}
 	catch (error) {
 		res.status(500).json({
-			error: `An error occurred while getting the payments : ${error}`,
+			message: `An error occurred while getting the payments : ${error.message}`,
 		});
 	}
 }

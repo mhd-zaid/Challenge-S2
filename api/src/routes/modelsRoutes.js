@@ -12,7 +12,7 @@ export const getModels = async (req, res) => {
 		res.json(models);
 	} catch (error) {
 		res.status(500).json({
-			error: `An error occurred while retrieving the models : ${error}`,
+			message: `An error occurred while retrieving the models : ${error.message}`,
 		});
 	}
 };
@@ -36,7 +36,7 @@ export const createModel = async (req, res) => {
 		res.json(model);
 	} catch (error) {
 		res.status(500).json({
-			error: `An error occurred while creating the model : ${error}`,
+			message: `An error occurred while creating the model : ${error.message}`,
 		});
 	}
 };
@@ -61,7 +61,7 @@ export const updateModel = async (req, res) => {
 		res.json({ message: "Model updated successfully" });
 	} catch (error) {
 		res.status(500).json({
-			error: `An error occurred while updating the model : ${error}`,
+			message: `An error occurred while updating the model : ${error.message}`,
 		});
 	}
 };
@@ -87,7 +87,7 @@ export const deleteModel = async (req, res) => {
 		});
 	} catch (error) {
 		res.status(500).json({
-			error: `An error occurred while deleting the model : ${error}`,
+			message: `An error occurred while deleting the model : ${error.message}`,
 		});
 	}
 };
@@ -110,7 +110,7 @@ export const getModel = async (req, res) => {
 		res.json(model);
 	} catch (error) {
 		res.status(500).json({
-			error: `An error occurred while retrieving the model : ${error}`,
+			message: `An error occurred while retrieving the model : ${error.message}`,
 		});
 	}
 };

@@ -9,7 +9,7 @@ export const getBrands = async (req, res) => {
 		res.json(brands);
 	} catch (error) {
 		res.status(500).json({
-			error: `An error occurred while retrieving the brands : ${error}`,
+			message: `An error occurred while retrieving the brands : ${error.message}`,
 		});
 	}
 };
@@ -27,7 +27,7 @@ export const createBrand = async (req, res) => {
 		res.json(brand);
 	} catch (error) {
 		res.status(500).json({
-			error: `An error occurred while creating the brand : ${error}`,
+			message: `An error occurred while creating the brand : ${error.message}`,
 		});
 	}
 };
@@ -50,7 +50,7 @@ export const updateBrand = async (req, res) => {
 		res.json({ message: "Brand updated successfully" });
 	} catch (error) {
 		res.status(500).json({
-			error: `An error occurred while updating the brand : ${error}`,
+			message: `An error occurred while updating the brand : ${error.message}`,
 		});
 	}
 };
@@ -74,7 +74,7 @@ export const deleteBrand = async (req, res) => {
 		});
 	} catch (error) {
 		res.status(500).json({
-			error: `An error occurred while deleting the brand : ${error}`,
+			message: `An error occurred while deleting the brand : ${error.message}`,
 		});
 	}
 };
@@ -95,7 +95,7 @@ export const getBrand = async (req, res) => {
 		res.json(brand);
 	} catch (error) {
 		res.status(500).json({
-			error: `An error occurred while retrieving the brand : ${error}`,
+			message: `An error occurred while retrieving the brand : ${error.message}`,
 		});
 	}
 }

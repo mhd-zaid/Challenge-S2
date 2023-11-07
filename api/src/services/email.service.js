@@ -39,7 +39,7 @@ export const sendEmailConfirmation = async (email, token) => {
 
         return true;
     } catch (error) {
-        console.error(`Error sending confirmation email : ${error}`);
+        console.error(`Error sending confirmation email : ${error.message}`);
     }
 };
 
@@ -56,7 +56,7 @@ export const sendBlockedAccountEmail = async (email) => {
 
         return true;
     } catch (error) {
-        console.error(`Error sending blocked account email : ${error}`);
+        console.error(`Error sending blocked account email : ${error.message}`);
     }
 };
 
@@ -81,7 +81,7 @@ export const sendPasswordChangeReminderEmail = async (email) => {
         return true;
     } catch (error) {
         console.error(
-            `Error sending password change reminder email : ${error}`
+            `Error sending password change reminder email : ${error.message}`
         );
     }
 };
@@ -108,7 +108,7 @@ export const sendDeletedAccountEmail = async (email, encryptionKey) => {
 
         return true;
     } catch (error) {
-        console.error(`Error sending deleted account email : ${error}`);
+        console.error(`Error sending deleted account email : ${error.message}`);
     }
 };
 
@@ -133,6 +133,6 @@ export const sendResetPasswordEmail = async (email, passwordResetToken) => {
 
         return true;
     } catch (error) {
-        console.error(`Error sending reset password email : ${error}`);
+        console.error(`Error sending reset password email : ${error.message}`);
     }
 }

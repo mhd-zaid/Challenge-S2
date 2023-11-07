@@ -11,7 +11,7 @@ export const getProducts = async (req, res) => {
 		res.json(products);
 	} catch (error) {
 		res.status(500).json({
-			error: `An error occurred while retrieving the products : ${error}`,
+			message: `An error occurred while retrieving the products : ${error.message}`,
 		});
 	}
 };
@@ -42,7 +42,7 @@ export const createProduct = async (req, res) => {
 		res.json(product);
 	} catch (error) {
 		res.status(500).json({
-			error: `An error occurred while creating the product : ${error}`,
+			message: `An error occurred while creating the product : ${error.message}`,
 		});
 	}
 };
@@ -79,7 +79,7 @@ export const updateProduct = async (req, res) => {
 		res.json({ message: "Product updated successfully" });
 	} catch (error) {
 		res.status(500).json({
-			error: `An error occurred while updating the product : ${error}`,
+			message: `An error occurred while updating the product : ${error.message}`,
 		});
 	}
 };
@@ -105,7 +105,7 @@ export const deleteProduct = async (req, res) => {
 		});
 	} catch (error) {
 		res.status(500).json({
-			error: `An error occurred while deleting the product : ${error}`,
+			message: `An error occurred while deleting the product : ${error.message}`,
 		});
 	}
 };
@@ -128,7 +128,7 @@ export const getProduct = async (req, res) => {
 		res.json(product);
 	} catch (error) {
 		res.status(500).json({
-			error: `An error occurred while retrieving the product : ${error}`,
+			message: `An error occurred while retrieving the product : ${error.message}`,
 		});
 	}
 };
