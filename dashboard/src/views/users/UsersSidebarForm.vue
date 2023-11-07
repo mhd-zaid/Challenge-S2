@@ -54,13 +54,13 @@ const validateAndSubmit = async (isCreation: boolean) => {
       })
     } else {
       axiosInstance
-        .put(`/users/${props.id}`, userToSubmit)
+        .patch(`/users/${props.id}`, userToSubmit)
         .then(() => {
           state.errors = ''
           emit('closeUpdatingDrawer')
         })
         .catch((error: any) => {
-          if (error.response.data.error.includes('is already taken')) {
+          if (error.response.data.error.includes('Email already taken')) {
             state.errors = 'Un compte est déjà associé à cet email'
           }
         })

@@ -12,7 +12,7 @@ const router = express.Router();
 router.get("/", getModels);
 router.get("/:id", getModel);
 router.post("/", createModel);
-router.put("/:id", updateModel);
+router.patch("/:id", updateModel);
 router.delete("/:id", deleteModel);
 
 export default router;

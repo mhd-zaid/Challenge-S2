@@ -25,7 +25,7 @@ const newValue = ref(props.modelValue)
 const toggleEditing = () => {
   if (isEditing.value) {
     axiosInstance
-      .put('/users/' + props.userId, {
+      .patch('/users/' + props.userId, {
         [props.model.name]: newValue.value
       })
       .then(() => {
