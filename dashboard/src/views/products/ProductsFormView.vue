@@ -79,7 +79,7 @@ if (!id) {
         state.form.url = `/images/${fileItem.file.name}`
       })
 
-      await axiosInstance.put(`/products/${id}`, state.form)
+      await axiosInstance.patch(`/products/${id}`, state.form)
       await axiosInstance.post('/products/upload', body)
       window.location.href = '/products'
     } catch (e: any) {

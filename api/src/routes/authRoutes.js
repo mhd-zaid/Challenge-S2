@@ -16,12 +16,16 @@ export const register = async (req, res) => {
         const {firstname, lastname, email, password, role, birthdate} =
             req.body;
 
-        if (!(firstname && lastname && email && password && birthdate))
-            throw new Error("Invalid arguments");
+		if (!(firstname && lastname && email && password && birthdate))
+			return res.status(400).json({ message: "Invalid arguments" });
 
-        if (!isUserMajor(new Date(birthdate)))
-            throw new Error("User must have 18 years old or more");
-        if (!isValidPassword(password)) throw new Error("Invalid password");
+		if (!isUserMajor(birthdate))
+			return res
+				.status(400)
+				.json({ error: "User must be 18 years old or older" });
+
+		if (!isValidPassword(password))
+			return res.status(400).json({ message: "Invalid password" });
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -29,7 +33,8 @@ export const register = async (req, res) => {
             where: {email},
         });
 
-        if (existingUser) throw new Error(`Email "${email}" is already taken`);
+		if (existingUser)
+			return res.status(409).json({ message: `Email already taken` });
 
         const authentificationToken = generateToken();
 
@@ -67,17 +72,16 @@ export const register = async (req, res) => {
             authentificationToken
         );
 
-        res.json({
-            message: isEmailSent
-                ? "User created successfully"
-                : "User created successfully but email not sent",
-            token: token,
-        });
-    } catch (error) {
-        res.status(500).json({
-            error: `An error occurred while creating the user : ${error}`,
-        });
-    }
+		res.status(201).json({
+			...JSON.parse(JSON.stringify(newPostgresUser)),
+			isEmailSent,
+			token: token,
+		});
+	} catch (error) {
+		res.status(500).json({
+			message: `An error occurred while creating the user : ${error.message}`,
+		});
+	}
 };
 
 export const login = async (req, res) => {
@@ -86,16 +90,15 @@ export const login = async (req, res) => {
 
         const user = await User.findOne({where: {email}});
 
-        if (!user) return res.status(401).json({message: "Email not found"});
+		if (!user) return res.status(404).json({ message: "Email not found" });
 
-        if (isUserBlocked(user)) {
-            const isEmailSent = await sendBlockedAccountEmail(email);
-            return res.status(401).json({
-                message: isEmailSent
-                    ? "User is temporarily blocked"
-                    : "User is temporarily blocked but email not sent",
-            });
-        }
+		if (isUserBlocked(user)) {
+			const isEmailSent = await sendBlockedAccountEmail(email);
+			return res.status(401).json({
+				message: "User is temporarily blocked",
+				isEmailSent,
+			});
+		}
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
@@ -137,12 +140,12 @@ export const login = async (req, res) => {
 
         delete userWithToken.password;
 
-        res.json(userWithToken);
-    } catch (error) {
-        res.status(500).json({
-            error: `An error occurred during login: ${error.message}`,
-        });
-    }
+		res.json(userWithToken);
+	} catch (error) {
+		res.status(500).json({
+			message: `An error occurred during login: ${error.message}`,
+		});
+	}
 };
 
 export const checkEmail = async (req, res) => {
@@ -153,14 +156,14 @@ export const checkEmail = async (req, res) => {
             where: {email},
         });
 
-        res.json({
-            message: user ? "Email already taken" : "Email available",
-        });
-    } catch (error) {
-        res.status(500).json({
-            error: `An error occurred while checking the email : ${error}`,
-        });
-    }
+		res.json({
+			message: user ? "Email already taken" : "Email available",
+		});
+	} catch (error) {
+		res.status(500).json({
+			message: `An error occurred while checking the email : ${error.message}`,
+		});
+	}
 };
 
 export const confirmEmail = async (req, res) => {
@@ -173,20 +176,21 @@ export const confirmEmail = async (req, res) => {
 
         let mongoUserToFind = null;
 
-        if (!user) throw new Error(`Email "${email}" not found`);
+		if (!user) return res.status(404).json({ message: "Email not found" });
 
-        if (user.isValidate) throw new Error("Email already confirmed");
+		if (user.isValidate)
+			return res.status(400).json({ message: "Email already confirmed" });
 
         const mongoUserId = new Types.ObjectId(user.id);
         mongoUserToFind = await UserMongo.findOne({
             _id: mongoUserId,
         });
 
-        if (!mongoUserToFind)
-            throw new Error(`Mongo user with id "${user.id}" not found`);
+		if (!mongoUserToFind)
+			return res.status(404).json({ message: "User not found" });
 
-        if (user.authentificationToken !== authentificationToken)
-            throw new Error("Invalid token");
+		if (user.authentificationToken !== authentificationToken)
+			return res.status(400).json({ message: "Invalid token" });
 
         await user.update(
             {isValidate: true, authentificationToken: null},
@@ -196,13 +200,13 @@ export const confirmEmail = async (req, res) => {
         mongoUserToFind.isValidate = true;
         await mongoUserToFind.save();
 
-        // TODO: change the real url
-        res.redirect("http://localhost:5174/login?email_confirmed=true");
-    } catch (error) {
-        res.status(500).json({
-            error: `An error occurred while validating the email : ${error}`,
-        });
-    }
+		// TODO: change the real url
+		res.redirect("http://localhost:5174/login?email_confirmed=true");
+	} catch (error) {
+		res.status(500).json({
+			message: `An error occurred while validating the email : ${error.message}`,
+		});
+	}
 };
 
 export const requestPasswordReset = async (req, res) => {
@@ -213,7 +217,7 @@ export const requestPasswordReset = async (req, res) => {
             where: {email},
         });
 
-        if (!user) throw new Error(`Email "${email}" not found`);
+		if (!user) return res.status(404).json({ message: "Email not found" });
 
         const passwordResetToken = generateToken();
 
@@ -224,58 +228,61 @@ export const requestPasswordReset = async (req, res) => {
 
         await user.update({passwordResetToken}, {where: {email}});
 
-        res.json({
-            message: isEmailSent ? "Email sent successfully" : "Email not sent",
-        });
-    } catch (error) {
-        res.status(500).json({
-            error: `An error occurred while resetting the password : ${error}`,
-        });
-    }
+		res.json({
+			message: isEmailSent ? "Email sent successfully" : "Email not sent",
+		});
+	} catch (error) {
+		res.status(500).json({
+			message: `An error occurred while resetting the password : ${error.message}`,
+		});
+	}
 };
 
 export const resetPassword = async (req, res) => {
     try {
         const {email, token, password} = req.body;
 
-        const user = await User.findOne({
-            where: {email},
-        });
-        if (!user) throw new Error(`Email "${email}" not found`);
+		const user = await User.findOne({
+			where: { email },
+		});
+		if (!user) return res.status(404).json({ message: "Email not found" });
 
-        if (user.passwordResetToken !== token) throw new Error("Invalid token");
+		if (user.passwordResetToken !== token)
+			return res.status(400).json({
+				message: "Invalid token",
+			});
 
-        if (!isValidPassword(password)) throw new Error("Invalid password");
+		if (!isValidPassword(password)) return res.status(400).json({
+			message: "Invalid password",
+		});
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        await user.update(
-            {
-                password: hashedPassword,
-                passwordResetToken: null,
-                passwordUpdatedAt: new Date(),
-            },
-            {where: {email}}
-        );
+		await user.update(
+			{
+				password: hashedPassword,
+				passwordResetToken: null,
+				passwordUpdatedAt: new Date(),
+			},
+			{ where: { email } }
+		);
 
-        res.json({message: "Password updated successfully"});
-    } catch (error) {
-        res.status(500).json({
-            error: `An error occurred while resetting the password : ${error}`,
-        });
-    }
+		res.json({ message: "Password updated successfully" });
+	} catch (error) {
+		res.status(500).json({
+			message: `An error occurred while resetting the password : ${error.message}`,
+		});
+	}
 };
 
 export const getMe = async (req, res) => {
-    try {
-        const user = await User.findOne({where: {id: req.user.userId}});
-        if (!user || !user.isValidate || user.role === "ROLE_USER") {
-            throw new Error("User not found");
-        }
-        res.json(user);
-    } catch (error) {
-        res.status(500).json({
-            error: `An error occurred while getting the user : ${error}`,
-        });
-    }
+	try {
+		const user = await User.findOne({ where: { id: req.user.userId } });
+		if (!user) return res.status(404).json({ message: "User not found" });
+		res.json(user);
+	} catch (error) {
+		res.status(500).json({
+			message: `An error occurred while getting the user : ${error.message}`,
+		});
+	}
 };

@@ -72,7 +72,7 @@ const submitCreation = async () => {
 }
 const submitUpdating = async () => {
   try {
-    await axiosInstance.put(`/models/${props.id}`, state.form).then(
+    await axiosInstance.patch(`/models/${props.id}`, state.form).then(
         () => {
           emit('closeUpdatingDrawer')
         })

@@ -6,7 +6,7 @@ import {
   EllipsisHorizontalIcon
 } from '@heroicons/vue/24/outline'
 import { ref } from 'vue'
-import { columns } from '@/utils/OTableColumns'
+import { columnNames, getValue } from '@/utils/valuesUpdater'
 
 const props = defineProps({
   columns: {
@@ -24,37 +24,6 @@ const props = defineProps({
 const emit = defineEmits(['showRow', 'updateRow', 'deleteRow'])
 
 const hoveredRow = ref<number | null>(null)
-
-const formatDate = (date: string) => {
-  const dateObject = new Date(date)
-  const year = dateObject.getFullYear()
-  const month = String(dateObject.getMonth() + 1).padStart(2, '0')
-  const day = String(dateObject.getDate()).padStart(2, '0')
-  const hours = String(dateObject.getHours()).padStart(2, '0')
-  const minutes = String(dateObject.getMinutes()).padStart(2, '0')
-  const seconds = String(dateObject.getSeconds()).padStart(2, '0')
-
-  return `${day}/${month}/${year} à ${hours}:${minutes}:${seconds}`
-}
-
-const getValue = (row: any, col: any) => {
-  switch (col) {
-    case 'createdAt':
-      return formatDate(row[col])
-    case 'role':
-      return row[col] === 'ROLE_ADMIN'
-        ? 'Administrateur'
-        : row[col] === 'ROLE_STORE_KEEPER'
-        ? 'Magasinier'
-        : 'Utilisateur'
-    case 'disabled':
-      return row[col] ? 'Inactif' : 'Actif'
-    case 'gender':
-      return row[col] === 'male' ? 'Homme' : 'Femme'
-    default:
-      return row[col]
-  }
-}
 </script>
 
 <template>
@@ -70,7 +39,7 @@ const getValue = (row: any, col: any) => {
                   scope="col"
                   class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
                 >
-                  {{ columns[col] ? columns[col] : col }}
+                  {{ columnNames[col] ? columnNames[col] : col }}
                   <i class="bi bi-sort-alpha-down" aria-label="Sort Icon"></i>
                 </th>
                 <th
@@ -88,10 +57,17 @@ const getValue = (row: any, col: any) => {
                 :key="index"
                 @mouseenter="hoveredRow = index"
                 @mouseleave="hoveredRow = null"
+                :class="{
+                  'text-purple-600': hoveredRow === index,
+                  'text-gray-900': hoveredRow !== index
+                }"
               >
                 <td
                   v-for="col in props.columns"
-                  class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
+                  class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6 cursor-pointer"
+                  @click="
+                    col !== props.columns[props.columns.length - 1] ? emit('showRow', row) : null
+                  "
                 >
                   {{ getValue(row, col) }}
                 </td>
@@ -99,11 +75,11 @@ const getValue = (row: any, col: any) => {
                   class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 flex justify-end"
                 >
                   <div class="w-24 flex justify-end items-center space-x-2">
-                    <button @click="emit('showRow', row)" v-show="hoveredRow === index">
+                    <!-- <button @click="emit('showRow', row)" v-show="hoveredRow === index">
                       <EyeIcon class="w-5 h-5 text-gray-900 hover:text-gray-950" />
-                    </button>
+                    </button> -->
                     <button @click="emit('updateRow', row)" v-show="hoveredRow === index">
-                      <PencilSquareIcon class="w-5 h-5 text-orange-500 hover:text-orange-600" />
+                      <PencilSquareIcon class="w-5 h-5 text-gray-900 hover:text-gray-700" />
                     </button>
                     <button @click="emit('deleteRow', row)" v-show="hoveredRow === index">
                       <TrashIcon class="w-5 h-5 text-red-600 hover:text-red-500" />

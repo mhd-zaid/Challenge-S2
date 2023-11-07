@@ -26,7 +26,7 @@ const submit = async () => {
       return
     }
     axiosInstance.get(`/auth/check-email?email=${state.form.email}`).then((res) => {
-      if (res.data.message === 'Email already taken') {
+      if (res.data.message.includes('Email already taken')) {
         state.errors = 'Un compte est déjà associé à cet email'
       }
     })

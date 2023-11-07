@@ -15,12 +15,12 @@ import { Types } from "mongoose";
 export const getUsers = async (req, res) => {
 	try {
 		const users = await User.findAll({
-			attributes: { exclude: ["password"] },
+			attributes: { exclude: ["password", "encryptionKey"] },
 		});
 		res.json(users);
 	} catch (error) {
 		res.status(500).json({
-			error: `An error occurred while retrieving the users : ${error}`,
+			message: `An error occurred while retrieving the users : ${error.message}`,
 		});
 	}
 };
@@ -29,12 +29,13 @@ export const getUser = async (req, res) => {
 	try {
 		const user = await User.findOne({
 			where: { id: req.params.id },
-			attributes: { exclude: ["password"] },
+			attributes: { exclude: ["password", "encryptionKey"] },
 		});
+		if (!user) return res.status(404).json({ message: "User not found" });
 		res.json(user);
 	} catch (error) {
 		res.status(500).json({
-			error: `An error occurred while retrieving the user : ${error}`,
+			message: `An error occurred while retrieving the user : ${error.message}`,
 		});
 	}
 };
@@ -45,11 +46,15 @@ export const createUser = async (req, res) => {
 			req.body;
 
 		if (!(firstname && lastname && email && password && birthdate))
-			throw new Error("Invalid arguments");
+			return res.status(400).json({ message: "Invalid arguments" });
 
-		if (!isValidPassword(password)) throw new Error("Invalid password");
 		if (!isUserMajor(birthdate))
-			throw new Error("User must have 18 years old or more");
+			return res
+				.status(400)
+				.json({ message: "User must be 18 years old or older" });
+
+		if (!isValidPassword(password))
+			return res.status(400).json({ message: "Invalid password" });
 
 		const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -57,7 +62,10 @@ export const createUser = async (req, res) => {
 			where: { email },
 		});
 
-		if (existingUser) throw new Error(`Email "${email}" is already taken`);
+		if (existingUser)
+			return res
+				.status(409)
+				.json({ message: `Email "${email}" is already taken` });
 
 		const authentificationToken = generateToken();
 
@@ -80,10 +88,10 @@ export const createUser = async (req, res) => {
 			authentificationToken,
 		});
 
-		res.json(postgresUser);
+		res.status(201).json(postgresUser);
 	} catch (error) {
 		res.status(500).json({
-			error: `An error occurred while creating the user : ${error}`,
+			message: `An error occurred while creating the user : ${error.message}`,
 		});
 	}
 };
@@ -113,17 +121,16 @@ export const updateUser = async (req, res) => {
 					where: { email: userDataToUpdate.email },
 				}));
 			if (existingUser)
-				throw new Error(
-					`Email "${userDataToUpdate.email}" is already taken`
-				);
+				return res.status(409).json({ message: `Email already taken` });
 		}
 
 		if (userDataToUpdate.password) {
 			// Check if password is updated and if it is, check if it is valid
 			if (!isValidPassword(req.body.password))
-				throw new Error(
-					"Password must contain at least 12 characters, 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character"
-				);
+				return res.status(400).json({
+					message:
+						"Password must contain at least 12 characters, 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character",
+				});
 			const hashedPassword = await bcrypt.hash(
 				userDataToUpdate.password,
 				10
@@ -135,7 +142,9 @@ export const updateUser = async (req, res) => {
 		if (userDataToUpdate.birthdate) {
 			// Check if birthdate is updated and if it is, check if user is major
 			if (!isUserMajor(userDataToUpdate.birthdate))
-				throw new Error("User must be major");
+				return res
+					.status(400)
+					.json({ message: "User must be 18 years old or older" });
 		}
 
 		if (userDataToUpdate.role) {
@@ -144,7 +153,7 @@ export const updateUser = async (req, res) => {
 				userDataToUpdate.role !== "ROLE_STORE_KEEPER" &&
 				userDataToUpdate.role !== "ROLE_USER"
 			)
-				throw new Error("Invalid role");
+				return res.status(400).json({ message: "Invalid role" });
 		}
 
 		if (userDataToUpdate.isValidate) {
@@ -152,7 +161,7 @@ export const updateUser = async (req, res) => {
 				userDataToUpdate.isValidate !== true &&
 				userDataToUpdate.isValidate !== false
 			)
-				throw new Error("Invalid isValidate value");
+				return res.status(400).json({ message: "Invalid isValidate" });
 		}
 
 		if (userDataToUpdate.disabled) {
@@ -160,22 +169,28 @@ export const updateUser = async (req, res) => {
 				userDataToUpdate.disabled !== true &&
 				userDataToUpdate.disabled !== false
 			)
-				throw new Error("Invalid disabled value");
+				return res.status(400).json({ message: "Invalid disabled" });
 		}
 
 		if (userDataToUpdate.firstname) {
 			if (userDataToUpdate.firstname.length < 2)
-				throw new Error("Firstname must contain at least 2 characters");
+				return res.status(400).json({
+					message: "Firstname must contain at least 2 characters",
+				});
 		}
 
 		if (userDataToUpdate.lastname) {
 			if (userDataToUpdate.lastname.length < 2)
-				throw new Error("Lastname must contain at least 2 characters");
+				return res.status(400).json({
+					message: "Lastname must contain at least 2 characters",
+				});
 		}
 
 		if (userDataToUpdate.loginAttempts) {
 			if (userDataToUpdate.loginAttempts < 0)
-				throw new Error("Login attempts must be positive");
+				return res.status(400).json({
+					message: "Login attempts must be a positive number",
+				});
 		}
 
 		await user.update(userDataToUpdate);
@@ -185,7 +200,7 @@ export const updateUser = async (req, res) => {
 		res.json({ message: "User updated successfully" });
 	} catch (error) {
 		res.status(500).json({
-			error: `An error occurred while updating the user : ${error}`,
+			message: `An error occurred while updating the user : ${error.message}`,
 		});
 	}
 };
@@ -195,14 +210,15 @@ export const updatePassword = async (req, res) => {
 		const { id } = req.params;
 		const { oldPassword, newPassword } = req.body;
 
-		if (!id) throw new Error("Id parameter is missing");
+		if (!id)
+			return res.status(400).json({ message: "Id parameter is missing" });
 
 		const user = await User.findOne({ where: { id } });
 
 		if (!user) return res.status(404).json({ message: "User not found" });
 
 		if (!oldPassword || !newPassword)
-			throw new Error("Old password or new password is missing");
+			return res.status(400).json({ message: "Invalid arguments" });
 
 		const isPasswordValid = await bcrypt.compare(
 			oldPassword,
@@ -213,9 +229,12 @@ export const updatePassword = async (req, res) => {
 			return res.status(400).json({ message: "Invalid password" });
 
 		if (!isValidPassword(newPassword))
-			throw new Error(
-				"Password must contain at least 12 characters, 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character"
-			);
+			return res
+				.status(400)
+				.json({
+					message:
+						"Password must contain at least 12 characters, 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character",
+				});
 
 		const hashedPassword = await bcrypt.hash(newPassword, 10);
 
@@ -224,7 +243,7 @@ export const updatePassword = async (req, res) => {
 		res.json({ message: "Password updated successfully" });
 	} catch (error) {
 		res.status(500).json({
-			error: `An error occurred while updating the password : ${error}`,
+			message: `An error occurred while updating the password : ${error.message}`,
 		});
 	}
 };
@@ -233,7 +252,8 @@ export const deleteUser = async (req, res) => {
 	try {
 		const { id } = req.params;
 
-		if (!id) throw new Error("Id parameter is missing");
+		if (!id)
+			return res.status(400).json({ message: "Id parameter is missing" });
 
 		const user = await User.findOne({ where: { id } });
 
@@ -263,13 +283,12 @@ export const deleteUser = async (req, res) => {
 		await userMongo.save();
 
 		res.json({
-			message: isEmailSent
-				? "User deleted successfully"
-				: "User deleted successfully but email not sent",
+			message: "User deleted successfully",
+			isEmailSent,
 		});
 	} catch (error) {
 		res.status(500).json({
-			error: `An error occurred while deleting the user : ${error}`,
+			message: `An error occurred while deleting the user : ${error.message}`,
 		});
 	}
 };
@@ -279,19 +298,23 @@ export const recoverUser = async (req, res) => {
 		const { id } = req.params;
 		const { encryptionKey } = req.body;
 
-		if (!id) throw new Error("Id parameter is missing");
+		if (!id)
+			return res.status(400).json({ message: "Id parameter is missing" });
 
 		const user = await User.findOne({ where: { id } });
 
 		if (!user) return res.status(404).json({ message: "User not found" });
 
 		if (!user.disabled)
-			throw new Error("User is not disabled, cannot be recovered");
+			return res.status(400).json({ message: "User is not disabled" });
 
-		if (!encryptionKey) throw new Error("Encryption key is missing");
+		if (!encryptionKey)
+			return res
+				.status(400)
+				.json({ message: "Encryption key is missing" });
 
 		if (encryptionKey !== user.encryptionKey)
-			throw new Error("Invalid encryption key");
+			return res.status(400).json({ message: "Invalid encryption key" });
 
 		const decryptedData = decryptUserData(user.toJSON(), encryptionKey);
 
@@ -301,7 +324,7 @@ export const recoverUser = async (req, res) => {
 		});
 	} catch (error) {
 		res.status(500).json({
-			error: `An error occurred while recovering the user : ${error}`,
+			message: `An error occurred while recovering the user : ${error.message}`,
 		});
 	}
 };

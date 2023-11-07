@@ -22,7 +22,7 @@ const toggleEditing = () => {
       return
     }
     axiosInstance
-      .put('/users/' + props.userId + '/password', {
+      .patch('/users/' + props.userId + '/password', {
         oldPassword: oldPassword.value,
         newPassword: newPassword.value
       })
