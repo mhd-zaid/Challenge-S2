@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue'
 import axiosInstance from '@/utils/axiosInstance'
-import {Bar} from 'vue-chartjs'
+import { Bar } from 'vue-chartjs'
 import MiniStatisticsCard from '@/components/dashboard/MiniStatisticsCard.vue'
 import {
   BarElement,
@@ -12,16 +12,16 @@ import {
   Title,
   Tooltip
 } from 'chart.js'
-import {onBeforeMount, reactive} from 'vue'
-import {ArchiveBoxIcon, ShoppingBagIcon, UserPlusIcon} from '@heroicons/vue/24/outline'
+import { onBeforeMount, reactive } from 'vue'
+import { ArchiveBoxIcon, ShoppingBagIcon, UserPlusIcon } from '@heroicons/vue/24/outline'
 
 const state = reactive({
   newUsersLast30Days: 0,
   newUsersAugmentation: 0,
   newProductsLast30Days: 0,
   newProductsAugmentation: 0,
-  newOrdersLast30Days: 1973,
-  newOrdersAugmentation: -176,
+  newOrdersLast30Days: 0,
+  newOrdersAugmentation: 0,
   userChartData: {
     labels: [],
     datasets: [
@@ -54,7 +54,7 @@ const state = reactive({
     labels: [],
     datasets: [
       {
-        data: [576, 893, 923, 1239, 748, 689, 908, 1389, 879, 1087, 1234, 1973],
+        data: [],
         label: 'Nouvelles commandes',
         backgroundColor: '#457B9D',
         borderWidth: 1,
@@ -85,28 +85,37 @@ onBeforeMount(async () => {
       newUsersBeforeLast30Days,
       newProductsLast30Days,
       newProductsBeforeLast30Days,
+      newOrdersLast30Days,
+      newOrdersBeforeLast30Days,
       months,
       newUsersLastYear,
-      newProductsLastYear
+      newProductsLastYear,
+      newOrdersLastYear
     ] = await Promise.all([
       axiosInstance.get('/stats/registrations/last-30-days'),
       axiosInstance.get('/stats/registrations/before-last-30-days'),
       axiosInstance.get('/stats/products/last-30-days'),
       axiosInstance.get('/stats/products/before-last-30-days'),
+      axiosInstance.get('/stats/orders/last-30-days'),
+      axiosInstance.get('/stats/orders/before-last-30-days'),
       axiosInstance.get('/stats/months'),
       axiosInstance.get('/stats/registrations/last-year'),
-      axiosInstance.get('/stats/products/last-year')
+      axiosInstance.get('/stats/products/last-year'),
+      axiosInstance.get('/stats/orders/last-year')
     ])
 
     state.newUsersLast30Days = newUsersLast30Days.data
     state.newUsersAugmentation = newUsersLast30Days.data - newUsersBeforeLast30Days.data
     state.newProductsLast30Days = newProductsLast30Days.data
     state.newProductsAugmentation = newProductsLast30Days.data - newProductsBeforeLast30Days.data
+    state.newOrdersLast30Days = newOrdersLast30Days.data
+    state.newOrdersAugmentation = newOrdersLast30Days.data - newOrdersBeforeLast30Days.data
     state.userChartData.labels = months.data
     state.orderChartData.labels = months.data
     state.productChartData.labels = months.data
     state.userChartData.datasets[0].data = newUsersLastYear.data
     state.productChartData.datasets[0].data = newProductsLastYear.data
+    state.orderChartData.datasets[0].data = newOrdersLastYear.data
     usersPerMonthKey++
     productsPerMonthKey++
     ordersPerMonthKey++
@@ -125,22 +134,22 @@ ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
       <h4 class="mt-8 text-base font-medium leading-6 text-gray-900">30 derniers jours</h4>
       <dl class="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         <MiniStatisticsCard
-            :icon="UserPlusIcon"
-            label="Nouvelles inscriptions"
-            :data="state.newUsersLast30Days"
-            :increase="state.newUsersAugmentation"
+          :icon="UserPlusIcon"
+          label="Nouvelles inscriptions"
+          :data="state.newUsersLast30Days"
+          :increase="state.newUsersAugmentation"
         />
         <MiniStatisticsCard
-            :icon="ArchiveBoxIcon"
-            label="Nouveaux produits"
-            :data="state.newProductsLast30Days"
-            :increase="state.newProductsAugmentation"
+          :icon="ArchiveBoxIcon"
+          label="Nouveaux produits"
+          :data="state.newProductsLast30Days"
+          :increase="state.newProductsAugmentation"
         />
         <MiniStatisticsCard
-            :icon="ShoppingBagIcon"
-            label="Nouvelles commandes"
-            :data="state.newOrdersLast30Days"
-            :increase="state.newOrdersAugmentation"
+          :icon="ShoppingBagIcon"
+          label="Nouvelles commandes"
+          :data="state.newOrdersLast30Days"
+          :increase="state.newOrdersAugmentation"
         />
       </dl>
     </div>
@@ -149,30 +158,30 @@ ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
       <dl>
         <div class="relative overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:px-6 sm:pt-6">
           <Bar
-              id="my-chart-id"
-              :key="usersPerMonthKey"
-              :options="state.chartOptions"
-              :data="state.userChartData"
+            id="my-chart-id"
+            :key="usersPerMonthKey"
+            :options="state.chartOptions"
+            :data="state.userChartData"
           />
         </div>
       </dl>
       <dl>
         <div class="relative overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:px-6 sm:pt-6">
           <Bar
-              id="my-chart-id"
-              :key="productsPerMonthKey"
-              :options="state.chartOptions"
-              :data="state.productChartData"
+            id="my-chart-id"
+            :key="productsPerMonthKey"
+            :options="state.chartOptions"
+            :data="state.productChartData"
           />
         </div>
       </dl>
       <dl>
         <div class="relative overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:px-6 sm:pt-6">
           <Bar
-              id="my-chart-id"
-              :key="ordersPerMonthKey"
-              :options="state.chartOptions"
-              :data="state.orderChartData"
+            id="my-chart-id"
+            :key="ordersPerMonthKey"
+            :options="state.chartOptions"
+            :data="state.orderChartData"
           />
         </div>
       </dl>
