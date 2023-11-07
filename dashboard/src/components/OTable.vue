@@ -58,7 +58,7 @@ const hoveredRow = ref<number | null>(null)
                 @mouseenter="hoveredRow = index"
                 @mouseleave="hoveredRow = null"
                 :class="{
-                  'text-purple-600': hoveredRow === index,
+                  'text-secondary': hoveredRow === index,
                   'text-gray-900': hoveredRow !== index
                 }"
               >
@@ -66,7 +66,7 @@ const hoveredRow = ref<number | null>(null)
                   v-for="col in props.columns"
                   class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6 cursor-pointer"
                   @click="
-                    col !== props.columns[props.columns.length - 1] ? emit('showRow', row) : null
+                    col !== props.columns[props.columns.length] ? emit('showRow', row) : null
                   "
                 >
                   {{ getValue(row, col) }}

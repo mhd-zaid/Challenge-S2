@@ -45,7 +45,7 @@ const emit = defineEmits(['closeDrawer'])
             >
               <DialogPanel class="pointer-events-auto w-screen max-w-lg">
                 <div class="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
-                  <div class="bg-indigo-700 px-4 py-6 sm:px-6">
+                  <div class="bg-primary px-4 py-6 sm:px-6">
                     <div class="flex items-center justify-between">
                       <DialogTitle class="text-base font-semibold leading-6 text-white">{{
                         props.title
@@ -53,7 +53,7 @@ const emit = defineEmits(['closeDrawer'])
                       <div class="ml-3 flex h-7 items-center">
                         <button
                           type="button"
-                          class="relative rounded-md bg-indigo-700 text-indigo-200 hover:text-white"
+                          class="relative rounded-md bg-primary text-indigo-200 hover:text-white"
                           @click="emit('closeDrawer')"
                         >
                           <span class="absolute -inset-2.5" />
