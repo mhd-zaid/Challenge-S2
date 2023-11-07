@@ -2,6 +2,8 @@ import Payment from "../models/postgres-payment.js";
 import Order from "../models/postgres-order.js";
 import User from "../models/postgres-user.js"
 import stripe from "../config/stripe-config.js";
+import OrderMongodb from "../models/mongodb-order.js";
+import { ObjectId } from "mongodb";
 
 export const createPayment = async (req, res) => {
 	try {
@@ -111,6 +113,9 @@ export const stripeSuccess = async (req, res) => {
 			const order = await Order.findOne({ where: { id: payment.orderId } });
 			order.status = "paid";
 			await order.save();
+			const mongoOrder = await OrderMongodb.findOne({ _id: new ObjectId(order.id) });
+			mongoOrder.status = "paid";
+			await mongoOrder.save();
 
 			return res.json({ message: "Payment succeed" });
 		}
@@ -131,6 +136,10 @@ export const stripeFailed = async (req, res) => {
 		const order = await Order.findOne({ where: { id: payment.orderId } });
 		order.status = "payment failed";
 		await order.save();
+		const mongoOrder = await OrderMongodb.findOne({ _id: new ObjectId(order.id) });
+		mongoOrder.status = "payment failed";
+		await mongoOrder.save();
+
 		return res.json({ message: "Payment failed" });
 	}
 	catch (error) {
