@@ -13,7 +13,7 @@ Payment.init(
 			defaultValue: DataTypes.UUIDV4,
 		},
 		status: {
-			type: DataTypes.STRING,
+			type: DataTypes.ENUM("paid", "failed"),
 			allowNull: false,
 		},
 		stripePaymentId: {

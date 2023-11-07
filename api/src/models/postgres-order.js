@@ -13,7 +13,7 @@ Order.init(
 			primaryKey: true,
 		},
 		status: {
-			type: DataTypes.STRING,
+			type: DataTypes.ENUM("payment pending","payment failed", "paid","in shipment", "shipped", "delivered"),
 			allowNull: false,
 		},
 		deliveryAddress: {
