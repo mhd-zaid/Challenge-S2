@@ -28,7 +28,9 @@ Payment.init(
 	}
 );
 
-Payment.belongsTo(Order);
+Payment.belongsTo(Order, {
+	as: "order",
+});
 	  
 
 export default Payment;

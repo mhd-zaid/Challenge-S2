@@ -43,8 +43,8 @@ export const createPayment = async (req, res) => {
 				quantity: storeItem.quantity,
 			}
 			}),
-			success_url: 'http://localhost:3000/payments/success/'+order.id,
-			cancel_url: 'http://localhost:3000/payments/failed/'+order.id,
+			success_url: 'http://localhost:3000/payments/success?session_id={CHECKOUT_SESSION_ID}',
+			cancel_url: 'http://localhost:3000/payments/failed?session_id={CHECKOUT_SESSION_ID}',
 			expires_at :  Math.floor((Date.now() / 1000) + (30 * 60)),
 			metadata: {
 				deliveryAdress: order.deliveryAddress,
@@ -74,8 +74,8 @@ export const createPayment = async (req, res) => {
 
 export const getPayment = async (req, res) => {
 	try {
-		const { id } = req.params.paymentId;
-		const payment = await Payment.findOne({ where: { id: id } });
+		const { id } = req.params;
+		const payment = await Payment.findOne({ where: { id: id }, include: "order" });
 		return res.json(payment);
 	}
 	catch (error) {
@@ -101,15 +101,16 @@ export const getStripeSession = async (req, res) => {
 
 export const stripeSuccess = async (req, res) => {
 	try {
-		const { id } = req.query
-		const payment = await Payment.findOne({ where: { orderId: id } });
+		const {session_id} = req.query;
+		const payment = await Payment.findOne({ where: { stripePaymentId: session_id } });
+
 		const session = await stripe.checkout.sessions.retrieve(payment.stripePaymentId);
 		if (session.payment_status === "paid") {
 			payment.status = "paid";
 			await payment.save();
-			const Order = await Order.findOne({ where: { id: payment.orderId } });
-			Order.status = "paid";
-			await Order.save();
+			const order = await Order.findOne({ where: { id: payment.orderId } });
+			order.status = "paid";
+			await order.save();
 
 			return res.json({ message: "Payment succeed" });
 		}
@@ -123,10 +124,13 @@ export const stripeSuccess = async (req, res) => {
 
 export const stripeFailed = async (req, res) => {
 	try {
-		const { id } = req.query
-		const payment = await Payment.findOne({ where: { orderId: id } });
+		const {session_id} = req.query;
+		const payment = await Payment.findOne({ where: { stripePaymentId: session_id } });
 		payment.status = "failed";
 		await payment.save();
+		const order = await Order.findOne({ where: { id: payment.orderId } });
+		order.status = "payment failed";
+		await order.save();
 		return res.json({ message: "Payment failed" });
 	}
 	catch (error) {
