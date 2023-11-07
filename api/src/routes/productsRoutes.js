@@ -29,6 +29,7 @@ export const createProduct = async (req, res) => {
 			size: req.body.size,
 			color: req.body.color,
 			url: req.body.url,
+			sku: req.body.sku,
 			models: models,
 		};
 		const productMongoDB = await ProductMongodb(productDataToCreate).save();

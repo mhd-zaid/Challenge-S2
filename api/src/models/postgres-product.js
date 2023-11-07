@@ -38,6 +38,10 @@ Product.init(
 			type: DataTypes.STRING,
 			allowNull: true,
 		},
+		sku: {
+			type: DataTypes.STRING,
+			allowNull: false,
+		},
 	},
 	{
 		sequelize,

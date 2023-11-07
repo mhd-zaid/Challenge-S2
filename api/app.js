@@ -9,8 +9,9 @@ import brands from "./src/router/brandsRouter.js";
 import models from "./src/router/modelsRouter.js";
 import products from "./src/router/productsRouter.js";
 import stats from "./src/router/statsRouter.js";
-import carts from "./src/router/cartsRouter.js";
 import wishes from "./src/router/wishsRouter.js";
+import orders from "./src/router/ordersRouter.js";
+import payments from "./src/router/paymentsRouter.js";
 import sequelize from "./src/config/sequelize-config.js";
 import mailTransporter from "./src/config/mail-config.js";
 import passwordRenewal from "./src/scripts/passwordRenewal.js";
@@ -18,6 +19,7 @@ import mongodbProduct from "./src/models/mongodb-product.js";
 import mongodbModel from "./src/models/mongodb-model.js";
 import mongodbBrand from "./src/models/mongodb-brand.js";
 import mongodbCategory from "./src/models/mongodb-category.js";
+import mongodbOrder from "./src/models/mongodb-order.js";
 import fileUpload from "express-fileupload";
 
 const app = express();
@@ -48,8 +50,9 @@ app.use("/brands", brands);
 app.use("/models", models);
 app.use("/products", products);
 app.use("/stats/", stats);
-app.use("/carts", carts);
 app.use("/wishes", wishes);
+app.use("/orders", orders);
+app.use("/payments", payments);
 
 // CRON job
 cron.schedule("0 0 * * *", async () => {
