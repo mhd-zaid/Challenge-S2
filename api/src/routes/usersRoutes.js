@@ -46,26 +46,25 @@ export const createUser = async (req, res) => {
 			req.body;
 
 		if (!(firstname && lastname && email && password && birthdate))
-			return res.status(400).json({ message: "Invalid arguments" });
+			return res.sendStatus(400);
 
 		if (!isUserMajor(birthdate))
-			return res
-				.status(400)
-				.json({ message: "User must be 18 years old or older" });
+			return res.status(400).json({ message: "Invalid birthdate" });
 
 		if (!isValidPassword(password))
 			return res.status(400).json({ message: "Invalid password" });
 
-		const hashedPassword = await bcrypt.hash(password, 10);
+		const hashedPassword = await bcrypt.hash(
+			password,
+			await bcrypt.genSalt(10)
+		);
 
 		const existingUser = await User.findOne({
 			where: { email },
 		});
 
 		if (existingUser)
-			return res
-				.status(409)
-				.json({ message: `Email "${email}" is already taken` });
+			return res.status(409).json({ message: `Email is already taken` });
 
 		const authentificationToken = generateToken();
 
@@ -128,8 +127,7 @@ export const updateUser = async (req, res) => {
 			// Check if password is updated and if it is, check if it is valid
 			if (!isValidPassword(req.body.password))
 				return res.status(400).json({
-					message:
-						"Password must contain at least 12 characters, 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character",
+					message: "Invalid password",
 				});
 			const hashedPassword = await bcrypt.hash(
 				userDataToUpdate.password,
@@ -142,9 +140,7 @@ export const updateUser = async (req, res) => {
 		if (userDataToUpdate.birthdate) {
 			// Check if birthdate is updated and if it is, check if user is major
 			if (!isUserMajor(userDataToUpdate.birthdate))
-				return res
-					.status(400)
-					.json({ message: "User must be 18 years old or older" });
+				return res.status(400).json({ message: "Invalid birthdate" });
 		}
 
 		if (userDataToUpdate.role) {
@@ -175,21 +171,21 @@ export const updateUser = async (req, res) => {
 		if (userDataToUpdate.firstname) {
 			if (userDataToUpdate.firstname.length < 2)
 				return res.status(400).json({
-					message: "Firstname must contain at least 2 characters",
+					message: "Invalid firstname",
 				});
 		}
 
 		if (userDataToUpdate.lastname) {
 			if (userDataToUpdate.lastname.length < 2)
 				return res.status(400).json({
-					message: "Lastname must contain at least 2 characters",
+					message: "Invalid lastname",
 				});
 		}
 
 		if (userDataToUpdate.loginAttempts) {
 			if (userDataToUpdate.loginAttempts < 0)
 				return res.status(400).json({
-					message: "Login attempts must be a positive number",
+					message: "Invalid loginAttempts",
 				});
 		}
 
@@ -197,7 +193,7 @@ export const updateUser = async (req, res) => {
 		Object.assign(userMongo, userDataToUpdate);
 		await userMongo.save();
 
-		res.json({ message: "User updated successfully" });
+		res.json(user);
 	} catch (error) {
 		res.status(500).json({
 			message: `An error occurred while updating the user : ${error.message}`,
@@ -229,18 +225,18 @@ export const updatePassword = async (req, res) => {
 			return res.status(400).json({ message: "Invalid password" });
 
 		if (!isValidPassword(newPassword))
-			return res
-				.status(400)
-				.json({
-					message:
-						"Password must contain at least 12 characters, 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character",
-				});
+			return res.status(400).json({
+				message: "Invalid password",
+			});
 
-		const hashedPassword = await bcrypt.hash(newPassword, 10);
+		const hashedPassword = await bcrypt.hash(
+			newPassword,
+			await bcrypt.genSalt(10)
+		);
 
 		await user.update({ password: hashedPassword });
 
-		res.json({ message: "Password updated successfully" });
+		res.sendStatus(200);
 	} catch (error) {
 		res.status(500).json({
 			message: `An error occurred while updating the password : ${error.message}`,
@@ -267,10 +263,7 @@ export const deleteUser = async (req, res) => {
 
 		const anonymizedData = anonymizeUserData(user.toJSON(), encryptionKey);
 
-		const isEmailSent = await sendDeletedAccountEmail(
-			user.email,
-			encryptionKey
-		);
+		await sendDeletedAccountEmail(user.email, encryptionKey);
 
 		await user.update(
 			{ ...anonymizedData, encryptionKey, disabled: true },
@@ -282,10 +275,7 @@ export const deleteUser = async (req, res) => {
 		userMongo.lastname = null;
 		await userMongo.save();
 
-		res.json({
-			message: "User deleted successfully",
-			isEmailSent,
-		});
+		res.sendStatus(204);
 	} catch (error) {
 		res.status(500).json({
 			message: `An error occurred while deleting the user : ${error.message}`,
@@ -318,10 +308,7 @@ export const recoverUser = async (req, res) => {
 
 		const decryptedData = decryptUserData(user.toJSON(), encryptionKey);
 
-		res.json({
-			message: "User data recovered successfully",
-			data: decryptedData,
-		});
+		res.json(decryptedData);
 	} catch (error) {
 		res.status(500).json({
 			message: `An error occurred while recovering the user : ${error.message}`,

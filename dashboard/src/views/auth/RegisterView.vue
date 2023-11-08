@@ -21,27 +21,26 @@ const router = useRouter()
 const submit = async () => {
   try {
     const result = userSchema.safeParse(state.form)
+
     if (!result.success) {
       state.errors = JSON.parse(result.error.message)[0].message
       return
     }
-    axiosInstance.get(`/auth/check-email?email=${state.form.email}`).then((res) => {
-      if (res.data.message.includes('Email already taken')) {
-        state.errors = 'Un compte est déjà associé à cet email'
-      }
-    })
 
-    axiosInstance
-      .post('/auth/register', state.form)
-      .then((res) => {
-        // showToast('Votre inscription a bien été pris en compte !', 'success')
-        router.push('/login?registered=true')
-      })
-      .catch((error) => {
-        state.errors = error.response.data.message
-      })
-  } catch (e: any) {
-    console.error(e)
+    const emailCheckResponse = await axiosInstance.get(
+      `/auth/check-email?email=${state.form.email}`
+    )
+
+    if (emailCheckResponse.data.message === 'Email already taken') {
+      state.errors = 'Un compte est déjà associé à cet email'
+      return
+    }
+
+    await axiosInstance.post('/auth/register', state.form)
+    router.push('/login?registered=true')
+  } catch (error: any) {
+    state.errors = error.message
+    console.error(error)
   }
 }
 </script>
