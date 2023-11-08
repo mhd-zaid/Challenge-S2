@@ -1,317 +1,309 @@
-import User from "../models/postgres-user.js";
-import UserMongo from "../models/mongodb-user.js";
-import { sendDeletedAccountEmail } from "../services/email.service.js";
-import {
+export default (
+	User,
+	UserMongo,
+	bcrypt,
 	isValidPassword,
 	anonymizeUserData,
 	generateEncryptionKey,
+	sendDeletedAccountEmail,
+	Types,
 	decryptUserData,
 	isUserMajor,
-} from "../services/user.service.js";
-import bcrypt from "bcryptjs";
-import { generateToken } from "../services/auth.service.js";
-import { Types } from "mongoose";
-
-export const getUsers = async (req, res) => {
-	try {
-		const users = await User.findAll({
-			attributes: { exclude: ["password", "encryptionKey"] },
-		});
-		res.json(users);
-	} catch (error) {
-		res.status(500).json({
-			message: `An error occurred while retrieving the users : ${error.message}`,
-		});
-	}
-};
-
-export const getUser = async (req, res) => {
-	try {
-		const user = await User.findOne({
-			where: { id: req.params.id },
-			attributes: { exclude: ["password", "encryptionKey"] },
-		});
-		if (!user) return res.status(404).json({ message: "User not found" });
-		res.json(user);
-	} catch (error) {
-		res.status(500).json({
-			message: `An error occurred while retrieving the user : ${error.message}`,
-		});
-	}
-};
-
-export const createUser = async (req, res) => {
-	try {
-		const { firstname, lastname, email, password, role, birthdate } =
-			req.body;
-
-		if (!(firstname && lastname && email && password && birthdate))
-			return res.sendStatus(400);
-
-		if (!isUserMajor(birthdate))
-			return res.status(400).json({ message: "Invalid birthdate" });
-
-		if (!isValidPassword(password))
-			return res.status(400).json({ message: "Invalid password" });
-
-		const hashedPassword = await bcrypt.hash(
-			password,
-			await bcrypt.genSalt(10)
-		);
-
-		const existingUser = await User.findOne({
-			where: { email },
-		});
-
-		if (existingUser)
-			return res.status(409).json({ message: `Email is already taken` });
-
-		const authentificationToken = generateToken();
-
-		const userMongo = await UserMongo.create({
-			firstname,
-			lastname,
-			role,
-			isValidate: false,
-			disabled: false,
-		});
-
-		const postgresUser = await User.create({
-			id: userMongo._id.toString(),
-			firstname,
-			lastname,
-			email,
-			birthdate: new Date(birthdate),
-			password: hashedPassword,
-			role,
-			authentificationToken,
-		});
-
-		res.status(201).json(postgresUser);
-	} catch (error) {
-		res.status(500).json({
-			message: `An error occurred while creating the user : ${error.message}`,
-		});
-	}
-};
-
-export const updateUser = async (req, res) => {
-	try {
-		const { id } = req.params;
-		const userDataToUpdate = req.body;
-
-		if (!id) {
-			return res.status(400).json({ message: "Id parameter is missing" });
+	generateToken
+) => ({
+	getUsers: async (req, res) => {
+		try {
+			const users = await User.findAll({
+				attributes: { exclude: ["password", "encryptionKey"] },
+			});
+			res.json(users);
+		} catch (error) {
+			res.status(500).json({
+				message: `An error occurred while retrieving the users : ${error.message}`,
+			});
 		}
+	},
 
-		const user = await User.findOne({ where: { id } });
+	getUser: async (req, res) => {
+		try {
+			const user = await User.findOne({
+				where: { id: req.params.id },
+				attributes: { exclude: ["password", "encryptionKey"] },
+			});
+			if (!user) return res.status(404).json({ message: "User not found" });
+			res.json(user);
+		} catch (error) {
+			res.status(500).json({
+				message: `An error occurred while retrieving the user : ${error.message}`,
+			});
+		}
+	},
 
-		if (!user) return res.status(404).json({ message: "User not found" });
+	createUser: async (req, res) => {
+		try {
+			const { firstname, lastname, email, password, role, birthdate } =
+				req.body;
 
-		const userMongo = await UserMongo.findOne({
-			_id: new Types.ObjectId(id),
-		});
+			if (!(firstname && lastname && email && password && birthdate))
+				return res.sendStatus(400);
 
-		if (userDataToUpdate.email) {
-			// Check if email is updated and if it is, check if it is already taken
-			const existingUser =
-				user.email !== userDataToUpdate.email &&
-				(await User.findOne({
-					where: { email: userDataToUpdate.email },
-				}));
+			if (!isUserMajor(birthdate))
+				return res.status(400).json({ message: "Invalid birthdate" });
+
+			if (!isValidPassword(password))
+				return res.status(400).json({ message: "Invalid password" });
+
+			const hashedPassword = await bcrypt.hash(
+				password,
+				await bcrypt.genSalt(10)
+			);
+
+			const existingUser = await User.findOne({
+				where: { email },
+			});
+
 			if (existingUser)
-				return res.status(409).json({ message: `Email already taken` });
-		}
+				return res.status(409).json({ message: `Email is already taken` });
 
-		if (userDataToUpdate.password) {
-			// Check if password is updated and if it is, check if it is valid
-			if (!isValidPassword(req.body.password))
+			const authentificationToken = generateToken();
+
+			const userMongo = await UserMongo.create({
+				firstname,
+				lastname,
+				role,
+				isValidate: false,
+				disabled: false,
+			});
+
+			const postgresUser = await User.create({
+				id: userMongo._id.toString(),
+				firstname,
+				lastname,
+				email,
+				birthdate: new Date(birthdate),
+				password: hashedPassword,
+				role,
+				authentificationToken,
+			});
+
+			res.status(201).json(postgresUser);
+		} catch (error) {
+			res.status(500).json({
+				message: `An error occurred while creating the user : ${error.message}`,
+			});
+		}
+	},
+
+	updateUser: async (req, res) => {
+		try {
+			const { id } = req.params;
+			const userDataToUpdate = req.body;
+
+			if (!id) {
+				return res.status(400).json({ message: "Id parameter is missing" });
+			}
+
+			const user = await User.findOne({ where: { id } });
+
+			if (!user) return res.status(404).json({ message: "User not found" });
+
+			const userMongo = await UserMongo.findOne({
+				_id: new Types.ObjectId(id),
+			});
+
+			if (userDataToUpdate.email) {
+				// Check if email is updated and if it is, check if it is already taken
+				const existingUser =
+					user.email !== userDataToUpdate.email &&
+					(await User.findOne({
+						where: { email: userDataToUpdate.email },
+					}));
+				if (existingUser)
+					return res.status(409).json({ message: `Email already taken` });
+			}
+
+			if (userDataToUpdate.password) {
+				// Check if password is updated and if it is, check if it is valid
+				if (!isValidPassword(req.body.password))
+					return res.status(400).json({
+						message: "Invalid password",
+					});
+				const hashedPassword = await bcrypt.hash(userDataToUpdate.password, 10);
+				userDataToUpdate.password = hashedPassword;
+				userDataToUpdate.passwordUpdatedAt = new Date();
+			}
+
+			if (userDataToUpdate.birthdate) {
+				// Check if birthdate is updated and if it is, check if user is major
+				if (!isUserMajor(userDataToUpdate.birthdate))
+					return res.status(400).json({ message: "Invalid birthdate" });
+			}
+
+			if (userDataToUpdate.role) {
+				if (
+					userDataToUpdate.role !== "ROLE_ADMIN" &&
+					userDataToUpdate.role !== "ROLE_STORE_KEEPER" &&
+					userDataToUpdate.role !== "ROLE_USER"
+				)
+					return res.status(400).json({ message: "Invalid role" });
+			}
+
+			if (userDataToUpdate.isValidate) {
+				if (
+					userDataToUpdate.isValidate !== true &&
+					userDataToUpdate.isValidate !== false
+				)
+					return res.status(400).json({ message: "Invalid isValidate" });
+			}
+
+			if (userDataToUpdate.disabled) {
+				if (
+					userDataToUpdate.disabled !== true &&
+					userDataToUpdate.disabled !== false
+				)
+					return res.status(400).json({ message: "Invalid disabled" });
+			}
+
+			if (userDataToUpdate.firstname) {
+				if (userDataToUpdate.firstname.length < 2)
+					return res.status(400).json({
+						message: "Invalid firstname",
+					});
+			}
+
+			if (userDataToUpdate.lastname) {
+				if (userDataToUpdate.lastname.length < 2)
+					return res.status(400).json({
+						message: "Invalid lastname",
+					});
+			}
+
+			if (userDataToUpdate.loginAttempts) {
+				if (userDataToUpdate.loginAttempts < 0)
+					return res.status(400).json({
+						message: "Invalid loginAttempts",
+					});
+			}
+
+			await user.update(userDataToUpdate);
+			Object.assign(userMongo, userDataToUpdate);
+			await userMongo.save();
+
+			res.json(user);
+		} catch (error) {
+			res.status(500).json({
+				message: `An error occurred while updating the user : ${error.message}`,
+			});
+		}
+	},
+
+	updatePassword: async (req, res) => {
+		try {
+			const { id } = req.params;
+			const { oldPassword, newPassword } = req.body;
+
+			if (!id)
+				return res.status(400).json({ message: "Id parameter is missing" });
+
+			const user = await User.findOne({ where: { id } });
+
+			if (!user) return res.status(404).json({ message: "User not found" });
+
+			if (!oldPassword || !newPassword)
+				return res.status(400).json({ message: "Invalid arguments" });
+
+			const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+
+			if (!isPasswordValid)
+				return res.status(400).json({ message: "Invalid password" });
+
+			if (!isValidPassword(newPassword))
 				return res.status(400).json({
 					message: "Invalid password",
 				});
+
 			const hashedPassword = await bcrypt.hash(
-				userDataToUpdate.password,
-				10
+				newPassword,
+				await bcrypt.genSalt(10)
 			);
-			userDataToUpdate.password = hashedPassword;
-			userDataToUpdate.passwordUpdatedAt = new Date();
+
+			await user.update({ password: hashedPassword });
+
+			res.sendStatus(200);
+		} catch (error) {
+			res.status(500).json({
+				message: `An error occurred while updating the password : ${error.message}`,
+			});
 		}
+	},
 
-		if (userDataToUpdate.birthdate) {
-			// Check if birthdate is updated and if it is, check if user is major
-			if (!isUserMajor(userDataToUpdate.birthdate))
-				return res.status(400).json({ message: "Invalid birthdate" });
-		}
+	deleteUser: async (req, res) => {
+		try {
+			const { id } = req.params;
 
-		if (userDataToUpdate.role) {
-			if (
-				userDataToUpdate.role !== "ROLE_ADMIN" &&
-				userDataToUpdate.role !== "ROLE_STORE_KEEPER" &&
-				userDataToUpdate.role !== "ROLE_USER"
-			)
-				return res.status(400).json({ message: "Invalid role" });
-		}
+			if (!id)
+				return res.status(400).json({ message: "Id parameter is missing" });
 
-		if (userDataToUpdate.isValidate) {
-			if (
-				userDataToUpdate.isValidate !== true &&
-				userDataToUpdate.isValidate !== false
-			)
-				return res.status(400).json({ message: "Invalid isValidate" });
-		}
+			const user = await User.findOne({ where: { id } });
 
-		if (userDataToUpdate.disabled) {
-			if (
-				userDataToUpdate.disabled !== true &&
-				userDataToUpdate.disabled !== false
-			)
-				return res.status(400).json({ message: "Invalid disabled" });
-		}
+			if (!user) return res.status(404).json({ message: "User not found" });
 
-		if (userDataToUpdate.firstname) {
-			if (userDataToUpdate.firstname.length < 2)
-				return res.status(400).json({
-					message: "Invalid firstname",
-				});
-		}
-
-		if (userDataToUpdate.lastname) {
-			if (userDataToUpdate.lastname.length < 2)
-				return res.status(400).json({
-					message: "Invalid lastname",
-				});
-		}
-
-		if (userDataToUpdate.loginAttempts) {
-			if (userDataToUpdate.loginAttempts < 0)
-				return res.status(400).json({
-					message: "Invalid loginAttempts",
-				});
-		}
-
-		await user.update(userDataToUpdate);
-		Object.assign(userMongo, userDataToUpdate);
-		await userMongo.save();
-
-		res.json(user);
-	} catch (error) {
-		res.status(500).json({
-			message: `An error occurred while updating the user : ${error.message}`,
-		});
-	}
-};
-
-export const updatePassword = async (req, res) => {
-	try {
-		const { id } = req.params;
-		const { oldPassword, newPassword } = req.body;
-
-		if (!id)
-			return res.status(400).json({ message: "Id parameter is missing" });
-
-		const user = await User.findOne({ where: { id } });
-
-		if (!user) return res.status(404).json({ message: "User not found" });
-
-		if (!oldPassword || !newPassword)
-			return res.status(400).json({ message: "Invalid arguments" });
-
-		const isPasswordValid = await bcrypt.compare(
-			oldPassword,
-			user.password
-		);
-
-		if (!isPasswordValid)
-			return res.status(400).json({ message: "Invalid password" });
-
-		if (!isValidPassword(newPassword))
-			return res.status(400).json({
-				message: "Invalid password",
+			const userMongo = await UserMongo.findOne({
+				_id: new Types.ObjectId(id),
 			});
 
-		const hashedPassword = await bcrypt.hash(
-			newPassword,
-			await bcrypt.genSalt(10)
-		);
+			const encryptionKey = generateEncryptionKey();
 
-		await user.update({ password: hashedPassword });
+			const anonymizedData = anonymizeUserData(user.toJSON(), encryptionKey);
 
-		res.sendStatus(200);
-	} catch (error) {
-		res.status(500).json({
-			message: `An error occurred while updating the password : ${error.message}`,
-		});
-	}
-};
+			await sendDeletedAccountEmail(user.email, encryptionKey);
 
-export const deleteUser = async (req, res) => {
-	try {
-		const { id } = req.params;
+			await user.update(
+				{ ...anonymizedData, encryptionKey, disabled: true },
+				{ where: { id } }
+			);
 
-		if (!id)
-			return res.status(400).json({ message: "Id parameter is missing" });
+			userMongo.disabled = true;
+			userMongo.firstname = null;
+			userMongo.lastname = null;
+			await userMongo.save();
 
-		const user = await User.findOne({ where: { id } });
+			res.sendStatus(204);
+		} catch (error) {
+			res.status(500).json({
+				message: `An error occurred while deleting the user : ${error.message}`,
+			});
+		}
+	},
 
-		if (!user) return res.status(404).json({ message: "User not found" });
+	recoverUser: async (req, res) => {
+		try {
+			const { id } = req.params;
+			const { encryptionKey } = req.body;
 
-		const userMongo = await UserMongo.findOne({
-			_id: new Types.ObjectId(id),
-		});
+			if (!id)
+				return res.status(400).json({ message: "Id parameter is missing" });
 
-		const encryptionKey = generateEncryptionKey();
+			const user = await User.findOne({ where: { id } });
 
-		const anonymizedData = anonymizeUserData(user.toJSON(), encryptionKey);
+			if (!user) return res.status(404).json({ message: "User not found" });
 
-		await sendDeletedAccountEmail(user.email, encryptionKey);
+			if (!user.disabled)
+				return res.status(400).json({ message: "User is not disabled" });
 
-		await user.update(
-			{ ...anonymizedData, encryptionKey, disabled: true },
-			{ where: { id } }
-		);
+			if (!encryptionKey)
+				return res.status(400).json({ message: "Encryption key is missing" });
 
-		userMongo.disabled = true;
-		userMongo.firstname = null;
-		userMongo.lastname = null;
-		await userMongo.save();
+			if (encryptionKey !== user.encryptionKey)
+				return res.status(400).json({ message: "Invalid encryption key" });
 
-		res.sendStatus(204);
-	} catch (error) {
-		res.status(500).json({
-			message: `An error occurred while deleting the user : ${error.message}`,
-		});
-	}
-};
+			const decryptedData = decryptUserData(user.toJSON(), encryptionKey);
 
-export const recoverUser = async (req, res) => {
-	try {
-		const { id } = req.params;
-		const { encryptionKey } = req.body;
-
-		if (!id)
-			return res.status(400).json({ message: "Id parameter is missing" });
-
-		const user = await User.findOne({ where: { id } });
-
-		if (!user) return res.status(404).json({ message: "User not found" });
-
-		if (!user.disabled)
-			return res.status(400).json({ message: "User is not disabled" });
-
-		if (!encryptionKey)
-			return res
-				.status(400)
-				.json({ message: "Encryption key is missing" });
-
-		if (encryptionKey !== user.encryptionKey)
-			return res.status(400).json({ message: "Invalid encryption key" });
-
-		const decryptedData = decryptUserData(user.toJSON(), encryptionKey);
-
-		res.json(decryptedData);
-	} catch (error) {
-		res.status(500).json({
-			message: `An error occurred while recovering the user : ${error.message}`,
-		});
-	}
-};
+			res.json(decryptedData);
+		} catch (error) {
+			res.status(500).json({
+				message: `An error occurred while recovering the user : ${error.message}`,
+			});
+		}
+	},
+});

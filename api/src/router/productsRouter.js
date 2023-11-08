@@ -1,12 +1,17 @@
 import express from "express";
-import {
+import productsRoutes from "../routes/productsRoutes.js";
+import Product from "../models/postgres-product.js";
+import ProductMongodb from "../models/mongodb-product.js";
+import mongoose from "mongoose";
+import { json } from "sequelize";
+const {
 	getProducts,
 	createProduct,
 	updateProduct,
 	deleteProduct,
 	getProduct,
 	uploadImage
-} from "../routes/productsRoutes.js";
+} = productsRoutes(Product, ProductMongodb, mongoose, json);
 
 const router = express.Router();
 

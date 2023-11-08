@@ -1,70 +1,70 @@
-import Wish from "../models/postgres-wish.js";
-
-export const getUserWish = async (req, res) => {
-	try {
-		const { id } = req.params;
-		const wish = await Wish.findOne({
-			where: { userId: id },
-			include: "products",
-		});
-		res.json(wish);
-	} catch (error) {
-		res.status(500).json({
-			message: `An error occurred while retrieving the wish : ${error.message}`,
-		});
-	}
-};
-
-export const addProductToWish = async (req, res) => {
-	try {
-		const { userId } = req.params;
-		const { productId } = req.body;
-
-		if (!id || !productId) {
-			return res
-				.status(400)
-				.json({ message: "Id parameter or productId is missing" });
+export default (Wish) => ({
+	getUserWish: async (req, res) => {
+		try {
+			const { id } = req.params;
+			const wish = await Wish.findOne({
+				where: { userId: id },
+				include: "products",
+			});
+			res.json(wish);
+		} catch (error) {
+			res.status(500).json({
+				message: `An error occurred while retrieving the wish : ${error.message}`,
+			});
 		}
+	},
 
-		const wish = await Wish.findOne({ where: { userId: userId } });
-		if (!wish) return res.status(404).json({ message: "Wish not found" });
+	addProductToWish: async (req, res) => {
+		try {
+			const { userId } = req.params;
+			const { productId } = req.body;
 
-		const product = await Product.findOne({ where: { id: productId } });
-		if (!product)
-			return res.status(404).json({ message: "Product not found" });
+			if (!id || !productId) {
+				return res
+					.status(400)
+					.json({ message: "Id parameter or productId is missing" });
+			}
 
-		await wish.addProduct(product);
-		res.json({ message: "Product added to wish successfully" });
-	} catch (error) {
-		res.status(500).json({
-			message: `An error occurred while adding the product to the wish : ${error.message}`,
-		});
-	}
-};
+			const wish = await Wish.findOne({ where: { userId: userId } });
+			if (!wish) return res.status(404).json({ message: "Wish not found" });
 
-export const deleteProductFromWish = async (req, res) => {
-	try {
-		const { userId } = req.params;
-		const { productId } = req.body;
+			const product = await Product.findOne({ where: { id: productId } });
+			if (!product)
+				return res.status(404).json({ message: "Product not found" });
 
-		if (!id || !productId) {
-			return res
-				.status(400)
-				.json({ message: "Id parameter or productId is missing" });
+			await wish.addProduct(product);
+			res.json({ message: "Product added to wish successfully" });
+		} catch (error) {
+			res.status(500).json({
+				message: `An error occurred while adding the product to the wish : ${error.message}`,
+			});
 		}
+	},
 
-		const wish = await Wish.findOne({ where: { userId: userId } });
-		if (!wish) return res.status(404).json({ message: "Wish not found" });
+	deleteProductFromWish: async (req, res) => {
+		try {
+			const { userId } = req.params;
+			const { productId } = req.body;
 
-		const product = await Product.findOne({ where: { id: productId } });
-		if (!product)
-			return res.status(404).json({ message: "Product not found" });
+			if (!id || !productId) {
+				return res
+					.status(400)
+					.json({ message: "Id parameter or productId is missing" });
+			}
 
-		await wish.removeProduct(product);
-		res.json({ message: "Product deleted from wish successfully" });
-	} catch (error) {
-		res.status(500).json({
-			message: `An error occurred while deleting the product from the wish : ${error.message}`,
-		});
-	}
-};
+			const wish = await Wish.findOne({ where: { userId: userId } });
+			if (!wish) return res.status(404).json({ message: "Wish not found" });
+
+			const product = await Product.findOne({ where: { id: productId } });
+			if (!product)
+				return res.status(404).json({ message: "Product not found" });
+
+			await wish.removeProduct(product);
+			res.json({ message: "Product deleted from wish successfully" });
+		} catch (error) {
+			res.status(500).json({
+				message: `An error occurred while deleting the product from the wish : ${error.message}`,
+			});
+		}
+	},
+});

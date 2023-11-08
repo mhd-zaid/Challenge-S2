@@ -1,12 +1,19 @@
 import express from "express";
-import { 
+import paymentsRoutes from "../routes/paymentsRoutes.js";
+import Payment from "../models/postgres-payment.js";
+import Order from "../models/postgres-order.js";
+import User from "../models/postgres-user.js"
+import stripe from "../config/stripe-config.js";
+import OrderMongodb from "../models/mongodb-order.js";
+import { ObjectId } from "mongodb";
+const { 
     getPayments,
     getStripeSession,
     getPayment,
     createPayment,
     stripeSuccess,
     stripeFailed
-} from "../routes/paymentRoutes.js";
+} = paymentsRoutes(Payment, Order, User, stripe, OrderMongodb, ObjectId)
 
 const router = express.Router();
 

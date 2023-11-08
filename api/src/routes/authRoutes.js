@@ -1,17 +1,6 @@
-import User from "../models/postgres-user.js";
-import UserMongo from "../models/mongodb-user.js";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
-import { generateToken, isUserBlocked } from "../services/auth.service.js";
-import {
-	sendEmailConfirmation,
-	sendBlockedAccountEmail,
-	sendResetPasswordEmail,
-} from "../services/email.service.js";
-import { isValidPassword, isUserMajor } from "../services/user.service.js";
-import { Types } from "mongoose";
+export default (User, UserMongo, bcrypt, isValidPassword, isUserMajor, generateToken, sendEmailConfirmation, sendBlockedAccountEmail) => ({
 
-export const register = async (req, res) => {
+ register : async (req, res) => {
 	try {
 		const { firstname, lastname, email, password, role, birthdate } =
 			req.body;
@@ -80,9 +69,9 @@ export const register = async (req, res) => {
 			message: `An error occurred while creating the user : ${error.message}`,
 		});
 	}
-};
+},
 
-export const login = async (req, res) => {
+ login : async (req, res) => {
 	try {
 		const { email, password } = req.body;
 
@@ -141,9 +130,9 @@ export const login = async (req, res) => {
 			message: `An error occurred during login: ${error.message}`,
 		});
 	}
-};
+},
 
-export const checkEmail = async (req, res) => {
+ checkEmail : async (req, res) => {
 	try {
 		const { email } = req.query;
 
@@ -158,9 +147,9 @@ export const checkEmail = async (req, res) => {
 			message: `An error occurred while checking the email : ${error.message}`,
 		});
 	}
-};
+},
 
-export const confirmEmail = async (req, res) => {
+ confirmEmail : async (req, res) => {
 	try {
 		const { email, authentificationToken } = req.query;
 
@@ -201,9 +190,9 @@ export const confirmEmail = async (req, res) => {
 			message: `An error occurred while validating the email : ${error.message}`,
 		});
 	}
-};
+},
 
-export const requestPasswordReset = async (req, res) => {
+ requestPasswordReset : async (req, res) => {
 	try {
 		const { email } = req.body;
 
@@ -225,9 +214,9 @@ export const requestPasswordReset = async (req, res) => {
 			message: `An error occurred while requesting the password reset : ${error.message}`,
 		});
 	}
-};
+},
 
-export const resetPassword = async (req, res) => {
+ resetPassword : async (req, res) => {
 	try {
 		const { email, token, password } = req.body;
 
@@ -263,9 +252,9 @@ export const resetPassword = async (req, res) => {
 			message: `An error occurred while resetting the password : ${error.message}`,
 		});
 	}
-};
+},
 
-export const getMe = async (req, res) => {
+ getMe : async (req, res) => {
 	try {
 		const user = await User.findOne({ where: { id: req.user.userId } });
 		if (!user) return res.status(404).json({ message: "User not found" });
@@ -275,4 +264,6 @@ export const getMe = async (req, res) => {
 			message: `An error occurred while getting the user : ${error.message}`,
 		});
 	}
-};
+}
+
+})
