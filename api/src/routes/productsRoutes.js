@@ -1,30 +1,22 @@
-import Product from "../models/postgres-product.js";
-import Modele from "../models/postgres-model.js";
-import Product_Images from "../models/postgres-product-images.js";
-import ProductMongodb from "../models/mongodb-product.js";
-import mongoose from "mongoose";
+export default (Product, Model, Product_Images, ProductMongodb, mongoose) => ({
 
-export const getProducts = async (req, res) => {
+getProducts : async (req, res) => {
     try {
-        const products = await Product.findAll(({
-            include: [{
-                model: Modele,
-                as: 'Modele'
-            }, {
-                model: Product_Images,
-                as: 'Product_Images'
-            }]
-        }));
+        const products = await Product.findAll({
+            include: ["model", "productImages"]
+        });
         res.json(products);
     } catch (error) {
         res.status(500).json({
             message: `An error occurred while retrieving the products : ${error.message}`,
         });
     }
-};
+},
 
-export const createProduct = async (req, res) => {
+createProduct : async (req, res) => {
     try {
+        const model = await Model.findOne({where: {id: req.body.modelId}});
+
         const productDataToCreate = {
             name: req.body.name,
             price: req.body.price,
@@ -32,8 +24,10 @@ export const createProduct = async (req, res) => {
             quantity: req.body.quantity,
             size: req.body.size,
             color: req.body.color,
+            discount: req.body.discount,
+			alerteQuantity: req.body.alerteQuantity,
             sku: req.body.sku,
-            modelId: req.body.model,
+            modelId: model.id,
         };
         const productMongoDB = await ProductMongodb(productDataToCreate).save();
         const id = productMongoDB._id.toString();
@@ -44,13 +38,13 @@ export const createProduct = async (req, res) => {
             message: `An error occurred while creating the product : ${error.message}`,
         });
     }
-};
+},
 
-export const updateProduct = async (req, res) => {
+updateProduct : async (req, res) => {
     try {
         const {id} = req.params;
 
-        const models = req.body.models.map(model => new mongoose.Types.ObjectId(model.id));
+        const model = await Model.findOne({where: {id: req.body.modelId}});
 
         const productDataToUpdate = {
             name: req.body.name,
@@ -59,8 +53,10 @@ export const updateProduct = async (req, res) => {
             quantity: req.body.quantity,
             size: req.body.size,
             color: req.body.color,
+            discount: req.body.discount,
+			alerteQuantity: req.body.alerteQuantity,
             sku: req.body.sku,
-            models: models,
+            modelId: model.id,
         };
 
         if (!id) {
@@ -81,9 +77,9 @@ export const updateProduct = async (req, res) => {
             message: `An error occurred while updating the product : ${error.message}`,
         });
     }
-};
+},
 
-export const deleteProduct = async (req, res) => {
+deleteProduct : async (req, res) => {
     try {
         const {id} = req.params;
 
@@ -107,9 +103,9 @@ export const deleteProduct = async (req, res) => {
             message: `An error occurred while deleting the product : ${error.message}`,
         });
     }
-};
+},
 
-export const getProduct = async (req, res) => {
+getProduct : async (req, res) => {
     try {
         const {id} = req.params;
 
@@ -119,13 +115,7 @@ export const getProduct = async (req, res) => {
 
         const product = await Product.findOne({
             where: {id},
-            include: [{
-                model: Modele,
-                as: 'Modele'
-            }, {
-                model: Product_Images,
-                as: 'Product_Images'
-            }]
+            include: ["model", "productImages"]
         });
 
         if (!product) return res.status(404).json({message: "Product not found"});
@@ -136,13 +126,15 @@ export const getProduct = async (req, res) => {
             message: `An error occurred while retrieving the product : ${error.message}`,
         });
     }
-};
+},
 
-export const uploadImage = async (req, res) => {
+uploadImage : async (req, res) => {
     const {id} = req.params;
     const images = req.files.map(file => file.filename);
     for (const image of images) {
         await Product_Images.create({url: image, ProductId: id});
     }
     res.status(200).json({message: "Image uploaded successfully"});
-};
+}
+    
+});
