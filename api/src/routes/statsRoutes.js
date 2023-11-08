@@ -237,12 +237,13 @@ export const getNewOrdersLast30Days = async (req, res) => {
 		date30DaysAgo.setHours(0, 0, 0, 0);
 		const query = {
 			status: "paid",
-			createdAt: {
+			date: {
 				$gte: date30DaysAgo,
 				$lte: new Date(),
 			},
 		};
 		const ordersCount = await Order.count(query);
+		console.log(query, ordersCount)
 		res.status(200).json(ordersCount);
 	} catch (error) {
 		res.status(500).json({
@@ -264,7 +265,7 @@ export const getNewOrdersBeforeLast30Days = async (req, res) => {
 
 		const query = {
 			status: "paid",
-			createdAt: {
+			date: {
 				$gte: date30DaysAgo,
 				$lte: date30DaysAgoEnd,
 			},
@@ -293,7 +294,7 @@ export const getNewOrdersLastYear = async (req, res) => {
 			endDate.setHours(23, 59, 59, 999);
 			const query = {
 				status: "paid",
-				createdAt: {
+				date: {
 					$gte: startDate,
 					$lte: endDate,
 				},
