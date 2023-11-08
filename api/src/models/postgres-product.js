@@ -1,6 +1,7 @@
 import {DataTypes, INTEGER, Model} from "sequelize";
 import sequelize from "../config/sequelize-config.js";
 import Product_Images from "./postgres-product-images.js";
+import Modele from "./postgres-model.js";
 
 class Product extends Model {
 }
@@ -58,6 +59,14 @@ Product.init(
         modelName: "Product",
     }
 );
+
+Product.belongsTo(Modele, {
+    as: "model",
+});
+
+Modele.hasMany(Product, {
+    as: "products",
+});
 
 Product.hasMany(Product_Images, {
     as: "Product_Images",

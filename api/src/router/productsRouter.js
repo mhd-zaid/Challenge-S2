@@ -2,6 +2,7 @@ import express from "express";
 import productsRoutes from "../routes/productsRoutes.js";
 import Product from "../models/postgres-product.js";
 import ProductMongodb from "../models/mongodb-product.js";
+import Model from "../models/postgres-model.js";
 import mongoose from "mongoose";
 import { json } from "sequelize";
 const {
@@ -11,7 +12,7 @@ const {
 	deleteProduct,
 	getProduct,
 	uploadImage
-} = productsRoutes(Product, ProductMongodb, mongoose, json);
+} = productsRoutes(Product, ProductMongodb, Model,mongoose, json);
 
 const router = express.Router();
 

@@ -1,8 +1,8 @@
-export default (Product, ProductMongodb, mongoose, json) => ({
+export default (Product, ProductMongodb, Model,mongoose, json) => ({
 	getProducts: async (req, res) => {
 		try {
 			const products = await Product.findAll({
-				include: "models",
+				include: "model",
 			});
 			res.json(products);
 		} catch (error) {
@@ -14,9 +14,7 @@ export default (Product, ProductMongodb, mongoose, json) => ({
 
 	createProduct: async (req, res) => {
 		try {
-			const models = req.body.models.map(
-				(model) => new mongoose.Types.ObjectId(model.id)
-			);
+			const model = await Model.findOne({where: {id: req.body.modelId}});
 
 			const productDataToCreate = {
 				name: req.body.name,
@@ -25,16 +23,14 @@ export default (Product, ProductMongodb, mongoose, json) => ({
 				quantity: req.body.quantity,
 				size: req.body.size,
 				color: req.body.color,
-				url: req.body.url,
+				discount: req.body.discount,
+				alerteQuantity: req.body.alerteQuantity,
 				sku: req.body.sku,
-				models: models,
+				modelId: model.id,
 			};
 			const productMongoDB = await ProductMongodb(productDataToCreate).save();
 			const id = productMongoDB._id.toString();
 			const product = await Product.create({ id, ...req.body });
-			for (const model of req.body.models) {
-				await product.addModels(model.id);
-			}
 
 			res.json(product);
 		} catch (error) {
@@ -48,9 +44,7 @@ export default (Product, ProductMongodb, mongoose, json) => ({
 		try {
 			const { id } = req.params;
 
-			const models = req.body.models.map(
-				(model) => new mongoose.Types.ObjectId(model.id)
-			);
+			const model = await Model.findOne({where: {id: req.body.modelId}});
 
 			const productDataToUpdate = {
 				name: req.body.name,
@@ -59,8 +53,10 @@ export default (Product, ProductMongodb, mongoose, json) => ({
 				quantity: req.body.quantity,
 				size: req.body.size,
 				color: req.body.color,
-				url: req.body.url,
-				models: models,
+				discount: req.body.discount,
+				alerteQuantity: req.body.alerteQuantity,
+				sku: req.body.sku,
+				modelId: model.id,
 			};
 
 			if (!id) {
@@ -121,7 +117,7 @@ export default (Product, ProductMongodb, mongoose, json) => ({
 
 			const product = await Product.findOne({
 				where: { id },
-				include: "models",
+				include: "model",
 			});
 
 			if (!product)

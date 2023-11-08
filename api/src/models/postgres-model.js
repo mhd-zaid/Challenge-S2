@@ -34,7 +34,6 @@ Modele.init(
 
 let Category;
 let Brand;
-let Product;
 import("./postgres-category.js")
     .then((module) => {
         Category = module.default;
@@ -54,13 +53,5 @@ import("./postgres-brand.js")
     .catch((error) => {
         console.error("Erreur lors de l'importation du modèle Brand :", error);
     });
-import("./postgres-product.js")
-    .then((module) => {
-        Product = module.default;
 
-        Modele.hasMany(Product);
-    })
-    .catch((error) => {
-        console.error("Erreur lors de l'importation du modèle Product :", error);
-    });
 export default Modele;

@@ -1,4 +1,4 @@
-export default (Model, ModelMongodb, CategoryMongodb, BrandMongodb) => ({
+export default (Model, ModelMongodb, CategoryMongodb, BrandMongodb,ObjectId) => ({
 	getModels: async (req, res) => {
 		try {
 			const models = await Model.findAll({

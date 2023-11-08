@@ -36,23 +36,11 @@ export default (
 				const mongoProduct = await ProductMongoDB.findOne({
 					_id: new ObjectId(product.id),
 				});
-				const mongoModel = await ModelMongodb.findOne({
-					_id: mongoProduct.models[0],
-				});
-				const mongoBrand = await BrandMongodb.findOne({
-					_id: mongoModel.brand,
-				});
-				const mongocategory = await CategoryMongodb.findOne({
-					_id: mongoModel.category,
-				});
-
+				
 				await order.addProduct(product.id, {
 					through: {
 						quantity: product.quantity,
-						product_version_id: mongoProduct.__v,
-						brand_version_id: mongoBrand.__v,
-						model_version_id: mongoModel.__v,
-						category_version_id: mongocategory.__v,
+						price: product.price,
 					},
 				});
 			}
