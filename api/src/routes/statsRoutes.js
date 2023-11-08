@@ -243,7 +243,6 @@ export const getNewOrdersLast30Days = async (req, res) => {
 			},
 		};
 		const ordersCount = await Order.count(query);
-		console.log(query, ordersCount)
 		res.status(200).json(ordersCount);
 	} catch (error) {
 		res.status(500).json({
