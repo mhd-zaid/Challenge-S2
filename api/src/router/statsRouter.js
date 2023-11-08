@@ -1,5 +1,10 @@
 import express from "express";
-import {
+import statsRoutes from "../routes/statsRoutes.js";
+import User from "../models/mongodb-user.js";
+import ProductHistory from "../models/mongodb-productHistory.js";
+import months from "../lib/monthsForStats.js";
+import Order from "../models/mongodb-order.js";
+const {
 	getNewUsersBeforeLast30Days,
 	getNewUsersLast30Days,
 	getNewUsersLastYear,
@@ -10,7 +15,7 @@ import {
 	getNewOrdersLast30Days,
 	getNewOrdersBeforeLast30Days,
 	getNewOrdersLastYear,
-} from "../routes/statsRoutes.js";
+} = statsRoutes(User, ProductHistory, months, Order);
 
 const router = express.Router();
 

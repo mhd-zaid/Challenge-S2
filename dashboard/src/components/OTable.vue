@@ -35,6 +35,7 @@ const hoveredRow = ref<number | null>(null)
             <thead class="bg-gray-50">
               <tr>
                 <th
+                  v-if="props.rows.length"
                   v-for="col in props.columns"
                   scope="col"
                   class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"

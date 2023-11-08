@@ -22,34 +22,29 @@ const isPasswordReset = route.query.password_reset === 'true'
 
 const getErrorMessage = (error: any) => {
   if (error.response) {
-    if (error.response.data.message === 'Email not found')
-      return "Aucun compte n'est associé à cet email"
-    if (error.response.data.message.includes('User is temporarily blocked'))
-      return 'Votre compte a été bloqué temporairement'
-    if (error.response.data.message === 'Invalid credentials') return 'Mot de passe incorrect'
-    if (error.response.data.message === 'Email not confirmed')
-      return 'Veuillez confirmer votre adresse e-mail'
+    if (error.response.status === 401) {
+      if (!error.response.data.message) return 'Email ou mot de passe incorrect'
+      if (error.response.data.message === 'User is temporarily blocked')
+        return 'Votre compte a été bloqué temporairement'
+      if (error.response.data.message === 'Email not confirmed')
+        return 'Veuillez confirmer votre adresse e-mail'
+    }
   }
-  return ''
+  return 'Une erreur est survenue'
 }
 
 const submit = async () => {
   try {
-    axiosInstance
-      .post('/auth/login', state.form)
-      .catch((error) => {
-        state.errors = getErrorMessage(error)
-      })
-      .then((res: any) => {
-        userStore.setUser(res.data)
-        userStore.setToken(res.data.token)
-        localStorage.setItem('token', res.data.token)
-        localStorage.setItem('user', JSON.stringify(res.data))
-        // showToast('Vous êtes connecté !', 'success')
-        router.push('/')
-      })
-  } catch (e: any) {
-    console.error(e)
+    const response = await axiosInstance.post('/auth/login', state.form)
+    const res = response.data
+
+    userStore.setUser(res)
+    userStore.setToken(res.token)
+    localStorage.setItem('token', res.token)
+    localStorage.setItem('user', JSON.stringify(res))
+    router.push('/')
+  } catch (error) {
+    state.errors = getErrorMessage(error)
   }
 }
 </script>
@@ -68,7 +63,9 @@ const submit = async () => {
           <p class="mt-2 text-sm leading-6 text-gray-500">
             Vous n'êtes pas encore inscrit ?
             {{ ' ' }}
-            <RouterLink to="register" class="font-semibold text-gray-900 hover:text-gray-700"
+            <RouterLink
+              to="register"
+              class="font-semibold text-secondary hover:text-secondary-light"
               >Inscrivez-vous ici</RouterLink
             >
           </p>
@@ -121,7 +118,9 @@ const submit = async () => {
 
               <div class="flex items-center justify-end">
                 <div class="text-sm leading-6">
-                  <a href="password-reset" class="font-semibold text-gray-900 hover:text-gray-700"
+                  <a
+                    href="password-reset"
+                    class="font-semibold text-secondary hover:text-secondary-light"
                     >Mot de passe oublié ?</a
                   >
                 </div>

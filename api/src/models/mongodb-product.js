@@ -7,14 +7,13 @@ const productSchema = new mongoose.Schema({
 	quantity: { type: Number, required: true },
 	size: { type: String, required: true },
 	color: { type: String, required: true },
-	url: { type: String, required: false },
+	discount: { type: Number, required: false },
+	alerteQuantity: { type: Number, required: false },
 	sku: { type: String, required: true },
-	models: [
-		{
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "Model",
-		},
-	],
+	model: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "Model",
+	},
 	deletedAt: { type: Date, default: null },
 });
 

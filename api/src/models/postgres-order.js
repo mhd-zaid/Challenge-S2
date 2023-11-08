@@ -19,11 +19,7 @@ Order.init(
 		deliveryAddress: {
 			type: DataTypes.STRING,
 			allowNull: false,
-		},
-		date: {
-			type: DataTypes.DATE,
-			defaultValue: Date.now,
-		},
+		}
 	},
 	{
 		sequelize,

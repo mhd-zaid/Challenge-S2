@@ -20,7 +20,13 @@ export const columnNames: any = {
   blockedAt: 'Date de blocage',
   isValidate: 'E-mail confirmé',
   authentificationToken: "Token d'authentification",
-  updatedAt: 'Date de modification'
+  updatedAt: 'Date de modification',
+  price: 'Prix',
+  vat: 'TVA',
+  quantity: 'Qté',
+  size: 'Taille',
+  color: 'Couleur',
+  status: 'Statut',
 }
 
 export const formatDate = (date: string) => {
@@ -53,6 +59,14 @@ export const getValue = (row: any, col: any) => {
     isValidate: {
       true: 'Oui',
       false: 'Non'
+    },
+    status: {
+      "payment pending": 'En attente',
+      paid: 'Payée',
+      processing: 'En cours',
+      shipped: 'Expédiée',
+      delivered: 'Livrée',
+      cancelled: 'Annulée'
     }
   }
 

@@ -1,26 +1,25 @@
-import Model from "../models/postgres-model.js";
-import ModelMongodb from "../models/mongodb-model.js";
-import CategoryMongodb from "../models/mongodb-category.js";
-import BrandMongodb from "../models/mongodb-brand.js";
-import { ObjectId } from "mongodb";
+export default (Model, ModelMongodb, CategoryMongodb, BrandMongodb,ObjectId) => ({
+	getModels: async (req, res) => {
+		try {
+			const models = await Model.findAll({
+				include: ["Brand", "Category", "Products"],
+			});
+			res.json(models);
+		} catch (error) {
+			res.status(500).json({
+				message: `An error occurred while retrieving the models : ${error.message}`,
+			});
+		}
+	},
 
-export const getModels = async (req, res) => {
-	try {
-		const models = await Model.findAll({
-			include: ["Brand", "Category", "Products"],
-		});
-		res.json(models);
-	} catch (error) {
-		res.status(500).json({
-			message: `An error occurred while retrieving the models : ${error.message}`,
-		});
-	}
-};
-
-export const createModel = async (req, res) => {
-	try {
-		const brandMongo = await BrandMongodb.findOne({ _id: new ObjectId(req.body.BrandId) });
-		const categoryMongo = await CategoryMongodb.findOne({ _id: new ObjectId(req.body.CategoryId) });
+	createModel: async (req, res) => {
+		try {
+			const brandMongo = await BrandMongodb.findOne({
+				_id: new ObjectId(req.body.BrandId),
+			});
+			const categoryMongo = await CategoryMongodb.findOne({
+				_id: new ObjectId(req.body.CategoryId),
+			});
 
 		const modelMongodb = await ModelMongodb({
 			name: req.body.name,
@@ -37,78 +36,79 @@ export const createModel = async (req, res) => {
 			message: `An error occurred while creating the model : ${error.message}`,
 		});
 	}
-};
+},
 
-export const updateModel = async (req, res) => {
-	try {
-		const { id } = req.params;
-		const modelDataToUpdate = req.body;
+	updateModel: async (req, res) => {
+		try {
+			const { id } = req.params;
+			const modelDataToUpdate = req.body;
 
-		if (!id) {
-			return res.status(400).json({ message: "Id parameter is missing" });
+			if (!id) {
+				return res.status(400).json({ message: "Id parameter is missing" });
+			}
+
+			const model = await Model.findOne({ where: { id } });
+			const modelMongo = await ModelMongodb.findOne({ _id: id });
+
+			if (!model) return res.status(404).json({ message: "Model not found" });
+
+			await model.update(modelDataToUpdate);
+			await modelMongo.updateOne(modelDataToUpdate);
+
+			res.json({ message: "Model updated successfully" });
+		} catch (error) {
+			res.status(500).json({
+				message: `An error occurred while updating the model : ${error.message}`,
+			});
 		}
+	},
 
-		const model = await Model.findOne({ where: { id } });
-		const modelMongo = await ModelMongodb.findOne({ _id: id });
+	deleteModel: async (req, res) => {
+		try {
+			const { id } = req.params;
 
-		if (!model) return res.status(404).json({ message: "Model not found" });
+			if (!id) {
+				return res.status(400).json({ message: "Id parameter is missing" });
+			}
 
-		await model.update(modelDataToUpdate);
-		await modelMongo.updateOne(modelDataToUpdate);
+			const model = await Model.findOne({ where: { id } });
+			const modelMongo = await ModelMongodb.findOne({ _id: id });
 
-		res.json({ message: "Model updated successfully" });
-	} catch (error) {
-		res.status(500).json({
-			message: `An error occurred while updating the model : ${error.message}`,
-		});
-	}
-};
+			if (!model) return res.status(404).json({ message: "Model not found" });
 
-export const deleteModel = async (req, res) => {
-	try {
-		const { id } = req.params;
+			await model.destroy();
+			await modelMongo.updateOne({ deletedAt: new Date() });
 
-		if (!id) {
-			return res.status(400).json({ message: "Id parameter is missing" });
+			res.json({
+				message: "Model deleted successfully",
+			});
+		} catch (error) {
+			res.status(500).json({
+				message: `An error occurred while deleting the model : ${error.message}`,
+			});
 		}
+	},
 
-		const model = await Model.findOne({ where: { id } });
-		const modelMongo = await ModelMongodb.findOne({ _id: id });
+	getModel: async (req, res) => {
+		try {
+			const { id } = req.params;
 
-		if (!model) return res.status(404).json({ message: "Model not found" });
+			if (!id) {
+				return res.status(400).json({ message: "Id parameter is missing" });
+			}
 
-		await model.destroy();
-		await modelMongo.updateOne({ deletedAt: new Date() });
+			const model = await Model.findOne({
+				where: { id },
+				include: ["Brand", "Category", "Products"],
+			});
 
-		res.json({
-			message: "Model deleted successfully",
-		});
-	} catch (error) {
-		res.status(500).json({
-			message: `An error occurred while deleting the model : ${error.message}`,
-		});
-	}
-};
+			if (!model) return res.status(404).json({ message: "Model not found" });
 
-export const getModel = async (req, res) => {
-	try {
-		const { id } = req.params;
-
-		if (!id) {
-			return res.status(400).json({ message: "Id parameter is missing" });
+			res.json(model);
+		} catch (error) {
+			res.status(500).json({
+				message: `An error occurred while retrieving the model : ${error.message}`,
+			});
 		}
-
-		const model = await Model.findOne({
-			where: { id },
-			include: ["Brand", "Category", "Products"],
-		});
-
-		if (!model) return res.status(404).json({ message: "Model not found" });
-
-		res.json(model);
-	} catch (error) {
-		res.status(500).json({
-			message: `An error occurred while retrieving the model : ${error.message}`,
-		});
-	}
-};
+	},
+});

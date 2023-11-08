@@ -60,6 +60,14 @@ Product.init(
     }
 );
 
+Product.belongsTo(Modele, {
+    as: "model",
+});
+
+Modele.hasMany(Product, {
+    as: "products",
+});
+
 Product.hasMany(Product_Images, {
     foreignKey: 'ProductId',
     as: "Product_Images",

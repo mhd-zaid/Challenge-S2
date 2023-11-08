@@ -1,12 +1,18 @@
 import express from "express";
-import {
+import productsRoutes from "../routes/productsRoutes.js";
+import Product from "../models/postgres-product.js";
+import ProductMongodb from "../models/mongodb-product.js";
+import Model from "../models/postgres-model.js";
+import mongoose from "mongoose";
+import { json } from "sequelize";
+const {
 	getProducts,
 	createProduct,
 	updateProduct,
 	deleteProduct,
 	getProduct,
 	uploadImage
-} from "../routes/productsRoutes.js";
+} = productsRoutes(Product, ProductMongodb, Model,mongoose, json);
 import multer from "multer";
 import path from "path";
 

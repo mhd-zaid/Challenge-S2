@@ -24,10 +24,11 @@ let updatingPassword =
 
 const getErrorMessage = (error: any) => {
   if (error.response) {
-    if (error.response.data.error.includes('Email')) return "Aucun compte n'est associé à cet email"
-    if (error.response.data.error.includes('Invalid token'))
+    if (error.response.data.message === 'Email not found')
+      return "Aucun compte n'est associé à cet email"
+    if (error.response.data.message === 'Invalid token')
       return 'Une erreur est survenue, veuillez vérifier que vous avez cliqué sur le dernier lien reçu par email'
-    if (error.response.data.error.includes('Invalid password'))
+    if (error.response.data.message === 'Invalid password')
       return 'Le mot de passe doit contenir au moins 12 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial'
   }
   return 'Une erreur est survenue'
@@ -36,30 +37,20 @@ const getErrorMessage = (error: any) => {
 const submit = async () => {
   try {
     if (!updatingPassword) {
-      axiosInstance
-        .post('/auth/request-password-reset', state.form)
-        .then(() => {
-          state.isEmailSent = true
-        })
-        .catch((error) => {
-          state.errors = getErrorMessage(error)
-        })
+      await axiosInstance.post('/auth/request-password-reset', state.form)
+      state.isEmailSent = true
     } else {
-      axiosInstance
-        .post('/auth/reset-password', {
-          email: route.query.email,
-          token: route.query.token,
-          password: state.form.password
-        })
-        .then(() => {
-          router.push('/login?password_reset=true')
-        })
-        .catch((error) => {
-          state.errors = getErrorMessage(error)
-        })
+      const resetPasswordData = {
+        email: route.query.email,
+        token: route.query.token,
+        password: state.form.password
+      }
+
+      await axiosInstance.post('/auth/reset-password', resetPasswordData)
+      router.push('/login?password_reset=true')
     }
-  } catch (e: any) {
-    console.error(e)
+  } catch (error) {
+    state.errors = getErrorMessage(error)
   }
 }
 </script>
@@ -84,7 +75,9 @@ const submit = async () => {
             Un email a été envoyé à votre adresse email pour réinitialiser votre mot de passe.
           </div>
           <div class="my-5">
-            <small v-if="state.errors.length" class="text-red-600">{{ state.errors }}</small>
+            <small v-if="state.errors.length && !state.isEmailSent" class="text-red-600">{{
+              state.errors
+            }}</small>
           </div>
 
           <div>

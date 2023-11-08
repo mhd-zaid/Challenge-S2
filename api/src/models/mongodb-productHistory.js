@@ -4,7 +4,7 @@ const productHistorySchema = new mongoose.Schema(
 	{
 		productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
 		quantityChange: { type: Number },
-		isAddition: { type: Boolean },
+		isAddition: { type: Boolean, default: true },
 	},
 	{
 		timestamps: true,
