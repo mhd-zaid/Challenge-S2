@@ -1,11 +1,15 @@
 import {DataTypes, Model} from "sequelize";
 import sequelize from "../config/sequelize-config.js";
+import Product from "./postgres-product.js";
 class Product_Images extends Model {}
 
 Product_Images.init({
     id: {
-        type: DataTypes.STRING,
+        type: DataTypes.UUID,
+        allowNull: false,
+        autoIncrement: true,
         primaryKey: true,
+        defaultValue: DataTypes.UUIDV4,
     },
     url: {
         type: DataTypes.STRING,
@@ -17,7 +21,5 @@ Product_Images.init({
         paranoid: true,
         modelName: "Product_Images",
     }
-
 );
-
 export default Product_Images;

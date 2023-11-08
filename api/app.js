@@ -15,19 +15,19 @@ import payments from "./src/router/paymentsRouter.js";
 import sequelize from "./src/config/sequelize-config.js";
 import mailTransporter from "./src/config/mail-config.js";
 import passwordRenewal from "./src/scripts/passwordRenewal.js";
-import mongodbProduct from "./src/models/mongodb-product.js";
-import mongodbModel from "./src/models/mongodb-model.js";
-import mongodbBrand from "./src/models/mongodb-brand.js";
-import mongodbCategory from "./src/models/mongodb-category.js";
-import mongodbOrder from "./src/models/mongodb-order.js";
-import fileUpload from "express-fileupload";
+import { fileURLToPath } from 'url';
+import path, { dirname } from 'path';
 
 const app = express();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 dotenv.config();
 
 app.use(express.json());
-app.use(fileUpload());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'uploads')));
 
 app.use((req, res, next) => {
 	res.setHeader("Access-Control-Allow-Origin", "*");

@@ -1,6 +1,7 @@
 import {DataTypes, INTEGER, Model} from "sequelize";
 import sequelize from "../config/sequelize-config.js";
 import Product_Images from "./postgres-product-images.js";
+import Modele from "./postgres-model.js";
 
 class Product extends Model {
 }
@@ -60,7 +61,14 @@ Product.init(
 );
 
 Product.hasMany(Product_Images, {
+    foreignKey: 'ProductId',
     as: "Product_Images",
+    onDelete: 'CASCADE'
 })
+
+Product.belongsTo(Modele, {
+    foreignKey: 'ModelId',
+    as: 'Modele',
+});
 
 export default Product;

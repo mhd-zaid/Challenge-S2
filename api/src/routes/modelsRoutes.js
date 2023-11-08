@@ -7,7 +7,7 @@ import { ObjectId } from "mongodb";
 export const getModels = async (req, res) => {
 	try {
 		const models = await Model.findAll({
-			include: ["Brand", "Category", "products"],
+			include: ["Brand", "Category", "Products"],
 		});
 		res.json(models);
 	} catch (error) {
@@ -28,11 +28,9 @@ export const createModel = async (req, res) => {
 			description: req.body.description,
 			category: categoryMongo,
 			brand: brandMongo,
-			products: [],
 		}).save();
 		const id = modelMongodb._id.toString();
-		const model = await Model.create({ id, ...req.body });
-
+		const model = await Model.create({ id, ...req.body});
 		res.json(model);
 	} catch (error) {
 		res.status(500).json({
@@ -81,7 +79,7 @@ export const deleteModel = async (req, res) => {
 
 		await model.destroy();
 		await modelMongo.updateOne({ deletedAt: new Date() });
-		
+
 		res.json({
 			message: "Model deleted successfully",
 		});
@@ -102,7 +100,7 @@ export const getModel = async (req, res) => {
 
 		const model = await Model.findOne({
 			where: { id },
-			include: ["Brand", "Category", "products"],
+			include: ["Brand", "Category", "Products"],
 		});
 
 		if (!model) return res.status(404).json({ message: "Model not found" });
