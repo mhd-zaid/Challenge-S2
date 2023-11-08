@@ -1,6 +1,5 @@
 import {DataTypes, Model} from "sequelize";
 import sequelize from "../config/sequelize-config.js";
-import Product from "./postgres-product.js";
 class Product_Images extends Model {}
 
 Product_Images.init({

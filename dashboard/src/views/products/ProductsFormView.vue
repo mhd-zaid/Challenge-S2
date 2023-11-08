@@ -25,17 +25,15 @@ const state = reactive({
 const id = router.currentRoute.value.params.id
 const init = async () => {
   const response = await axiosInstance.get('/models')
-  console.log(response.data, 'response')
   state.models = response.data.map((model: any) => {
     return {
       label: model.name + ' (' + model.gender + ')',
       value: model.id
     }
   })
-  if (id !== 'create') {
+  if (id) {
     const response = await axiosInstance.get(`/products/${id}`)
     state.form = response.data
-    state.form.models = response.data.models[0].id
   }
 }
 
@@ -47,7 +45,6 @@ const createProduct = async () => {
     state.images.forEach((fileItem: any) => {
       images.append('image', fileItem.file)
     })
-    console.log(response, 'response')
     await axiosInstance.post('/products/upload/'+response.data.id, images)
     await router.push('/products')
   } catch (e) {
@@ -85,9 +82,10 @@ init()
           id="registration-example"
           @submit="createProduct"
           enctype="multipart/form-data"
-          action="false"
+          :action="false"
           :classes="{
               form: 'bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2',
+              actions: 'hidden'
             }"
       >
         <div class="px-4 py-6 sm:p-8 ">
