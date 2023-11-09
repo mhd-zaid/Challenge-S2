@@ -44,6 +44,7 @@ const submit = async () => {
     localStorage.setItem('user', JSON.stringify(res))
     router.push('/')
   } catch (error) {
+    console.log(error)
     state.errors = getErrorMessage(error)
   }
 }

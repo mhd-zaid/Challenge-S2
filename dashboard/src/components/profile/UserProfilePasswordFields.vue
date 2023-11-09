@@ -14,36 +14,29 @@ const oldPassword = ref('')
 const newPassword = ref('')
 const confirmPassword = ref('')
 const passwordError = ref('')
+const confirmation = ref(false)
 
-const toggleEditing = () => {
+const toggleEditing = async () => {
   if (isEditing.value) {
     if (newPassword.value !== confirmPassword.value) {
       passwordError.value = 'Les mots de passe ne correspondent pas.'
       return
     }
-    axiosInstance
-      .patch('/users/' + props.userId + '/password', {
+    try {
+      await axiosInstance.patch('/users/' + props.userId + '/password', {
         oldPassword: oldPassword.value,
         newPassword: newPassword.value
       })
-      .then((res) => {
-        console.log(res)
-        isEditing.value = false
-        // TODO: Add notification
-      })
-      .catch((error) => {
-        console.error(error)
-        if (
-          JSON.stringify(error.response.data).includes('Old password or new password is missing')
-        ) {
-          passwordError.value = "L'ancien mot de passe ou le nouveau mot de passe est manquant."
-        } else if (JSON.stringify(error.response.data).includes('Invalid password')) {
-          passwordError.value = "L'ancien mot de passe ne correspond pas."
-        } else if (JSON.stringify(error.response.data).includes('Password must contain')) {
-          passwordError.value =
-            'Le mot de passe doit contenir au moins 12 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.'
-        } else passwordError.value = error.response.data
-      })
+      isEditing.value = false
+      confirmation.value = true
+    } catch (error: any) {
+      if (error.response.data.message === 'Invalid password') {
+        passwordError.value = "L'ancien mot de passe ne correspond pas."
+      } else if (error.response.data.message === 'Invalid new password') {
+        passwordError.value =
+          'Le mot de passe doit contenir au moins 12 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.'
+      } else passwordError.value = error.response.data
+    }
   } else {
     isEditing.value = true
   }
@@ -51,7 +44,8 @@ const toggleEditing = () => {
 </script>
 
 <template>
-  <div v-if="!isEditing" class="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5">
+  <div v-if="!isEditing" class="py-4 sm:py-5">
+    <div v-if="confirmation" class="text-green-600 my-5">Le mot de passe a bien été modifié.</div>
     <span class="flex-shrink-0">
       <button
         type="button"

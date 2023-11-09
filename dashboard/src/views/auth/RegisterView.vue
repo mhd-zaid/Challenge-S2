@@ -27,20 +27,18 @@ const submit = async () => {
       return
     }
 
-    const emailCheckResponse = await axiosInstance.get(
-      `/auth/check-email?email=${state.form.email}`
-    )
-
-    if (emailCheckResponse.data.message === 'Email already taken') {
-      state.errors = 'Un compte est déjà associé à cet email'
-      return
-    }
+    await axiosInstance.get(`/auth/check-email?email=${state.form.email}`)
 
     await axiosInstance.post('/auth/register', state.form)
     router.push('/login?registered=true')
   } catch (error: any) {
+    if (error.response) {
+      if (error.response.status === 409) {
+        state.errors = 'Un compte est déjà associé à cet email'
+        return
+      }
+    }
     state.errors = error.message
-    console.error(error)
   }
 }
 </script>
@@ -59,7 +57,7 @@ const submit = async () => {
           <p class="mt-2 text-sm leading-6 text-gray-500">
             Vous avez déjà un compte ?
             {{ ' ' }}
-            <RouterLink to="login" class="font-semibold text-gray-900 hover-text-gray-700"
+            <RouterLink to="login" class="font-semibold text-secondary hover:text-secondary-light"
               >Connectez-vous ici</RouterLink
             >
           </p>

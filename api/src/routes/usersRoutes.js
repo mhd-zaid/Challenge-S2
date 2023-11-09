@@ -94,6 +94,7 @@ export default (
 		}
 	},
 
+	// TODO: add admin verification before updating user role
 	updateUser: async (req, res) => {
 		try {
 			const { id } = req.params;
@@ -128,7 +129,7 @@ export default (
 					return res.status(400).json({
 						message: "Invalid password",
 					});
-				const hashedPassword = await bcrypt.hash(userDataToUpdate.password, 10);
+				const hashedPassword = await bcrypt.hash(userDataToUpdate.password, await bcrypt.genSalt(10));
 				userDataToUpdate.password = hashedPassword;
 				userDataToUpdate.passwordUpdatedAt = new Date();
 			}
@@ -219,7 +220,7 @@ export default (
 
 			if (!isValidPassword(newPassword))
 				return res.status(400).json({
-					message: "Invalid password",
+					message: "Invalid new password",
 				});
 
 			const hashedPassword = await bcrypt.hash(
