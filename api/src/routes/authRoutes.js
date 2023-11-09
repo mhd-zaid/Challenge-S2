@@ -14,11 +14,10 @@ export default (
 ) => ({
 	register: async (req, res) => {
 		try {
-			const { firstname, lastname, email, password, birthdate, role } =
+			const { firstname, lastname, email, password, birthdate } =
 				req.body;
-			if (role !== "ROLE_USER") return res.sendStatus(403);
 
-			if (!(firstname && lastname && email && password && birthdate && role))
+			if (!(firstname && lastname && email && password && birthdate))
 				return res.sendStatus(400);
 
 			if (!isUserMajor(birthdate))
@@ -53,7 +52,6 @@ export default (
 				firstname,
 				lastname,
 				email,
-				role,
 				birthdate: new Date(birthdate),
 				password: hashedPassword,
 				authentificationToken,
