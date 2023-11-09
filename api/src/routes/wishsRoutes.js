@@ -1,4 +1,4 @@
-export default (Wish) => ({
+export default (Wish, Product) => ({
 	getUserWish: async (req, res) => {
 		try {
 			const { id } = req.params;
@@ -26,7 +26,8 @@ export default (Wish) => ({
 			}
 
 			const wish = await Wish.findOne({ where: { userId: userId } });
-			if (!wish) return res.status(404).json({ message: "Wish not found" });
+			if (!wish)
+				return res.status(404).json({ message: "Wish not found" });
 
 			const product = await Product.findOne({ where: { id: productId } });
 			if (!product)
@@ -53,7 +54,8 @@ export default (Wish) => ({
 			}
 
 			const wish = await Wish.findOne({ where: { userId: userId } });
-			if (!wish) return res.status(404).json({ message: "Wish not found" });
+			if (!wish)
+				return res.status(404).json({ message: "Wish not found" });
 
 			const product = await Product.findOne({ where: { id: productId } });
 			if (!product)
