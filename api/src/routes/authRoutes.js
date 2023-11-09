@@ -14,10 +14,11 @@ export default (
 ) => ({
 	register: async (req, res) => {
 		try {
-			const { firstname, lastname, email, password, birthdate } =
+			const { firstname, lastname, email, password, birthdate, role } =
 				req.body;
+			if (role !== "ROLE_USER") return res.sendStatus(403);
 
-			if (!(firstname && lastname && email && password && birthdate))
+			if (!(firstname && lastname && email && password && birthdate && role))
 				return res.sendStatus(400);
 
 			if (!isUserMajor(birthdate))
@@ -52,6 +53,7 @@ export default (
 				firstname,
 				lastname,
 				email,
+				role,
 				birthdate: new Date(birthdate),
 				password: hashedPassword,
 				authentificationToken,
@@ -283,6 +285,9 @@ export default (
 			const user = await User.findOne({ where: { id: req.user.userId } });
 			if (!user)
 				return res.status(404).json({ message: "User not found" });
+			if (user.role === "ROLE_USER")
+				return res.status(403).json({ message: "Users can't access to this route" })
+
 			res.json(user);
 		} catch (error) {
 			res.status(500).json({
