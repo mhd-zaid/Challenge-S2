@@ -72,11 +72,23 @@ const hoveredRow = ref<number | null>(null)
                 <td
                   v-for="col in props.columns"
                   class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6 cursor-pointer"
-                  @click="
-                    col !== props.columns[props.columns.length] ? emit('showRow', row) : null
-                  "
+                  @click="col !== props.columns[props.columns.length] ? emit('showRow', row) : null"
                 >
-                  {{ getValue(row, col) }}
+                  <img
+                    v-if="col === 'productImage' && getValue(row, 'productImages')"
+                    class="w-16"
+                    :src="getValue(row, col)"
+                    alt="Image du produit"
+                  />
+                  <img
+                    v-else-if="col === 'productImage'"
+                    class="w-16"
+                    src="/images/no-image.jpeg"
+                    alt="Acunne image disponible"
+                  />
+                  <span v-else>
+                    {{ getValue(row, col) }}
+                  </span>
                 </td>
                 <td
                   v-if="props.actions"
