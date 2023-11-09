@@ -36,6 +36,8 @@ export const columnNames: any = {
   alerteQuantity: 'Qté. avant alerte',
   deletedAt: 'Date de suppression',
   modelId: 'ID modèle',
+  productImage: 'Image',
+  productImages: 'Images'
 }
 
 export const formatDate = (date: string) => {
@@ -48,6 +50,24 @@ export const formatDate = (date: string) => {
   const seconds = String(dateObject.getSeconds()).padStart(2, '0')
 
   return `${day}/${month}/${year} à ${hours}:${minutes}:${seconds}`
+}
+
+const getImages = (productImages: any) => {
+  if (!productImages || productImages.length === 0) {
+    return ''
+  }
+
+  return productImages.map((productImage: any) => {
+    return `http://localhost:3000/images/${productImage.url}`
+  })
+}
+
+const getFirstImage = (productImages: any) => {
+  if (!productImages || productImages.length === 0) {
+    return ''
+  }
+
+  return `http://localhost:3000/images/${productImages[0].url}`
 }
 
 export const getValue = (row: any, col: any) => {
@@ -79,6 +99,14 @@ export const getValue = (row: any, col: any) => {
     },
     discount: {
       null: 'Aucune'
+    },
+    color: {
+      white: 'Blanc',
+      black: 'Noir',
+      red: 'Rouge',
+      blue: 'Bleu',
+      green: 'Vert',
+      yellow: 'Jaune'
     }
   }
 
@@ -101,6 +129,14 @@ export const getValue = (row: any, col: any) => {
 
   if (col === 'user') {
     return row[col].id
+  }
+
+  if (col === 'productImages') {
+    return getImages(row[col])
+  }
+
+  if (col === 'productImage') {
+    return getFirstImage(row['productImages'])
   }
 
   return row[col]
