@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "test": "jest",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "migrate:schema": "node migrate.js",
+    "fixtures:load": "node fixturesLoad.js"
   },
   "author": "",
   "license": "ISC",
