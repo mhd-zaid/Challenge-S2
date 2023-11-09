@@ -9,6 +9,11 @@ import { ref } from 'vue'
 import { columnNames, getValue } from '@/utils/valuesUpdater'
 
 const props = defineProps({
+  actions: {
+    required: false,
+    type: Boolean,
+    default: true
+  },
   columns: {
     required: true,
     type: Object,
@@ -44,6 +49,7 @@ const hoveredRow = ref<number | null>(null)
                   <i class="bi bi-sort-alpha-down" aria-label="Sort Icon"></i>
                 </th>
                 <th
+                  v-if="props.actions"
                   scope="col"
                   class="py-3.5 pl-4 pr-6 text-right text-sm font-semibold text-gray-900 sm:pl-6"
                 >
@@ -73,6 +79,7 @@ const hoveredRow = ref<number | null>(null)
                   {{ getValue(row, col) }}
                 </td>
                 <td
+                  v-if="props.actions"
                   class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 flex justify-end"
                 >
                   <div class="w-24 flex justify-end items-center space-x-2">

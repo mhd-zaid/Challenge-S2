@@ -27,6 +27,15 @@ export const columnNames: any = {
   size: 'Taille',
   color: 'Couleur',
   status: 'Statut',
+  userId: 'ID utilisateur',
+  deliveryAddress: 'Adresse de livraison',
+  products: 'Produits',
+  user: 'ID utilisateur',
+  sku: 'SKU',
+  discount: 'Réduction',
+  alerteQuantity: 'Qté. avant alerte',
+  deletedAt: 'Date de suppression',
+  modelId: 'ID modèle',
 }
 
 export const formatDate = (date: string) => {
@@ -61,12 +70,15 @@ export const getValue = (row: any, col: any) => {
       false: 'Non'
     },
     status: {
-      "payment pending": 'En attente',
+      'payment pending': 'En attente',
       paid: 'Payée',
       processing: 'En cours',
       shipped: 'Expédiée',
       delivered: 'Livrée',
       cancelled: 'Annulée'
+    },
+    discount: {
+      null: 'Aucune'
     }
   }
 
@@ -75,13 +87,20 @@ export const getValue = (row: any, col: any) => {
     return mapping[row[col]] || row[col]
   }
 
-  if (
-    col === 'createdAt' ||
-    col === 'updatedAt' ||
-    col === 'birthdate' ||
-    col === 'passwordUpdatedAt'
-  ) {
+  const dateColumns = [
+    'date',
+    'createdAt',
+    'updatedAt',
+    'deletedAt',
+    'birthdate',
+    'passwordUpdatedAt'
+  ]
+  if (col in dateColumns) {
     return formatDate(row[col])
+  }
+
+  if (col === 'user') {
+    return row[col].id
   }
 
   return row[col]

@@ -1,77 +1,77 @@
 <script lang="ts" setup>
-import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
-import axiosInstance from "@/utils/axiosInstance";
-import { reactive } from "vue";
+import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue'
+import axiosInstance from '@/utils/axiosInstance'
+import { onBeforeMount } from 'vue'
+import { ref } from 'vue'
+import { onMounted, reactive } from 'vue'
+import { useRoute } from 'vue-router'
+import { columnNames, getValue } from '@/utils/valuesUpdater'
 
-const id = window.location.pathname.split("/")[2];
+const route = useRoute()
+
 const state = reactive({
-product: {
-  models:[
-    {}
-  ]
-},
+  product: <any>{}
 })
+
+const productId = ref<string | null>(null)
 
 const getProduct = async () => {
   try {
-    const response = await axiosInstance.get(`/products/${id}`);
-    state.product = response.data
-    console.log(response.data)
-  } catch (error) {
-      console.log(error)
+    await axiosInstance.get(`/products/${productId.value}`).then((res) => {
+      state.product = res.data
+    })
+  } catch (e: any) {
+    throw e
   }
 }
 
-getProduct();
+onBeforeMount(() => {
+  if (typeof route.params.id === 'string') productId.value = route.params.id
+})
 
-
+onMounted(() => {
+  getProduct()
+})
 </script>
 <template>
   <AuthenticatedLayout>
-    <h1>Product Details</h1>
-    <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-        <RouterLink :to="{name : 'products'}" class="font-semibold text-gray-900 hover:text-gray-700">
-        <button
-            type="button"
-            class="block rounded-md bg-primary px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-primary-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+    <div class="px-4">
+      <div class="sm:flex sm:items-center">
+        <div class="sm:flex-auto">
+          <h1 class="text-base font-semibold leading-6 text-gray-900">
+            {{
+              state.product && state.product.id
+                ? `Produit n° ${state.product.sku}`
+                : 'Produit non disponible'
+            }}
+          </h1>
+        </div>
+        <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+          <RouterLink
+            :to="{ name: 'users' }"
+            class="font-semibold text-indigo-600 hover:text-indigo-500"
+          >
+            <button
+              type="button"
+              class="block rounded-md bg-primary px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-primary-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >
-            return to products
-        </button>
-        </RouterLink>
+              Retour à la liste
+            </button>
+          </RouterLink>
+        </div>
+      </div>
+      <div class="mt-8 flow-root">
+        <table class="min-w-full divide-y divide-gray-200">
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr v-for="(value, key) in state.product" :key="key">
+              <td class="px-6 py-4 text-sm font-medium text-gray-500">
+                {{ columnNames[key] ? columnNames[key] : key }}
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-900">{{ getValue(state.product, key) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-    <table>
-      <thead>
-        <tr>
-          <th>Model</th>
-          <th>Model Gender</th>
-          <th>Name</th>
-          <th>Price</th>
-          <th>Quantity</th>
-          <th>VAT</th>
-          <th>Size</th>
-          <th>Color</th>
-          <th>Image</th>
-          <th>Created At</th>
-          <th>Updated At</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>{{ state.product.models[0].name }}</td>
-          <td>{{ state.product.models[0].gender }}</td>
-          <td>{{ state.product.name }}</td>
-          <td>{{ state.product.price }}</td>
-          <td>{{ state.product.quantity }}</td>
-          <td>{{ state.product.vat }}</td>
-          <td>{{ state.product.size }}</td>
-          <td>{{ state.product.color }}</td>
-          <td v-if="state.product.url"><img :src="'/src/uploads'+ state.product.url" alt=""></td>
-          <td v-else></td>
-          <td>{{ state.product.createdAt }}</td>
-          <td>{{ state.product.updatedAt }}</td>
-        </tr>
-      </tbody>
-    </table>
-
   </AuthenticatedLayout>
 </template>
