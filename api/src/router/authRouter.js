@@ -17,6 +17,8 @@ const {
     login,
     confirmEmail,
     getMe,
+    checkIfAdmin,
+    checkIfUser,
     checkEmail,
     requestPasswordReset,
     resetPassword,
@@ -29,6 +31,8 @@ router.post("/register", register);
 router.post("/login", login);
 router.get("/confirm", confirmEmail);
 router.get("/me", authMiddleware, getMe);
+router.get("/check-if-admin", authMiddleware, checkIfAdmin);
+router.get("/check-if-authenticated", authMiddleware, checkIfUser);
 router.get("/check-email", checkEmail);
 router.post("/request-password-reset", requestPasswordReset);
 router.post("/reset-password", resetPassword);

@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '@/views/DashboardView.vue'
 import { authRoutes } from '@/router/auth'
 import { CategoriesRoutes } from '@/router/categories'
 import { UserRoutes } from '@/router/users'
@@ -21,7 +20,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'dashboard',
-      component: HomeView,
+      component: () => import('@/views/DashboardView.vue'),
       meta: {
         title: 'Dashboard',
         requiresAuthentication: true
@@ -40,7 +39,7 @@ router.beforeEach(async (to, from, next) => {
   } else {
     if (loggedIn) {
       try {
-        const response = await fetch(`http://localhost:3000/auth/me`, {
+        const response = await fetch(`http://localhost:3000/auth/check-if-admin`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
