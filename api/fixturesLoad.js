@@ -26,3 +26,10 @@ sequelize
         modelsFixture.forEach(model => Model.create(model))
     })
     .then(() => console.log("Models loaded"))
+    .then(async () => {
+        const productsFixtureModule = await import("./src/fixtures/product.js");
+        const productsFixture = productsFixtureModule.default;
+        
+        productsFixture.forEach(product => Product.create(product))
+    })
+    .then(() => console.log("Products loaded"))
