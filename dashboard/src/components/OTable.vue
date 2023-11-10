@@ -49,7 +49,6 @@ const hoveredRow = ref<number | null>(null)
                   <i class="bi bi-sort-alpha-down" aria-label="Sort Icon"></i>
                 </th>
                 <th
-                  v-if="props.actions"
                   scope="col"
                   class="py-3.5 pl-4 pr-6 text-right text-sm font-semibold text-gray-900 sm:pl-6"
                 >

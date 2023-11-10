@@ -13,8 +13,4 @@ const sequelize = new Sequelize(process.env.POSTGRES_URI, {
     logging: false, // Désactive les logs Sequelize
 });
 
-sequelize.sync({alter: true}).then(() => {
-    console.log("Database & tables created!");
-});
-
 export default sequelize;

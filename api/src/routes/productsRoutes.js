@@ -4,7 +4,12 @@ export default (Product, Model, Product_Images, ProductMongodb, mongoose) => ({
 			const products = await Product.findAll({
 				include: ["model", "productImages"],
 			});
-			res.json(products);
+			res.json(
+				products.map((product) => ({
+					...product.dataValues,
+					price: (product.dataValues.price / 100).toFixed(2),
+				}))
+			);
 		} catch (error) {
 			res.status(500).json({
 				message: `An error occurred while retrieving the products : ${error.message}`,
@@ -20,7 +25,7 @@ export default (Product, Model, Product_Images, ProductMongodb, mongoose) => ({
 
 			const productDataToCreate = {
 				name: req.body.name,
-				price: req.body.price,
+				price: req.body.price * 100,
 				vat: req.body.vat,
 				quantity: req.body.quantity,
 				size: req.body.size,
@@ -56,7 +61,7 @@ export default (Product, Model, Product_Images, ProductMongodb, mongoose) => ({
 
 			const productDataToUpdate = {
 				name: req.body.name,
-				price: req.body.price,
+				price: req.body.price * 100,
 				vat: req.body.vat,
 				quantity: req.body.quantity,
 				size: req.body.size,
@@ -137,6 +142,7 @@ export default (Product, Model, Product_Images, ProductMongodb, mongoose) => ({
 			if (!product)
 				return res.status(404).json({ message: "Product not found" });
 
+			product.price = (product.price / 100).toFixed(2);
 			res.json(product);
 		} catch (error) {
 			res.status(500).json({
