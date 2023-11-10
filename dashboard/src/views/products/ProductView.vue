@@ -23,7 +23,6 @@ const getProduct = async () => {
   } catch (e: any) {
     throw e
   }
-  console.log(state.product)
 }
 
 onBeforeMount(() => {

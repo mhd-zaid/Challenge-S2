@@ -37,7 +37,8 @@ export const columnNames: any = {
   deletedAt: 'Date de suppression',
   modelId: 'ID modèle',
   productImage: 'Image',
-  productImages: 'Images'
+  productImages: 'Images',
+  model: 'Modèle'
 }
 
 export const formatDate = (date: string) => {
@@ -68,6 +69,14 @@ const getFirstImage = (productImages: any) => {
   }
 
   return `http://localhost:3000/images/${productImages[0].url}`
+}
+
+const getModel = (model: any) => {
+  if (!model) {
+    return ''
+  }
+
+  return `${model.name} ${model.gender}`
 }
 
 export const getValue = (row: any, col: any) => {
@@ -106,7 +115,7 @@ export const getValue = (row: any, col: any) => {
       red: 'Rouge',
       blue: 'Bleu',
       green: 'Vert',
-      yellow: 'Jaune'
+      yellow: 'Jaune',
     }
   }
 
@@ -137,6 +146,10 @@ export const getValue = (row: any, col: any) => {
 
   if (col === 'productImage') {
     return getFirstImage(row['productImages'])
+  }
+
+  if (col === 'model') {
+    return getModel(row[col])
   }
 
   return row[col]

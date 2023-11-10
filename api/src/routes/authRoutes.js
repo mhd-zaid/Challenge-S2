@@ -283,8 +283,6 @@ export default (
 			const user = await User.findOne({ where: { id: req.user.userId } });
 			if (!user)
 				return res.status(404).json({ message: "User not found" });
-			if (user.role === "ROLE_USER")
-				return res.status(403).json({ message: "Users can't access to this route" })
 
 			res.json(user);
 		} catch (error) {
