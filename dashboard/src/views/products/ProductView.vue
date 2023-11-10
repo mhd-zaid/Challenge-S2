@@ -68,14 +68,17 @@ onMounted(() => {
               <td class="px-6 py-4 text-sm font-medium text-gray-500">
                 {{ columnNames[key] ? columnNames[key] : key }}
               </td>
-              <td :class="{ 'flex': key === 'productImages' }" class="px-6 py-4 text-sm text-gray-900">
-                  <img
-                  v-if="key === 'productImages'"
-                    class="w-48 h-32 object-cover"
-                    v-for="url in getValue(state.product, key)"
-                    :src="url"
-                    alt="Image du produit"
-                  />
+              <td
+                :class="{ flex: typeof key === 'string' && key === 'productImages' }"
+                class="px-6 py-4 text-sm text-gray-900"
+              >
+                <img
+                  v-if="typeof key === 'string' && key === 'productImages'"
+                  class="w-48 h-32 object-cover"
+                  v-for="url in getValue(state.product, key)"
+                  :src="url"
+                  alt="Image du produit"
+                />
                 <span v-else>
                   {{ getValue(state.product, key) }}
                 </span>
