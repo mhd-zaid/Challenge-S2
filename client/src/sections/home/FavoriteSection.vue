@@ -14,10 +14,10 @@ const props = defineProps({
           Nos meilleures ventes
         </h2>
         <a
-          href="#"
-          class="hidden text-sm font-semibold text-indigo-600 hover:text-indigo-500 sm:block"
+          href="/prodcuts?bestsellers=true"
+          class="hidden text-sm font-semibold text-primary-600 hover:text-primary-500 sm:block"
         >
-          Recherchez parmis toutes nos meilleures ventes
+          Voir toutes les meilleures ventes
           <span aria-hidden="true"> &rarr;</span>
         </a>
       </div>
@@ -44,7 +44,7 @@ const props = defineProps({
       </div>
 
       <div class="mt-6 sm:hidden">
-        <a href="#" class="block text-sm font-semibold text-indigo-600 hover:text-indigo-500">
+        <a href="#" class="block text-sm font-semibold text-primary-600 hover:text-primary-500">
           Recherchez parmis toutes nos meilleures ventes
           <span aria-hidden="true"> &rarr;</span>
         </a>

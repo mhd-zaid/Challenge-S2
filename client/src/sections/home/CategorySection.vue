@@ -7,10 +7,10 @@
           Achetez par catégories
         </h2>
         <a
-          href="#"
-          class="hidden text-sm font-semibold text-indigo-600 hover:text-indigo-500 sm:block"
+          href="/products"
+          class="hidden text-sm font-semibold text-primary-600 hover:text-primary-500 sm:block"
         >
-          Rechercher toutes les catégories
+          Voir toutes les catégories
           <span aria-hidden="true"> &rarr;</span>
         </a>
       </div>
@@ -96,7 +96,7 @@
       </div>
 
       <div class="mt-6 sm:hidden">
-        <a href="#" class="block text-sm font-semibold text-indigo-600 hover:text-indigo-500">
+        <a href="#" class="block text-sm font-semibold text-primary-600 hover:text-primary-500">
           Rechercher toutes les catégories
           <span aria-hidden="true"> &rarr;</span>
         </a>

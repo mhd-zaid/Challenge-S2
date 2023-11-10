@@ -14,15 +14,15 @@ import { CheckCircleIcon, InformationCircleIcon } from '@heroicons/vue/20/solid'
           <p>Faucibus commodo massa rhoncus, volutpat. Dignissim sed eget risus enim. Mattis mauris semper sed amet vitae sed turpis id. Id dolor praesent donec est. Odio penatibus risus viverra tellus varius sit neque erat velit. Faucibus commodo massa rhoncus, volutpat. Dignissim sed eget risus enim. Mattis mauris semper sed amet vitae sed turpis id.</p>
           <ul role="list" class="mt-8 max-w-xl space-y-8 text-gray-600">
             <li class="flex gap-x-3">
-              <CheckCircleIcon class="mt-1 h-5 w-5 flex-none text-indigo-600" aria-hidden="true" />
+              <CheckCircleIcon class="mt-1 h-5 w-5 flex-none text-primary-600" aria-hidden="true" />
               <span><strong class="font-semibold text-gray-900">Data types.</strong> Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit perferendis suscipit eaque, iste dolor cupiditate blanditiis ratione.</span>
             </li>
             <li class="flex gap-x-3">
-              <CheckCircleIcon class="mt-1 h-5 w-5 flex-none text-indigo-600" aria-hidden="true" />
+              <CheckCircleIcon class="mt-1 h-5 w-5 flex-none text-primary-600" aria-hidden="true" />
               <span><strong class="font-semibold text-gray-900">Loops.</strong> Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem cupidatat commodo.</span>
             </li>
             <li class="flex gap-x-3">
-              <CheckCircleIcon class="mt-1 h-5 w-5 flex-none text-indigo-600" aria-hidden="true" />
+              <CheckCircleIcon class="mt-1 h-5 w-5 flex-none text-primary-600" aria-hidden="true" />
               <span><strong class="font-semibold text-gray-900">Events.</strong> Ac tincidunt sapien vehicula erat auctor pellentesque rhoncus. Et magna sit morbi lobortis.</span>
             </li>
           </ul>
