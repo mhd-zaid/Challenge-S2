@@ -9,15 +9,6 @@ export const OrderRoutes = [
         }
     },
     {
-        path: '/orders/create',
-        name: 'order-create',
-        component: () => import('@/views/orders/OrderCreate.vue'),
-        meta : {
-            title: 'Create Order',
-            requiresAuthentication: true,
-        }
-    },
-    {
         path: '/orders/:id',
         name: 'order',
         component: () => import('@/views/orders/OrderView.vue'),
@@ -26,13 +17,4 @@ export const OrderRoutes = [
             requiresAuthentication: true,
         }
     },
-    {
-        path: '/orders/:id/edit',
-        name: 'order-edit',
-        component: () => import('@/views/orders/OrderEdit.vue'),
-        meta : {
-            title: 'Edit Order :id',
-            requiresAuthentication: true,
-        }
-    }
 ]

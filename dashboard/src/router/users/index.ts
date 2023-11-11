@@ -9,15 +9,6 @@ export const UserRoutes = [
         }
     },
     {
-        path: '/users/create',
-        name: 'user-create',
-        component: () => import('@/views/users/UserCreate.vue'),
-        meta : {
-            title: 'Create User',
-            requiresAuthentication: true,
-        }
-    },
-    {
         path: '/users/:id',
         name: 'user',
         component: () => import('@/views/users/UserView.vue'),
@@ -26,13 +17,4 @@ export const UserRoutes = [
             requiresAuthentication: true,
         }
     },
-    {
-        path: '/users/:id/edit',
-        name: 'user-edit',
-        component: () => import('@/views/users/UserEdit.vue'),
-        meta : {
-            title: 'Edit User :id',
-            requiresAuthentication: true,
-        }
-    }
 ]
