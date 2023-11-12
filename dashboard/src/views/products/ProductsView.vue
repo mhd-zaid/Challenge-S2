@@ -17,7 +17,6 @@ const state = reactive({
 })
 const abortController = new AbortController()
 const getProducts = async () => {
-  try {
     await axiosInstance.get('/products').then((res) => {
       state.columns = [
         'productImages',
@@ -34,21 +33,14 @@ const getProducts = async () => {
     })
     // change productImages to productImage to differentiate first image from others
     state.columns[0] = 'productImage'
-  } catch (e: any) {
-    throw e
-  }
 }
 
 const deleteProduct = async (id: string) => {
-  try {
     await axiosInstance.delete(`/products/${id}`).then(() => {
       state.openConfirmation = false
       state.selectedId = ''
       getProducts()
     })
-  } catch (e: any) {
-    throw e
-  }
 }
 
 const OpenConfirmationModal = (product: any) => {

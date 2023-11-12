@@ -83,7 +83,7 @@ const hoveredRow = ref<number | null>(null)
                     v-else-if="col === 'productImage'"
                     class="w-16"
                     src="/images/no-image.jpeg"
-                    alt="Acunne image disponible"
+                    alt="Aucune image disponible"
                   />
                   <span v-else>
                     {{ getValue(row, col) }}

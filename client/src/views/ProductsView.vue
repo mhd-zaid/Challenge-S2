@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import LayoutComponent from "@/layout/LayoutComponent.vue";
-import {ref} from 'vue'
+import {reactive, ref} from 'vue'
 import {
   Dialog,
   DialogPanel,
@@ -12,9 +12,35 @@ import {
 } from '@headlessui/vue'
 import {XMarkIcon} from '@heroicons/vue/24/outline'
 import {ChevronDownIcon, PlusIcon} from '@heroicons/vue/20/solid'
+import axiosInstance from "@/utils/axiosInstance";
+
+const state = reactive({
+  products: [],
+  brands: [],
+  categories: [],
+  models: [],
+})
+const mobileFiltersOpen = ref(false)
+
+const init = async () => {
+  await axiosInstance.get('/products')
+      .then((res) => {
+        state.products = res.data
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+}
+init()
 
 
-const breadcrumbs = [{id: 1, name: 'Men', href: '#'}]
+const getImage = (product: any) => {
+  if (product.productImages.length > 0) {
+    return `http://localhost:3000/images/${product.productImages[0].url}`
+  } else {
+    return '/images/no-image.jpeg'
+  }
+}
 const filters = [
   {
     id: 'color',
@@ -52,58 +78,6 @@ const filters = [
     ],
   },
 ]
-const products = [
-  {
-    id: 1,
-    name: 'Basic Tee 8-Pack',
-    href: '#',
-    price: '$256',
-    description: 'Get the full lineup of our Basic Tees. Have a fresh shirt all week, and an extra for laundry day.',
-    options: '8 colors',
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/category-page-02-image-card-01.jpg',
-    imageAlt: 'Eight shirts arranged on table in black, olive, grey, blue, white, red, mustard, and green.',
-  },
-  {
-    id: 2,
-    name: 'Basic Tee',
-    href: '#',
-    price: '$32',
-    description: 'Look like a visionary CEO and wear the same black t-shirt every day.',
-    options: 'Black',
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/category-page-02-image-card-02.jpg',
-    imageAlt: 'Front of plain black t-shirt.',
-  },
-  // More products...
-]
-const footerNavigation = {
-  products: [
-    {name: 'Bags', href: '#'},
-    {name: 'Tees', href: '#'},
-    {name: 'Objects', href: '#'},
-    {name: 'Home Goods', href: '#'},
-    {name: 'Accessories', href: '#'},
-  ],
-  company: [
-    {name: 'Who we are', href: '#'},
-    {name: 'Sustainability', href: '#'},
-    {name: 'Press', href: '#'},
-    {name: 'Careers', href: '#'},
-    {name: 'Terms & Conditions', href: '#'},
-    {name: 'Privacy', href: '#'},
-  ],
-  customerService: [
-    {name: 'Contact', href: '#'},
-    {name: 'Shipping', href: '#'},
-    {name: 'Returns', href: '#'},
-    {name: 'Warranty', href: '#'},
-    {name: 'Secure Payments', href: '#'},
-    {name: 'FAQ', href: '#'},
-    {name: 'Find a store', href: '#'},
-  ],
-}
-
-const mobileFiltersOpen = ref(false)
-
 </script>
 
 <template>
@@ -172,7 +146,7 @@ const mobileFiltersOpen = ref(false)
           </div>
         </Dialog>
       </TransitionRoot>
-      <div class=" px-6 py-24 lg:px-8 bg-primary-50">
+      <div class=" px-6 py-24 lg:px-8 bg-gray-100">
         <div class="mx-auto max-w-2xl text-center">
           <h1 class="mt-2 text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">Nouvel arrivage</h1>
           <p class="mt-6 text-lg leading-8 text-gray-600">Variété de chaussures pour hommes et femmes de haute qualité
@@ -212,25 +186,23 @@ const mobileFiltersOpen = ref(false)
           <section aria-labelledby="product-heading" class="mt-6 lg:col-span-2 lg:mt-0 xl:col-span-3">
             <h2 id="product-heading" class="sr-only">Products</h2>
             <div class="grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-10 lg:gap-x-8 xl:grid-cols-3">
-              <div v-for="product in products" :key="product.id"
+              <div v-for="product in state.products" :key="product.id"
                    class="group relative flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white">
-                <div class="aspect-h-4 aspect-w-3 bg-gray-200 sm:aspect-none group-hover:opacity-75 sm:h-96">
-                  <img :src="product.imageSrc" :alt="product.imageAlt"
-                       class="h-full w-full object-cover object-center sm:h-full sm:w-full"/>
-                </div>
-                <div class="flex flex-1 flex-col space-y-2 p-4">
-                  <h3 class="text-sm font-medium text-gray-900">
-                    <a :href="product.href">
-                      <span aria-hidden="true" class="absolute inset-0"/>
-                      {{ product.name }}
-                    </a>
-                  </h3>
-                  <p class="text-sm text-gray-500">{{ product.description }}</p>
-                  <div class="flex flex-1 flex-col justify-end">
-                    <p class="text-sm italic text-gray-500">{{ product.options }}</p>
-                    <p class="text-base font-medium text-gray-900">{{ product.price }}</p>
+                <RouterLink :to="'/products/'+product.id">
+                  <div class="aspect-h-4 aspect-w-3 bg-gray-200 sm:aspect-none group-hover:opacity-75 sm:h-96">
+                    <img :src="getImage(product)" alt="Front of men&#039;s Basic Tee in black."
+                         class="h-full w-full object-cover object-center sm:h-full sm:w-full"/>
                   </div>
-                </div>
+                  <div class="flex flex-1 flex-col space-y-2 p-4">
+                    <h3 class="text-sm font-medium text-gray-900">
+                      {{ product.name }}
+                    </h3>
+                    <p class="text-sm text-gray-500">{{ product?.model?.description }}</p>
+                    <div class="flex flex-1 flex-col justify-end">
+                      <p class="text-base font-medium text-gray-900">{{ product.price }} €</p>
+                    </div>
+                  </div>
+                </RouterLink>
               </div>
             </div>
           </section>
