@@ -172,16 +172,14 @@ const mobileFiltersOpen = ref(false)
           </div>
         </Dialog>
       </TransitionRoot>
-
-      <div class="mx-auto max-w-2xl px-4 lg:max-w-7xl lg:px-8">
-        <div class="bg-white px-6 py-24 lg:px-8">
-          <div class="mx-auto max-w-2xl text-center">
-            <h1 class="mt-2 text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">Nouvel arrivage</h1>
-            <p class="mt-6 text-lg leading-8 text-gray-600">Variété de chaussures pour hommes et femmes de haute qualité
-              et de marques internationales</p>
-          </div>
+      <div class=" px-6 py-24 lg:px-8 bg-primary-50">
+        <div class="mx-auto max-w-2xl text-center">
+          <h1 class="mt-2 text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">Nouvel arrivage</h1>
+          <p class="mt-6 text-lg leading-8 text-gray-600">Variété de chaussures pour hommes et femmes de haute qualité
+            et de marques internationales</p>
         </div>
-
+      </div>
+      <div class="mx-auto max-w-2xl px-4 lg:max-w-7xl lg:px-8 ">
         <div class="pb-24 pt-12 lg:grid lg:grid-cols-3 lg:gap-x-8 xl:grid-cols-4">
           <aside>
             <h2 class="sr-only">Filters</h2>

@@ -5,6 +5,7 @@ import UserProfileField from '@/components/profile/UserProfileField.vue'
 import UserProfilePasswordFields from '@/components/profile/UserProfilePasswordFields.vue'
 import UserProfileSwitchField from '@/components/profile/UserProfileSwitchField.vue'
 import LayoutComponent from "@/layout/LayoutComponent.vue";
+import HistorySection from "@/sections/profile/HistorySection.vue";
 
 const state: { user: any; tabs: any[]; currentModifications: any } = reactive({
   user: null,
@@ -219,6 +220,8 @@ getUser()
                     </p>
                   </div>
                   <div class="mt-6">
+
+                    <HistorySection/>
 
                   </div>
                 </div>
