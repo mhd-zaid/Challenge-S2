@@ -1,5 +1,11 @@
 import express from "express";
-import { getUserWish, addProductToWish, deleteProductFromWish} from '../routes/wishsRoutes.js';
+import wishsRoutes from "../routes/wishsRoutes.js";
+import Wish from "../models/postgres-wish.js";
+import Product from "../models/postgres-product.js";
+const { getUserWish, addProductToWish, deleteProductFromWish } = wishsRoutes(
+	Wish,
+	Product
+);
 
 const router = express.Router();
 

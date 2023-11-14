@@ -9,7 +9,14 @@ const isValidPassword = (password) => {
 };
 
 const generateEncryptionKey = () => {
-	return crypto.randomBytes(32).toString("hex");
+	const charset =
+		"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	let result = "";
+	for (let i = 0; i < 12; i++) {
+		const randomIndex = Math.floor(Math.random() * charset.length);
+		result += charset.charAt(randomIndex);
+	}
+	return result;
 };
 
 const anonymizeUserData = (user, encryptionKey) => {
@@ -63,5 +70,5 @@ export {
 	anonymizeUserData,
 	generateEncryptionKey,
 	decryptUserData,
-    isUserMajor,
+	isUserMajor,
 };

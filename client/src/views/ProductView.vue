@@ -264,7 +264,7 @@ const selectedSize = ref(product.sizes[2])
                 <StarIcon v-for="rating in [0, 1, 2, 3, 4]" :key="rating" :class="[reviews.average > rating ? 'text-gray-900' : 'text-gray-200', 'h-5 w-5 flex-shrink-0']" aria-hidden="true" />
               </div>
               <p class="sr-only">{{ reviews.average }} out of 5 stars</p>
-              <a :href="reviews.href" class="ml-3 text-sm font-medium text-indigo-600 hover:text-indigo-500">{{ reviews.totalCount }} reviews</a>
+              <a :href="reviews.href" class="ml-3 text-sm font-medium text-primary-600 hover:text-primary-500">{{ reviews.totalCount }} reviews</a>
             </div>
           </div>
 
@@ -290,14 +290,14 @@ const selectedSize = ref(product.sizes[2])
             <div class="mt-10">
               <div class="flex items-center justify-between">
                 <h3 class="text-sm font-medium text-gray-900">Size</h3>
-                <a href="#" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">Size guide</a>
+                <a href="#" class="text-sm font-medium text-primary-600 hover:text-primary-500">Size guide</a>
               </div>
 
               <RadioGroup v-model="selectedSize" class="mt-4">
                 <RadioGroupLabel class="sr-only">Choose a size</RadioGroupLabel>
                 <div class="grid grid-cols-4 gap-4 sm:grid-cols-8 lg:grid-cols-4">
                   <RadioGroupOption as="template" v-for="size in product.sizes" :key="size.name" :value="size" :disabled="!size.inStock" v-slot="{ active, checked }">
-                    <div :class="[size.inStock ? 'cursor-pointer bg-white text-gray-900 shadow-sm' : 'cursor-not-allowed bg-gray-50 text-gray-200', active ? 'ring-2 ring-indigo-500' : '', 'group relative flex items-center justify-center rounded-md border py-3 px-4 text-sm font-medium uppercase hover:bg-gray-50 focus:outline-none sm:flex-1 sm:py-6']">
+                    <div :class="[size.inStock ? 'cursor-pointer bg-white text-gray-900 shadow-sm' : 'cursor-not-allowed bg-gray-50 text-gray-200', active ? 'ring-2 ring-primary-500' : '', 'group relative flex items-center justify-center rounded-md border py-3 px-4 text-sm font-medium uppercase hover:bg-gray-50 focus:outline-none sm:flex-1 sm:py-6']">
                       <RadioGroupLabel as="span">{{ size.name }}</RadioGroupLabel>
                       <span v-if="size.inStock" :class="[active ? 'border' : 'border-2', checked ? 'border-indigo-500' : 'border-transparent', 'pointer-events-none absolute -inset-px rounded-md']" aria-hidden="true" />
                       <span v-else aria-hidden="true" class="pointer-events-none absolute -inset-px rounded-md border-2 border-gray-200">
@@ -311,7 +311,7 @@ const selectedSize = ref(product.sizes[2])
               </RadioGroup>
             </div>
 
-            <button type="submit" class="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Add to bag</button>
+            <button type="submit" class="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-primary-600 px-8 py-3 text-base font-medium text-white hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">Add to bag</button>
           </form>
         </div>
 

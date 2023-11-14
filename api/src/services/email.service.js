@@ -39,7 +39,7 @@ export const sendEmailConfirmation = async (email, token) => {
 
         return true;
     } catch (error) {
-        console.error(`Error sending confirmation email : ${error}`);
+        console.error(`Error sending confirmation email : ${error.message}`);
     }
 };
 
@@ -56,7 +56,7 @@ export const sendBlockedAccountEmail = async (email) => {
 
         return true;
     } catch (error) {
-        console.error(`Error sending blocked account email : ${error}`);
+        console.error(`Error sending blocked account email : ${error.message}`);
     }
 };
 
@@ -81,7 +81,7 @@ export const sendPasswordChangeReminderEmail = async (email) => {
         return true;
     } catch (error) {
         console.error(
-            `Error sending password change reminder email : ${error}`
+            `Error sending password change reminder email : ${error.message}`
         );
     }
 };
@@ -108,6 +108,31 @@ export const sendDeletedAccountEmail = async (email, encryptionKey) => {
 
         return true;
     } catch (error) {
-        console.error(`Error sending deleted account email : ${error}`);
+        console.error(`Error sending deleted account email : ${error.message}`);
     }
 };
+
+export const sendResetPasswordEmail = async (email, passwordResetToken) => {
+    try {
+        const htmlTemplate = fs.readFileSync(
+            path.join(__dirname, "../templates/reset-password.html"),
+            "utf8"
+        );
+
+        // TODO: replace with frontend url
+        const passwordResetLink = `http://localhost:5174/password-reset?email=${email}&token=${passwordResetToken}`;
+
+        const subject = "Réinitialisation de votre mot de passe";
+
+        const template = htmlTemplate.replace(
+            "{{passwordResetLink}}",
+            passwordResetLink
+        );
+
+        await sendEmail(email, subject, template);
+
+        return true;
+    } catch (error) {
+        console.error(`Error sending reset password email : ${error.message}`);
+    }
+}

@@ -20,19 +20,19 @@ const state = reactive({
   newUsersAugmentation: 0,
   newProductsLast30Days: 0,
   newProductsAugmentation: 0,
-  newOrdersLast30Days: 1973,
-  newOrdersAugmentation: -176,
+  newOrdersLast30Days: 0,
+  newOrdersAugmentation: 0,
   userChartData: {
     labels: [],
     datasets: [
       {
         data: [],
         label: 'Nouvelles inscriptions',
-        backgroundColor: '#374151',
+        backgroundColor: '#FF7A5C',
         borderWidth: 1,
         barThickness: 20,
         borderRadius: 4,
-        hoverBackgroundColor: '#1F2937'
+        hoverBackgroundColor: '#FF7A5C'
       }
     ]
   },
@@ -42,12 +42,11 @@ const state = reactive({
       {
         data: [],
         label: 'Nouveaux produits',
-        backgroundColor: '#6366F1',
-        borderColor: '#6366F1',
+        backgroundColor: '#00ADB5',
         borderWidth: 1,
         barThickness: 20,
         borderRadius: 4,
-        hoverBackgroundColor: '#4F46E5'
+        hoverBackgroundColor: '#00ADB5'
       }
     ]
   },
@@ -55,14 +54,13 @@ const state = reactive({
     labels: [],
     datasets: [
       {
-        data: [576, 893, 923, 1239, 748, 689, 908, 1389, 879, 1087, 1234, 1973],
+        data: [],
         label: 'Nouvelles commandes',
-        backgroundColor: '#d97706',
-        borderColor: '#d97706',
+        backgroundColor: '#457B9D',
         borderWidth: 1,
         barThickness: 20,
         borderRadius: 4,
-        hoverBackgroundColor: '#b45309'
+        hoverBackgroundColor: '#457B9D'
       }
     ]
   },
@@ -87,28 +85,37 @@ onBeforeMount(async () => {
       newUsersBeforeLast30Days,
       newProductsLast30Days,
       newProductsBeforeLast30Days,
+      newOrdersLast30Days,
+      newOrdersBeforeLast30Days,
       months,
       newUsersLastYear,
-      newProductsLastYear
+      newProductsLastYear,
+      newOrdersLastYear
     ] = await Promise.all([
       axiosInstance.get('/stats/registrations/last-30-days'),
       axiosInstance.get('/stats/registrations/before-last-30-days'),
       axiosInstance.get('/stats/products/last-30-days'),
       axiosInstance.get('/stats/products/before-last-30-days'),
+      axiosInstance.get('/stats/orders/last-30-days'),
+      axiosInstance.get('/stats/orders/before-last-30-days'),
       axiosInstance.get('/stats/months'),
       axiosInstance.get('/stats/registrations/last-year'),
-      axiosInstance.get('/stats/products/last-year')
+      axiosInstance.get('/stats/products/last-year'),
+      axiosInstance.get('/stats/orders/last-year')
     ])
 
     state.newUsersLast30Days = newUsersLast30Days.data
     state.newUsersAugmentation = newUsersLast30Days.data - newUsersBeforeLast30Days.data
     state.newProductsLast30Days = newProductsLast30Days.data
     state.newProductsAugmentation = newProductsLast30Days.data - newProductsBeforeLast30Days.data
+    state.newOrdersLast30Days = newOrdersLast30Days.data
+    state.newOrdersAugmentation = newOrdersLast30Days.data - newOrdersBeforeLast30Days.data
     state.userChartData.labels = months.data
     state.orderChartData.labels = months.data
     state.productChartData.labels = months.data
     state.userChartData.datasets[0].data = newUsersLastYear.data
     state.productChartData.datasets[0].data = newProductsLastYear.data
+    state.orderChartData.datasets[0].data = newOrdersLastYear.data
     usersPerMonthKey++
     productsPerMonthKey++
     ordersPerMonthKey++
@@ -122,7 +129,7 @@ ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 
 <template>
   <AuthenticatedLayout>
-    <div>
+    <div px-4>
       <h1 class="text-lg leading-6 font-semibold text-gray-900">Tableau de bord</h1>
       <h4 class="mt-8 text-base font-medium leading-6 text-gray-900">30 derniers jours</h4>
       <dl class="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">

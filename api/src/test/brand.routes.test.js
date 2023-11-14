@@ -1,10 +1,4 @@
-const brandsRoutes  =  jest.fn().mockReturnValue({
-    getBrands: jest.fn(),
-    getBrand: jest.fn(),
-    createBrand: jest.fn(),
-    updateBrand: jest.fn(),
-    deleteBrand: jest.fn()
-});
+import brandsRoutes from "../routes/brandsRoutes";
 
 const brands = [
     {

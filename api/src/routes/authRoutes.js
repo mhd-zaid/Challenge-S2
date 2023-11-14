@@ -1,226 +1,321 @@
-import User from "../models/postgres-user.js";
-import UserMongo from "../models/mongodb-user.js";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
-import {
-	generateAuthentificationToken,
-	isUserBlocked,
-} from "../services/auth.service.js";
-import {
+export default (
+	User,
+	UserMongo,
+	jwt,
+	bcrypt,
+	generateToken,
 	sendEmailConfirmation,
+	isUserBlocked,
+	isValidPassword,
+	isUserMajor,
 	sendBlockedAccountEmail,
-} from "../services/email.service.js";
-import { isValidPassword, isUserMajor } from "../services/user.service.js";
-import { Types } from "mongoose";
+	sendResetPasswordEmail,
+	Types
+) => ({
+	register: async (req, res) => {
+		try {
+			const { firstname, lastname, email, password, birthdate } =
+				req.body;
 
-export const register = async (req, res) => {
-	try {
-		const { firstname, lastname, email, password, role, birthdate } =
-            req.body;
+			if (!(firstname && lastname && email && password && birthdate))
+				return res.sendStatus(400);
 
-		if (!(firstname && lastname && email && password && birthdate))
-			throw new Error("Invalid arguments");
+			if (!isUserMajor(birthdate))
+				return res.status(400).json({ error: "Invalid birthdate" });
 
-		if (!isUserMajor(new Date(birthdate)))
-			throw new Error("User must have 18 years old or more");
-		if (!isValidPassword(password)) throw new Error("Invalid password");
+			if (!isValidPassword(password))
+				return res.status(400).json({ message: "Invalid password" });
 
-		const hashedPassword = await bcrypt.hash(password, 10);
+			const hashedPassword = await bcrypt.hash(
+				password,
+				await bcrypt.genSalt(10)
+			);
 
-		const existingUser = await User.findOne({
-			where: { email },
-		});
+			const existingUser = await User.findOne({
+				where: { email },
+			});
 
-		if (existingUser) throw new Error(`Email "${email}" is already taken`);
+			if (existingUser)
+				return res.status(409).json({ message: `Email already taken` });
 
-		const authentificationToken = generateAuthentificationToken();
+			const authentificationToken = generateToken();
 
-		const newMongoUser = await UserMongo.create({
-			firstname,
-			lastname,
-			role,
-			isValidate: false,
-			disabled: false,
-		});
+			const newMongoUser = await UserMongo.create({
+				firstname,
+				lastname,
+				isValidate: false,
+				disabled: false,
+			});
 
-		const newPostgresUser = await User.create({
-			id: newMongoUser._id.toString(),
-			firstname,
-			lastname,
-			email,
-            birthdate: new Date(birthdate),
-			password: hashedPassword,
-			role,
-			authentificationToken,
-		});
+			const newPostgresUser = await User.create({
+				id: newMongoUser._id.toString(),
+				firstname,
+				lastname,
+				email,
+				birthdate: new Date(birthdate),
+				password: hashedPassword,
+				authentificationToken,
+			});
 
-		const payload = {
-			userId: newPostgresUser.id,
-		};
+			const payload = {
+				userId: newPostgresUser.id,
+			};
 
-		const options = {
-			expiresIn: "12h",
-		};
+			const options = {
+				expiresIn: "12h",
+			};
 
-		const token = jwt.sign(payload, process.env.SECRET_KEY, options);
+			const token = jwt.sign(payload, process.env.SECRET_KEY, options);
 
-		const isEmailSent = await sendEmailConfirmation(
-			email,
-			authentificationToken
-		);
+			const isEmailSent = await sendEmailConfirmation(
+				email,
+				authentificationToken
+			);
 
-		res.json({
-			message: isEmailSent
-				? "User created successfully"
-				: "User created successfully but email not sent",
-			token: token,
-		});
-	} catch (error) {
-		res.status(500).json({
-			error: `An error occurred while creating the user : ${error}`,
-		});
-	}
-};
-
-export const login = async (req, res) => {
-	try {
-		const { email, password } = req.body;
-
-		const user = await User.findOne({ where: { email } });
-
-		if (!user)
-			return res.status(401).json({ message: "Email not found" });
-
-		if (isUserBlocked(user)) {
-			const isEmailSent = await sendBlockedAccountEmail(email);
-			return res.status(401).json({
-				message: isEmailSent
-					? "User is temporarily blocked"
-					: "User is temporarily blocked but email not sent",
+			res.status(201).json({
+				...JSON.parse(JSON.stringify(newPostgresUser)),
+				isEmailSent,
+				token: token,
+			});
+		} catch (error) {
+			res.status(500).json({
+				message: `An error occurred while creating the user : ${error.message}`,
 			});
 		}
+	},
 
-		const isPasswordValid = await bcrypt.compare(password, user.password);
+	login: async (req, res) => {
+		try {
+			const { email, password } = req.body;
 
-		if (!isPasswordValid) {
-			user.loginAttempts = user.loginAttempts
-				? user.loginAttempts + 1
-				: 1;
-			if (user.loginAttempts >= 3) user.blockedAt = new Date();
+			const user = await User.findOne({ where: { email } });
+
+			if (!user) return res.sendStatus(401);
+
+			if (isUserBlocked(user)) {
+				const isEmailSent = await sendBlockedAccountEmail(email);
+				return res.status(401).json({
+					message: "User is temporarily blocked",
+					isEmailSent,
+				});
+			}
+
+			const isPasswordValid = await bcrypt.compare(
+				password,
+				user.password
+			);
+
+			if (!isPasswordValid) {
+				user.loginAttempts = user.loginAttempts
+					? user.loginAttempts + 1
+					: 1;
+				if (user.loginAttempts >= 3) user.blockedAt = new Date();
+				user.save();
+				return res.sendStatus(401);
+			}
+
+			if (user.loginAttempts) user.loginAttempts = 0;
+			if (user.blockedAt) user.blockedAt = null;
 			user.save();
-			return res.status(401).json({
-				message: "Invalid credentials",
-				loginAttempts: user.loginAttempts,
+
+			if (!user.isValidate)
+				return res.status(401).json({ message: "Email not confirmed" });
+
+			const payload = {
+				userId: user.id,
+			};
+
+			const options = {
+				expiresIn: "12h",
+			};
+
+			const token = jwt.sign(payload, process.env.SECRET_KEY, options);
+
+			const userWithToken = {
+				firstname: user.firstname,
+				lastname: user.lastname,
+				email: user.email,
+				token,
+			};
+
+			delete userWithToken.password;
+
+			res.json(userWithToken);
+		} catch (error) {
+			res.status(500).json({
+				message: `An error occurred during login: ${error.message}`,
 			});
 		}
+	},
 
-		if (user.loginAttempts) user.loginAttempts = 0;
-		if (user.blockedAt) user.blockedAt = null;
-		user.save();
+	checkEmail: async (req, res) => {
+		try {
+			const { email } = req.query;
 
-		if (!user.isValidate)
-			return res.status(401).json({ message: "Email not confirmed" });
+			const user = await User.findOne({
+				where: { email },
+			});
 
-		const payload = {
-			userId: user.id,
-		};
+			if (!user) return res.sendStatus(201);
+			return res.sendStatus(409);
+		} catch (error) {
+			res.status(500).json({
+				message: `An error occurred while checking the email : ${error.message}`,
+			});
+		}
+	},
 
-		const options = {
-			expiresIn: "12h",
-		};
+	confirmEmail: async (req, res) => {
+		try {
+			const { email, authentificationToken } = req.query;
 
-		const token = jwt.sign(payload, process.env.SECRET_KEY, options);
+			const user = await User.findOne({
+				where: { email },
+			});
 
-		const userWithToken = {
-			firstname: user.firstname,
-			lastname: user.lastname,
-			email: user.email,
-			token,
-		};
+			let mongoUserToFind = null;
 
-		delete userWithToken.password;
+			if (!user)
+				return res.status(404).json({ message: "Email not found" });
 
-		res.json(userWithToken);
-	} catch (error) {
-		res.status(500).json({
-			error: `An error occurred during login: ${error.message}`,
-		});
+			if (user.isValidate)
+				return res
+					.status(400)
+					.json({ message: "Email already confirmed" });
+
+			const mongoUserId = new Types.ObjectId(user.id);
+			mongoUserToFind = await UserMongo.findOne({
+				_id: mongoUserId,
+			});
+
+			if (!mongoUserToFind)
+				return res.status(404).json({ message: "User not found" });
+
+			if (user.authentificationToken !== authentificationToken)
+				return res.status(400).json({ message: "Invalid token" });
+
+			await user.update(
+				{ isValidate: true, authentificationToken: null },
+				{ where: { email } }
+			);
+
+			mongoUserToFind.isValidate = true;
+			await mongoUserToFind.save();
+
+			// TODO: change the real url
+			res.redirect("http://localhost:5174/login?email_confirmed=true");
+		} catch (error) {
+			res.status(500).json({
+				message: `An error occurred while validating the email : ${error.message}`,
+			});
+		}
+	},
+
+	requestPasswordReset: async (req, res) => {
+		try {
+			const { email } = req.body;
+
+			const user = await User.findOne({
+				where: { email },
+			});
+
+			if (!user)
+				return res.status(404).json({ message: "Email not found" });
+
+			const passwordResetToken = generateToken();
+
+			await sendResetPasswordEmail(email, passwordResetToken);
+
+			await user.update({ passwordResetToken }, { where: { email } });
+
+			res.sendStatus(200);
+		} catch (error) {
+			res.status(500).json({
+				message: `An error occurred while requesting the password reset : ${error.message}`,
+			});
+		}
+	},
+
+	resetPassword: async (req, res) => {
+		try {
+			const { email, token, password } = req.body;
+
+			const user = await User.findOne({
+				where: { email },
+			});
+			if (!user)
+				return res.status(404).json({ message: "User not found" });
+
+			if (user.passwordResetToken !== token)
+				return res.status(400).json({
+					message: "Invalid token",
+				});
+
+			if (!isValidPassword(password))
+				return res.status(400).json({
+					message: "Invalid password",
+				});
+
+			const hashedPassword = await bcrypt.hash(
+				password,
+				await bcrypt.genSalt(10)
+			);
+
+			await user.update(
+				{
+					password: hashedPassword,
+					passwordResetToken: null,
+					passwordUpdatedAt: new Date(),
+				},
+				{ where: { email } }
+			);
+
+			res.sendStatus(200);
+		} catch (error) {
+			res.status(500).json({
+				message: `An error occurred while resetting the password : ${error.message}`,
+			});
+		}
+	},
+
+	getMe: async (req, res) => {
+		try {
+			const user = await User.findOne({ where: { id: req.user.userId } });
+			if (!user)
+				return res.status(404).json({ message: "User not found" });
+
+
+			res.json(user);
+		} catch (error) {
+			res.status(500).json({
+				message: `An error occurred while getting the user : ${error.message}`,
+			});
+		}
+	},
+	checkIfAdmin: async (req, res) => {
+		try {
+			const user = await User.findOne({ where: { id: req.user.userId } });
+			if (!user)
+				return res.status(404).json({ message: "User not found" });
+			if (user.role === "ROLE_USER")
+				return res.status(403).json({ message: "Users can't access to this route" })
+			res.json(!!user);
+		} catch (error) {
+			res.status(500).json({
+				message: `An error occurred while getting the user : ${error.message}`,
+			});
+		}
+	},
+	checkIfUser: async (req, res) => {
+		try {
+			const user = await User.findOne({ where: { id: req.user.userId } });
+			if (!user)
+				return res.status(404).json({ message: "User not found" });
+			res.json(!!user);
+		} catch (error) {
+			res.status(500).json({
+				message: `An error occurred while getting the user : ${error.message}`,
+			});
+		}
 	}
-};
-
-export const checkEmail = async (req, res) => {
-    try {
-        const { email } = req.query;
-
-        const user = await User.findOne({
-            where: { email },
-        });
-
-        res.json({
-            message: user ? "Email already taken" : "Email available",
-        });
-    } catch (error) {
-        res.status(500).json({
-            error: `An error occurred while checking the email : ${error}`,
-        });
-    }
-};
-
-export const confirmEmail = async (req, res) => {
-	try {
-		const { email, authentificationToken } = req.query;
-
-		const user = await User.findOne({
-			where: { email },
-		});
-
-		let mongoUserToFind = null;
-
-		if (!user) throw new Error(`Email "${email}" not found`);
-
-		if (user.isValidate) throw new Error("Email already confirmed");
-
-		const mongoUserId = new Types.ObjectId(user.id);
-		mongoUserToFind = await UserMongo.findOne({
-			_id: mongoUserId,
-		});
-
-		if (!mongoUserToFind)
-			throw new Error(`Mongo user with id "${user.id}" not found`);
-
-		if (user.authentificationToken !== authentificationToken)
-			throw new Error("Invalid token");
-
-		await user.update(
-			{ isValidate: true, authentificationToken: null },
-			{ where: { email } }
-		);
-
-		mongoUserToFind.isValidate = true;
-		await mongoUserToFind.save();
-
-		res.json({
-			message: "Email confirmed successfully",
-		});
-	} catch (error) {
-		res.status(500).json({
-			error: `An error occurred while validating the email : ${error}`,
-		});
-	}
-};
-
-export const logout = async (req, res) => {
-	// Logique de déconnexion de l'utilisateur
-};
-
-export const getMe = async (req, res) => {
-	try {
-		const user = await User.findOne({ where: { id: req.user.userId } });
-		if (!user) throw new Error("User not found");
-		res.json(user);
-	} catch (error) {
-		res.status(500).json({
-			error: `An error occurred while getting the user : ${error}`,
-		});
-	}
-};
+});

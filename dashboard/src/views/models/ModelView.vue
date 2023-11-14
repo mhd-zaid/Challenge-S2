@@ -2,8 +2,9 @@
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
 import axiosInstance from "@/utils/axiosInstance";
 import { reactive } from "vue";
-
-const id = window.location.pathname.split("/")[2];
+import {useRouter} from "vue-router";
+const router = useRouter();
+const id = router.currentRoute.value.params.id;
 const state = reactive({
 model: {
   Category: {
@@ -29,10 +30,10 @@ getModel();
   <AuthenticatedLayout>
     <h1>Model Details</h1>
     <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-        <RouterLink :to="{name : 'models'}" class="font-semibold text-indigo-600 hover:text-indigo-500">
+        <RouterLink :to="{name : 'models'}" class="font-semibold text-gray-900 hover:text-gray-700">
         <button
             type="button"
-            class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            class="block rounded-md bg-primary px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-primary-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >
             return to models
         </button>
@@ -87,6 +88,6 @@ getModel();
         </tr>
       </tbody>
     </table>
-    
+
   </AuthenticatedLayout>
 </template>

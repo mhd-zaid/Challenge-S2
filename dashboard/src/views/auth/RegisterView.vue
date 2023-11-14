@@ -2,9 +2,8 @@
 import GuestLayout from '@/layouts/GuestLayout.vue'
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { showToast } from '@/utils/toast'
-import { z } from 'zod'
 import axiosInstance from '@/utils/axiosInstance'
+import { userSchema } from '@/schemas/userSchema'
 
 const state: any = reactive({
   form: {
@@ -19,81 +18,27 @@ const state: any = reactive({
 
 const router = useRouter()
 
-const userSchema = z.object({
-  firstname: z.string().min(2, 'Le prénom doit avoir au moins 2 caractères'),
-  lastname: z.string().min(2, 'Le nom doit avoir au moins 2 caractères'),
-  birthdate: z.string().refine((birthdate) => {
-    const dateRegex = /^\d{4}-\d{2}-\d{2}$/
-    if (!dateRegex.test(birthdate)) {
-      return false
-    }
-
-    const today = new Date()
-    const birthdateDate = new Date(birthdate)
-    const age = today.getFullYear() - birthdateDate.getFullYear()
-
-    return age >= 18
-  }, 'Vous devez être majeur pour vous inscrire'),
-
-  email: z.string().email('Veuillez entrer une adresse e-mail valide'),
-  password: z
-    .string()
-    .min(12, 'Le mot de passe doit avoir au moins 12 caractères')
-    .refine((password) => {
-      if (password.length < 12) {
-        return 'Le mot de passe doit avoir au moins 12 caractères'
-      }
-
-      if (!/[A-Za-z]/.test(password)) {
-        return 'Le mot de passe doit contenir au moins une lettre'
-      }
-
-      if (!/[A-Z]/.test(password)) {
-        return 'Le mot de passe doit contenir au moins une majuscule'
-      }
-
-      if (!/[a-z]/.test(password)) {
-        return 'Le mot de passe doit contenir au moins une minuscule'
-      }
-
-      if (!/\d/.test(password)) {
-        return 'Le mot de passe doit contenir au moins un chiffre'
-      }
-
-      if (!/[!@#$%^&*]/.test(password)) {
-        return 'Le mot de passe doit contenir au moins un caractère spécial'
-      }
-
-      return true
-    })
-})
-
 const submit = async () => {
   try {
     const result = userSchema.safeParse(state.form)
+
     if (!result.success) {
       state.errors = JSON.parse(result.error.message)[0].message
       return
     }
-    axiosInstance.get(`/auth/check-email?email=${state.form.email}`).then((res) => {
-      if (res.data.message === 'Email already taken') {
-        state.errors = 'Un compte est déjà associé à cet email'
-      }
-    })
 
-    axiosInstance
-      .post('/auth/register', state.form)
-      .then((res) => {
-        showToast('Votre inscription a bien été pris en compte !', 'success')
-        setTimeout(() => {
-          router.push('/login?registered=true')
-        }, 1000)
-      })
-      .catch((error) => {
-        state.errors = error.response.data.message
-      })
-  } catch (e: any) {
-    console.error(e)
+    await axiosInstance.get(`/auth/check-email?email=${state.form.email}`)
+
+    await axiosInstance.post('/auth/register', state.form)
+    router.push('/login?registered=true')
+  } catch (error: any) {
+    if (error.response) {
+      if (error.response.status === 409) {
+        state.errors = 'Un compte est déjà associé à cet email'
+        return
+      }
+    }
+    state.errors = error.message
   }
 }
 </script>
@@ -112,7 +57,7 @@ const submit = async () => {
           <p class="mt-2 text-sm leading-6 text-gray-500">
             Vous avez déjà un compte ?
             {{ ' ' }}
-            <RouterLink to="login" class="font-semibold text-indigo-600 hover-text-indigo-500"
+            <RouterLink to="login" class="font-semibold text-secondary hover:text-secondary-light"
               >Connectez-vous ici</RouterLink
             >
           </p>
@@ -136,7 +81,7 @@ const submit = async () => {
                   v-model="state.form.firstname"
                   type="text"
                   placeholder="Prénom"
-                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder-text-gray-400 focus-ring-2 focus-ring-inset focus-ring-indigo-600 sm-text-sm sm-leading-6"
+                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   required
                 />
               </div>
@@ -150,7 +95,7 @@ const submit = async () => {
                   v-model="state.form.lastname"
                   type="text"
                   placeholder="Nom"
-                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder-text-gray-400 focus-ring-2 focus-ring-inset focus-ring-indigo-600 sm-text-sm sm-leading-6"
+                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   required
                 />
               </div>
@@ -163,7 +108,7 @@ const submit = async () => {
                   id="birthdate"
                   v-model="state.form.birthdate"
                   type="date"
-                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 pr-2 ring-inset ring-gray-300 placeholder-text-gray-400 focus-ring-2 focus-ring-inset focus-ring-indigo-600 sm-text-sm sm-leading-6"
+                  class="block w-full px-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   required
                 />
               </div>
@@ -177,7 +122,7 @@ const submit = async () => {
                   v-model="state.form.email"
                   type="email"
                   placeholder="exemple@gmail.com"
-                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder-text-gray-400 focus-ring-2 focus-ring-inset focus-ring-indigo-600 sm-text-sm sm-leading-6"
+                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   required
                 />
               </div>
@@ -191,7 +136,7 @@ const submit = async () => {
                   v-model="state.form.password"
                   type="password"
                   placeholder="Mot de passe"
-                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder-text-gray-400 focus-ring-2 focus-ring-inset focus-ring-indigo-600 sm-text-sm sm-leading-6"
+                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   required
                 />
               </div>
@@ -199,7 +144,7 @@ const submit = async () => {
               <div>
                 <button
                   type="submit"
-                  class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover-bg-indigo-500 focus-visible-outline focus-visible-outline-2 focus-visible-outline-offset-2 focus-visible-outline-indigo-600"
+                  class="flex w-full justify-center rounded-md bg-primary px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover-bg-indigo-500 focus-visible-outline focus-visible-outline-2 focus-visible-outline-offset-2 focus-visible-outline-indigo-600"
                 >
                   S'inscrire
                 </button>

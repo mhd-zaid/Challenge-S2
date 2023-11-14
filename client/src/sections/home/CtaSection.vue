@@ -9,13 +9,13 @@
           <div class="relative pb-16 pt-48 sm:pb-24">
             <div>
               <h2 id="sale-heading" class="text-4xl font-bold tracking-tight text-white md:text-5xl">
-                Final Stock.
+                Promotions
                 <br/>
-                Up to 50% off.
+                jusqu'à -50%
               </h2>
               <div class="mt-6 text-base">
                 <a href="#" class="font-semibold text-white">
-                  Shop the sale
+                  Profitez des promotions
                   <span aria-hidden="true"> &rarr;</span>
                 </a>
               </div>
@@ -26,34 +26,34 @@
                 <div class="flex space-x-6 sm:flex-col sm:space-x-0 sm:space-y-6 lg:space-y-8">
                   <div class="flex-shrink-0">
                     <img class="h-64 w-64 rounded-lg object-cover md:h-72 md:w-72"
-                         src="https://tailwindui.com/img/ecommerce-images/home-page-03-category-01.jpg" alt=""/>
+                         src="/images/offers-1.jpeg" alt=""/>
                   </div>
 
                   <div class="mt-6 flex-shrink-0 sm:mt-0">
                     <img class="h-64 w-64 rounded-lg object-cover md:h-72 md:w-72"
-                         src="https://tailwindui.com/img/ecommerce-images/home-page-03-category-02.jpg" alt=""/>
+                         src="/images/offers-2.jpeg" alt=""/>
                   </div>
                 </div>
                 <div class="flex space-x-6 sm:-mt-20 sm:flex-col sm:space-x-0 sm:space-y-6 lg:space-y-8">
                   <div class="flex-shrink-0">
                     <img class="h-64 w-64 rounded-lg object-cover md:h-72 md:w-72"
-                         src="https://tailwindui.com/img/ecommerce-images/home-page-03-favorite-01.jpg" alt=""/>
+                         src="/images/offers-3.jpeg" alt=""/>
                   </div>
 
                   <div class="mt-6 flex-shrink-0 sm:mt-0">
                     <img class="h-64 w-64 rounded-lg object-cover md:h-72 md:w-72"
-                         src="https://tailwindui.com/img/ecommerce-images/home-page-03-favorite-02.jpg" alt=""/>
+                         src="/images/offers-4.jpeg" alt=""/>
                   </div>
                 </div>
                 <div class="flex space-x-6 sm:flex-col sm:space-x-0 sm:space-y-6 lg:space-y-8">
                   <div class="flex-shrink-0">
                     <img class="h-64 w-64 rounded-lg object-cover md:h-72 md:w-72"
-                         src="https://tailwindui.com/img/ecommerce-images/home-page-03-category-01.jpg" alt=""/>
+                         src="/images/offers-5.jpeg" alt=""/>
                   </div>
 
                   <div class="mt-6 flex-shrink-0 sm:mt-0">
                     <img class="h-64 w-64 rounded-lg object-cover md:h-72 md:w-72"
-                         src="https://tailwindui.com/img/ecommerce-images/home-page-03-category-02.jpg" alt=""/>
+                         src="/images/offers-6.jpeg" alt=""/>
                   </div>
                 </div>
               </div>

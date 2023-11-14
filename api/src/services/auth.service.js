@@ -1,4 +1,4 @@
-const generateAuthentificationToken = () => {
+const generateToken = () => {
     const charset = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     let code = "";
     for (let i = 0; i < 6; i++) {
@@ -18,4 +18,4 @@ const isUserBlocked = (user) => {
     );
 };
 
-export { generateAuthentificationToken, isUserBlocked };
+export { generateToken, isUserBlocked };

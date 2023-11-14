@@ -1,15 +1,4 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import ProductsView from "@/views/ProductsView.vue";
-import CartView from "@/views/CartView.vue";
-import CheckoutView from "@/views/CheckoutView.vue";
-import ProductView from "@/views/ProductView.vue";
-import LoginView from "@/views/LoginView.vue";
-import ProfileView from "@/views/ProfileView.vue";
-import CguView from "@/views/CguView.vue";
-import NotFoundView from "@/views/NotFoundView.vue";
-import FaqView from "@/views/FaqView.vue";
-import CgvView from "@/views/CgvView.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,57 +6,115 @@ const router = createRouter({
         {
             path: '/',
             name: 'home',
-            component: HomeView
+            component: () => import('@/views/HomeView.vue'),
+            meta: {
+                requiresAuth: false
+            }
         },
         {
             path: '/products',
             name: 'products',
-            component: ProductsView
+            component: () => import('@/views/ProductsView.vue'),
+            meta: {
+                requiresAuth: false
+            }
         },
         {
             path: '/products/:id',
             name: 'product',
-            component: ProductView
+            component: () => import('@/views/ProductView.vue'),
+            meta: {
+                requiresAuth: false
+            }
         },
+        // Todo: make the requires auth dynamic
         {
             path: '/cart',
             name: 'cart',
-            component: CartView
+            component: () => import('@/views/CartView.vue'),
+            meta: {
+                requiresAuth: true
+            }
+        },
+        {
+            path: '/wishlist',
+            name: 'wishlist',
+            component: () => import('@/views/WichlistView.vue'),
+            meta: {
+                requiresAuth: true
+            }
         },
         {
             path: '/checkout',
             name: 'checkout',
-            component: CheckoutView
+            component: () => import('@/views/CheckoutView.vue'),
+            meta: {
+                requiresAuth: true
+            }
         },
         {
             path: '/login',
             name: 'login',
-            component: LoginView
+            component: () => import('@/views/auth/LoginView.vue'),
+            meta: {
+                requiresAuth: false
+            }
+        },
+        {
+            path: '/register',
+            name: 'register',
+            component: () => import('@/views/auth/RegisterView.vue'),
+            meta: {
+                requiresAuth: false
+            }
         },
         {
             path: '/profile',
             name: 'profile',
-            component: ProfileView
+            component: () => import('@/views/auth/ProfileView.vue'),
+            meta: {
+                requiresAuth: true
+            }
         },
         {
             path: '/faq',
             name: 'faq',
-            component: FaqView
+            component: () => import('@/views/FaqView.vue'),
+            meta: {
+                requiresAuth: false
+            }
         },
         {
             path: '/cgv',
             name: 'cgv',
-            component: CgvView
+            component: () => import('@/views/CgvView.vue'),
+            meta: {
+                requiresAuth: false
+            }
         },
         {
             path: '/cgu',
             name: 'cgu',
-            component: CguView
+            component: () => import('@/views/CguView.vue'),
+            meta: {
+                requiresAuth: false
+            }
+        },
+        {
+            path: '/exchange-policy',
+            name: 'exchange-policy',
+            component: () => import('@/views/ExchangePolicyView.vue'),
+            meta: {
+                requiresAuth: false
+            }
         },
         {
             path: '/:pathMatch(.*)*',
             name: 'not-found',
-            component: NotFoundView
+            component: () => import('@/views/NotFoundView.vue'),
+            meta: {
+                requiresAuth: false
+            }
         }
     ],
     scrollBehavior(to, from, savedPosition) {
@@ -79,4 +126,31 @@ const router = createRouter({
     },
 })
 
+router.beforeEach(async (to, from, next) => {
+    const token = window.localStorage.getItem('token')
+    const loggedIn = !!token
+
+    if (to.meta.requiresAuth && !loggedIn) {
+        next({ name: 'login' })
+    } else {
+        if (loggedIn) {
+            try {
+                const response = await fetch(`http://localhost:3000/auth/check-if-authenticated`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                })
+                if (!response.ok) {
+                    window.localStorage.removeItem('token')
+                    window.localStorage.removeItem('user')
+                    next({ name: 'login' })
+                }
+            } catch (error) {
+                console.error('Error while fetching user', error)
+                next({ name: 'login' })
+            }
+        }
+        next()
+    }
+})
 export default router

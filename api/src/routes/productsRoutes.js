@@ -1,146 +1,162 @@
-import Product from "../models/postgres-product.js";
-import ProductMongodb from "../models/mongodb-product.js";
-import mongoose from "mongoose";
-import { json } from "sequelize";
-
-export const getProducts = async (req, res) => {
-	try {
-		const products = await Product.findAll({
-			include: "models",
-		});
-		res.json(products);
-	} catch (error) {
-		res.status(500).json({
-			error: `An error occurred while retrieving the products : ${error}`,
-		});
-	}
-};
-
-export const createProduct = async (req, res) => {
-	try {
-		
-		const models = req.body.models.map(model => new mongoose.Types.ObjectId(model.id));
-		
-		const productDataToCreate = {
-			name: req.body.name,
-			price: req.body.price,
-			vat: req.body.vat,
-			quantity: req.body.quantity,
-			size: req.body.size,
-			color: req.body.color,
-			url: req.body.url,
-			models: models,
-		};
-		const productMongoDB = await ProductMongodb(productDataToCreate).save();
-		const id = productMongoDB._id.toString();
-		const product = await Product.create({ id, ...req.body });
-		for (const model of req.body.models) {
-			await product.addModels(model.id);
+export default (Product, Model, Product_Images, ProductMongodb, mongoose) => ({
+	getProducts: async (req, res) => {
+		try {
+			const products = await Product.findAll({
+				include: ["model", "productImages"],
+			});
+			res.json(
+				products.map((product) => ({
+					...product.dataValues,
+					price: (product.dataValues.price / 100).toFixed(2),
+				}))
+			);
+		} catch (error) {
+			res.status(500).json({
+				message: `An error occurred while retrieving the products : ${error.message}`,
+			});
 		}
+	},
 
-		res.json(product);
-	} catch (error) {
-		res.status(500).json({
-			error: `An error occurred while creating the product : ${error}`,
-		});
-	}
-};
+	createProduct: async (req, res) => {
+		try {
+			const model = await Model.findOne({
+				where: { id: req.body.model },
+			});
 
-export const updateProduct = async (req, res) => {
-	try {
-		const { id } = req.params;
-
-		const models = req.body.models.map(model => new mongoose.Types.ObjectId(model.id));
-
-		const productDataToUpdate = {
-			name: req.body.name,
-			price: req.body.price,
-			vat: req.body.vat,
-			quantity: req.body.quantity,
-			size: req.body.size,
-			color: req.body.color,
-			url: req.body.url,
-			models: models,
-		};
-
-		if (!id) {
-			return res.status(400).json({ message: "Id parameter is missing" });
+			const productDataToCreate = {
+				name: req.body.name,
+				price: req.body.price * 100,
+				vat: req.body.vat,
+				quantity: req.body.quantity,
+				size: req.body.size,
+				color: req.body.color,
+				discount: req.body.discount,
+				alerteQuantity: req.body.alerteQuantity,
+				sku: req.body.sku,
+				modelId: model.id,
+			};
+			const productMongoDB =
+				await ProductMongodb(productDataToCreate).save();
+			const id = productMongoDB._id.toString();
+			const product = await Product.create({
+				id,
+				...req.body,
+				ModelId: req.body.model,
+			});
+			res.json(product);
+		} catch (error) {
+			res.status(500).json({
+				message: `An error occurred while creating the product : ${error.message}`,
+			});
 		}
+	},
 
-		const product = await Product.findOne({ where: { id } });
-		const productMongo = await ProductMongodb.findOne({ _id: id });
+	updateProduct: async (req, res) => {
+		try {
+			const { id } = req.params;
 
-		if (!product) return res.status(404).json({ message: "Product not found" });
+			const model = await Model.findOne({
+				where: { id: req.body.modelId },
+			});
 
-		await product.update(req.body);
-		await productMongo.updateOne(productDataToUpdate);
+			const productDataToUpdate = {
+				name: req.body.name,
+				price: req.body.price * 100,
+				vat: req.body.vat,
+				quantity: req.body.quantity,
+				size: req.body.size,
+				color: req.body.color,
+				discount: req.body.discount,
+				alerteQuantity: req.body.alerteQuantity,
+				sku: req.body.sku,
+				modelId: model.id,
+			};
 
-		res.json({ message: "Product updated successfully" });
-	} catch (error) {
-		res.status(500).json({
-			error: `An error occurred while updating the product : ${error}`,
-		});
-	}
-};
-
-export const deleteProduct = async (req, res) => {
-	try {
-		const { id } = req.params;
-
-		if (!id) {
-			return res.status(400).json({ message: "Id parameter is missing" });
-		}
-
-		const product = await Product.findOne({ where: { id } });
-		const productMongo = await ProductMongodb.findOne({ _id: id });
-
-		if (!product) return res.status(404).json({ message: "Product not found" });
-
-		await product.destroy();
-		await productMongo.updateOne({ deletedAt: Date.now() });
-		
-		res.json({
-			message: "Product deleted successfully",
-		});
-	} catch (error) {
-		res.status(500).json({
-			error: `An error occurred while deleting the product : ${error}`,
-		});
-	}
-};
-
-export const getProduct = async (req, res) => {
-	try {
-		const { id } = req.params;
-
-		if (!id) {
-			return res.status(400).json({ message: "Id parameter is missing" });
-		}
-
-		const product = await Product.findOne({
-			where: { id },
-			include: "models",
-		});
-
-		if (!product) return res.status(404).json({ message: "Product not found" });
-
-		res.json(product);
-	} catch (error) {
-		res.status(500).json({
-			error: `An error occurred while retrieving the product : ${error}`,
-		});
-	}
-};
-
-export const uploadImage = async (req, res) => {
-	const file = req.files !== undefined ? req.files.image : null;
-	if (file) {
-		req.body.image = `/images/${file.name}`;
-		file.mv("./uploads"+req.body.image, async (error) => {
-			if (error) {
-				console.error(error);
-				return res.status(500).json({ message: error });
+			if (!id) {
+				return res
+					.status(400)
+					.json({ message: "Id parameter is missing" });
 			}
-		});
-	}
-};
+
+			const product = await Product.findOne({ where: { id } });
+			const productMongo = await ProductMongodb.findOne({ _id: id });
+
+			if (!product)
+				return res.status(404).json({ message: "Product not found" });
+
+			await product.update(req.body);
+			await productMongo.updateOne(productDataToUpdate);
+
+			res.json({ message: "Product updated successfully" });
+		} catch (error) {
+			res.status(500).json({
+				message: `An error occurred while updating the product : ${error.message}`,
+			});
+		}
+	},
+
+	deleteProduct: async (req, res) => {
+		try {
+			const { id } = req.params;
+
+			if (!id) {
+				return res
+					.status(400)
+					.json({ message: "Id parameter is missing" });
+			}
+
+			const product = await Product.findOne({ where: { id } });
+			const productMongo = await ProductMongodb.findOne({ _id: id });
+
+			if (!product)
+				return res.status(404).json({ message: "Product not found" });
+
+			await product.destroy();
+			await productMongo.updateOne({ deletedAt: Date.now() });
+
+			res.json({
+				message: "Product deleted successfully",
+			});
+		} catch (error) {
+			res.status(500).json({
+				message: `An error occurred while deleting the product : ${error.message}`,
+			});
+		}
+	},
+
+	getProduct: async (req, res) => {
+		try {
+			const { id } = req.params;
+
+			if (!id) {
+				return res
+					.status(400)
+					.json({ message: "Id parameter is missing" });
+			}
+
+			const product = await Product.findOne({
+				where: { id },
+				include: ["model", "productImages"],
+			});
+
+			if (!product)
+				return res.status(404).json({ message: "Product not found" });
+
+			product.price = (product.price / 100).toFixed(2);
+			res.json(product);
+		} catch (error) {
+			res.status(500).json({
+				message: `An error occurred while retrieving the product : ${error.message}`,
+			});
+		}
+	},
+
+	uploadImage: async (req, res) => {
+		const { id } = req.params;
+		const images = req.files.map((file) => file.filename);
+		for (const image of images) {
+			await Product_Images.create({ url: image, ProductId: id });
+		}
+		res.status(200).json({ message: "Image uploaded successfully" });
+	},
+});

@@ -25,7 +25,7 @@ const newValue = ref(props.modelValue)
 const toggleEditing = () => {
   if (isEditing.value) {
     axiosInstance
-      .put('/users/' + props.userId, {
+      .patch('/users/' + props.userId, {
         [props.model.name]: newValue.value
       })
       .then(() => {
@@ -92,7 +92,7 @@ const isBirthdate = props.model.name === 'birthdate'
       <span class="ml-4 flex-shrink-0">
         <button
           type="button"
-          class="rounded-md bg-white font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+          class="rounded-md bg-white font-medium text-secondary hover:text-secondary/60 focus:outline-none focus:ring-2 focus:ring-secondary/60 focus:ring-offset-2"
           @click="toggleEditing"
         >
           {{ isEditing ? 'Enregistrer' : props.modelValue ? 'Modifier' : 'Ajouter' }}
