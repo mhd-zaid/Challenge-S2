@@ -2,6 +2,9 @@
 import axiosInstance from '@/utils/axiosInstance'
 import {reactive, watch} from 'vue'
 import ODrawer from "@/components/ODrawer.vue";
+import type {BrandType} from "@/types/BrandType";
+import type {ModelType} from "@/types/ModelType";
+import type {CategoryType} from "@/types/CategoryTypes";
 
 const props = defineProps({
   open: {
@@ -16,13 +19,7 @@ const props = defineProps({
 })
 
 const state = reactive({
-  form: {
-    name: '',
-    gender: '',
-    description: '',
-    BrandId: '',
-    CategoryId: '',
-  } as any,
+  form: {} as ModelType,
   gender: [
     {
       value: 'male',
@@ -33,8 +30,8 @@ const state = reactive({
       name: 'Female'
     }
   ],
-  brands: [] as any,
-  categories: [] as any,
+  brands: [] as BrandType[],
+  categories: [] as CategoryType[],
   errors: {}
 })
 

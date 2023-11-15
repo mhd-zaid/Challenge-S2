@@ -1,33 +1,28 @@
 <script lang="ts" setup>
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue'
 import axiosInstance from '@/utils/axiosInstance'
-import { onBeforeMount } from 'vue'
-import { ref } from 'vue'
 import { onMounted, reactive } from 'vue'
-import { useRoute } from 'vue-router'
+import {useRouter} from 'vue-router'
 import { columnNames, getValue } from '@/utils/valuesUpdater'
+import type {UserType} from "@/types/UserType";
 
-const route = useRoute()
+const route = useRouter()
 
 const state = reactive({
-  user: <any>{}
+  user: {} as UserType
 })
 
-const userId = ref<string | null>(null)
+const userId = route.currentRoute.value.params.id
 
 const getUser = async () => {
   try {
-    await axiosInstance.get(`/users/${userId.value}`).then((res) => {
+    await axiosInstance.get(`/users/${userId}`).then((res) => {
       state.user = res.data
     })
   } catch (e: any) {
     throw e
   }
 }
-
-onBeforeMount(() => {
-  if (typeof route.params.id === 'string') userId.value = route.params.id
-})
 
 onMounted(() => {
   getUser()

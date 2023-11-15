@@ -1,4 +1,4 @@
-import type {ModelType} from "./ModelTypes";
+import type {ModelType} from "./ModelType";
 
 export type CategoryType = {
     createdAt: string;

@@ -3,15 +3,13 @@ import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
 import axiosInstance from "@/utils/axiosInstance";
 import { reactive } from "vue";
 import {useRouter} from "vue-router";
+import type {ModelType} from "@/types/ModelType";
+
 const router = useRouter();
 const id = router.currentRoute.value.params.id;
+
 const state = reactive({
-model: {
-  Category: {
-  },
-  Brand: {
-  },
-},
+model: {} as ModelType,
 })
 
 const getModel = async () => {

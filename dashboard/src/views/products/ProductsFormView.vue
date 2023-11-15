@@ -12,7 +12,7 @@ const state = reactive({
     quantity: '',
     vat: '',
     size: '',
-    color: '',
+    color: '' as any,
     sku: '',
     discount: '',
     model: '' as any
@@ -52,12 +52,10 @@ const createProduct = async () => {
 }
 
 const updateProduct = async () => {
-  console.log(state.form, state.image, 'update')
   try {
     const body = new FormData()
-    state.image.forEach((fileItem: any) => {
+    state.images.forEach((fileItem: any) => {
       body.append('image', fileItem.file)
-      state.form.url = `/images/${fileItem.file.name}`
     })
     await axiosInstance.patch('/products', state.form)
     await axiosInstance.post('/products/upload', body)
@@ -81,7 +79,7 @@ init()
         id="registration-example"
         @submit="createProduct"
         enctype="multipart/form-data"
-        :action="false"
+        action="false"
         :classes="{
           form: 'bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2',
           actions: 'hidden'
