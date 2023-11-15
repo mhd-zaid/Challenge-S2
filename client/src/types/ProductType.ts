@@ -4,6 +4,7 @@ import type {ProductImageType} from "@/types/ProductImageType";
 export type ProductType = {
     id: string;
     name: string;
+    sku: string;
     price: string;
     quantity: number;
     color: string;

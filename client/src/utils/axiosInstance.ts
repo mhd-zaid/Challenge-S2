@@ -1,7 +1,9 @@
 import axios from "axios";
+import.meta.env.PROD;
+
 
 const axiosInstance = axios.create({
-    baseURL: "http://localhost:3000",
+    baseURL: import.meta.env.PROD ? "https://api.sneakpeak.fr" : "http://localhost:3000",
 });
 
 axiosInstance.interceptors.request.use(
