@@ -13,12 +13,16 @@ import {
 import {XMarkIcon} from '@heroicons/vue/24/outline'
 import {ChevronDownIcon, PlusIcon} from '@heroicons/vue/20/solid'
 import axiosInstance from "@/utils/axiosInstance";
+import type {ProductType} from "@/types/ProductType";
+import type {BrandType} from "@/types/BrandType";
+import type {CategoryType} from "@/types/CategoryTypes";
+import type {ModelType} from "@/types/ModelType";
 
 const state = reactive({
-  products: [],
-  brands: [],
-  categories: [],
-  models: [],
+  products: [] as ProductType[],
+  brands: [] as BrandType[],
+  categories: [] as CategoryType[],
+  models: [] as ModelType[],
 })
 const mobileFiltersOpen = ref(false)
 

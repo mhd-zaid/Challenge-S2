@@ -57,7 +57,7 @@ const submit = async () => {
     >
       <div class="mx-auto w-full max-w-sm lg:w-96">
         <div>
-          <img class="h-10 w-auto" src="assets/images/sneakpeak_logo_black.png" alt="Sneak Peak" />
+          <img class="h-10 w-auto" src="/images/sneakpeak_logo_black.png" alt="Sneak Peak" />
           <h2 class="mt-8 text-2xl font-bold leading-9 tracking-tight text-gray-900">
             Connectez-vous à votre compte
           </h2>

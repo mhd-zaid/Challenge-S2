@@ -5,7 +5,7 @@ import ModelsSidebarForm from "@/views/models/ModelsSidebarForm.vue";
 import OModal from "@/components/OModal.vue";
 import OTable from "@/components/OTable.vue";
 import {onUnmounted, reactive} from "vue";
-import type {ModelType} from "@/types/ModelTypes";
+import type {ModelType} from "@/types/ModelType";
 import {useRouter} from "vue-router";
 
 const state = reactive({

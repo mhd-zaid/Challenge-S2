@@ -1,33 +1,28 @@
 <script lang="ts" setup>
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue'
 import axiosInstance from '@/utils/axiosInstance'
-import { onBeforeMount } from 'vue'
-import { ref } from 'vue'
 import { onMounted, reactive } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { columnNames, getValue } from '@/utils/valuesUpdater'
+import type {ProductType} from "@/types/ProductType";
 
-const route = useRoute()
+const router = useRouter();
 
 const state = reactive({
-  product: <any>{}
+  product: {} as ProductType,
 })
 
-const productId = ref<string | null>(null)
+const productId = router.currentRoute.value.params.id;
 
 const getProduct = async () => {
   try {
-    await axiosInstance.get(`/products/${productId.value}`).then((res) => {
+    await axiosInstance.get(`/products/${productId}`).then((res) => {
       state.product = res.data
     })
   } catch (e: any) {
     throw e
   }
 }
-
-onBeforeMount(() => {
-  if (typeof route.params.id === 'string') productId.value = route.params.id
-})
 
 onMounted(() => {
   getProduct()
@@ -68,11 +63,11 @@ onMounted(() => {
                 {{ columnNames[key] ? columnNames[key] : key }}
               </td>
               <td
-                :class="{ flex: typeof key === 'string' && key === 'productImages' }"
+                :class="{ flex: key === 'productImages' }"
                 class="px-6 py-4 text-sm text-gray-900"
               >
                 <img
-                  v-if="typeof key === 'string' && key === 'productImages'"
+                  v-if="key === 'productImages'"
                   class="w-48 h-32 object-cover"
                   v-for="url in getValue(state.product, key)"
                   :src="url"

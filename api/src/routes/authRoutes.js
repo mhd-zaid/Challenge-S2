@@ -298,7 +298,7 @@ export default (
 			if (!user)
 				return res.status(404).json({ message: "User not found" });
 			if (user.role === "ROLE_USER")
-				return res.status(403).json({ message: "Users can't access to this route" })
+				return res.sendStatus(403)
 			res.json(!!user);
 		} catch (error) {
 			res.status(500).json({

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import GuestLayout from '@/layouts/GuestLayout.vue'
+import GuestLayout from '@/layout/GuestLayout.vue'
 import { reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axiosInstance from '@/utils/axiosInstance'
