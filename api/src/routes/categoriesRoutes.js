@@ -4,7 +4,10 @@ export default (Category, ObjectId) => ({
 			const categories = await Category.findAll({
 				include: "models",
 			});
-			res.json(categories);
+			if (categories.length === 0) {
+				res.status(404).json({ message: "No categories found" });
+			}
+			res.status(200).json(categories);
 		} catch (error) {
 			res.status(500).json({
 				message: `An error occurred while retrieving the categories : ${error.message}`,
@@ -14,28 +17,39 @@ export default (Category, ObjectId) => ({
 
 	createCategory: async (req, res) => {
 		try {
+			if (!req.body.name) {
+				return res.status(400).json({ message: "Name parameter is missing" });
+			}
+
 			const id = new ObjectId().toString();
 			const category = await Category.create({ id, ...req.body });
-			if (req.body.models !== undefined) {
-				for (const model of req.body.models) {
-					await category.addModels(model.id);
-				}
-			}
-			res.json(category);
+			
+			res.status(201).json(category);
 		} catch (error) {
-			res.status(500).json({
-				message: `An error occurred while creating the category : ${error.message}`,
-			});
+			if (error.name == "SequelizeValidationError") {
+				res.status(422).json({
+					message: `An error occurred while creating the category : ${error.message}`,
+				});
+			}else {
+				res.status(500).json({
+					message: `An error occurred while creating the category : ${error.message}`,
+				});
+			}
 		}
 	},
 
 	updateCategory: async (req, res) => {
 		try {
+
 			const { id } = req.params;
 			const categoryDataToUpdate = req.body;
 
 			if (!id) {
 				return res.status(400).json({ message: "Id parameter is missing" });
+			}
+
+			if (!categoryDataToUpdate.name) {
+				return res.status(400).json({ message: "Name parameter is missing" });
 			}
 
 			const category = await Category.findOne({ where: { id } });
@@ -45,11 +59,17 @@ export default (Category, ObjectId) => ({
 
 			await category.update(categoryDataToUpdate);
 
-			res.json({ message: "Category updated successfully" });
+			res.status(200).json({ message: "Category updated successfully" });
 		} catch (error) {
-			res.status(500).json({
-				message: `An error occurred while updating the category : ${error.message}`,
-			});
+			if (error.name == "SequelizeValidationError") {
+				res.status(422).json({
+					message: `An error occurred while creating the category : ${error.message}`,
+				});
+			}else {
+				res.status(500).json({
+					message: `An error occurred while creating the category : ${error.message}`,
+				});
+			}
 		}
 	},
 
@@ -67,7 +87,7 @@ export default (Category, ObjectId) => ({
 				return res.status(404).json({ message: "Category not found" });
 
 			await category.destroy();
-			res.json({
+			res.status(204).json({
 				message: "Category deleted successfully",
 			});
 		} catch (error) {
