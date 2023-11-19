@@ -1,4 +1,4 @@
-export default (Product, Model, Product_Images, ProductMongodb, mongoose) => ({
+export default (Product, Model, Product_Images, ProductMongodb, ObjectId) => ({
 	getProducts: async (req, res) => {
 		try {
 			const products = await Product.findAll({
@@ -21,7 +21,9 @@ export default (Product, Model, Product_Images, ProductMongodb, mongoose) => ({
 		try {
 			const model = await Model.findOne({
 				where: { id: req.body.model },
-			});
+			}, {include: ["Brand", "Category"]});
+
+			const id = new ObjectId();
 
 			const productDataToCreate = {
 				name: req.body.name,
@@ -35,14 +37,21 @@ export default (Product, Model, Product_Images, ProductMongodb, mongoose) => ({
 				sku: req.body.sku,
 				modelId: model.id,
 			};
-			const productMongoDB =
-				await ProductMongodb(productDataToCreate).save();
-			const id = productMongoDB._id.toString();
 			const product = await Product.create({
-				id,
-				...req.body,
-				ModelId: req.body.model,
+				id: id.toString(),
+				...productDataToCreate
 			});
+
+			productDataToCreate.model = model;
+			productDataToCreate.brand = model.Brand;
+			productDataToCreate.category = model.Category;
+			productDataToCreate.deletedAt = null;
+
+			await ProductMongodb({
+				_id: id,
+				...productDataToCreate,
+			}).save();
+			
 			res.json(product);
 		} catch (error) {
 			res.status(500).json({
@@ -56,8 +65,8 @@ export default (Product, Model, Product_Images, ProductMongodb, mongoose) => ({
 			const { id } = req.params;
 
 			const model = await Model.findOne({
-				where: { id: req.body.modelId },
-			});
+				where: { id: req.body.model },
+			}, {include: ["Brand", "Category"]});
 
 			const productDataToUpdate = {
 				name: req.body.name,
@@ -79,12 +88,17 @@ export default (Product, Model, Product_Images, ProductMongodb, mongoose) => ({
 			}
 
 			const product = await Product.findOne({ where: { id } });
-			const productMongo = await ProductMongodb.findOne({ _id: id });
+
+			const productMongo = await ProductMongodb.findOne({ _id: new ObjectId(id) });
 
 			if (!product)
 				return res.status(404).json({ message: "Product not found" });
 
 			await product.update(req.body);
+			productDataToUpdate.model = model;
+			productDataToUpdate.brand = model.Brand;
+			productDataToUpdate.category = model.Category;
+
 			await productMongo.updateOne(productDataToUpdate);
 
 			res.json({ message: "Product updated successfully" });
@@ -106,7 +120,7 @@ export default (Product, Model, Product_Images, ProductMongodb, mongoose) => ({
 			}
 
 			const product = await Product.findOne({ where: { id } });
-			const productMongo = await ProductMongodb.findOne({ _id: id });
+			const productMongo = await ProductMongodb.findOne({ _id: new ObjectId(id) });
 
 			if (!product)
 				return res.status(404).json({ message: "Product not found" });

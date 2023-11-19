@@ -1,4 +1,4 @@
-export default (Brand, BrandMongodb) => ({
+export default (Brand, ObjectId) => ({
 	getBrands: async (req, res) => {
 		try {
 			const brands = await Brand.findAll({
@@ -14,8 +14,7 @@ export default (Brand, BrandMongodb) => ({
 
 	createBrand: async (req, res) => {
 		try {
-			const brandMongo = await BrandMongodb(req.body).save();
-			const id = brandMongo._id.toString();
+			const id = new ObjectId().toString();
 			const brand = await Brand.create({ id, ...req.body });
 			if (req.body.models !== undefined) {
 				for (const model of req.body.models) {
@@ -39,10 +38,9 @@ export default (Brand, BrandMongodb) => ({
 			}
 
 			const brand = await Brand.findOne({ where: { id } });
-			const BrandMongo = await BrandMongodb.findOne({ _id: id });
 
 			if (!brand) return res.status(404).json({ message: "Brand not found" });
-			await BrandMongo.updateOne(brandDataToUpdate);
+
 			await brand.update(brandDataToUpdate);
 			res.json({ message: "Brand updated successfully" });
 		} catch (error) {
@@ -61,11 +59,11 @@ export default (Brand, BrandMongodb) => ({
 			}
 
 			const brand = await Brand.findOne({ where: { id } });
-			const brandMongo = await BrandMongodb.findOne({ _id: id });
+
 			if (!brand) return res.status(404).json({ message: "Brand not found" });
 
 			await brand.destroy();
-			await brandMongo.updateOne({ deletedAt: new Date() });
+
 			res.json({
 				message: "Brand deleted successfully",
 			});
