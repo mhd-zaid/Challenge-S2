@@ -8,14 +8,24 @@ export default (
 ) => ({
 	createOrder: async (req, res) => {
 		try {
+			switch (req.body) {
+				case !req.body.userId:
+					return res.status(400).json({ message: "userId parameter is missing" });
+				case !req.body.deliveryAddress:
+					return res
+						.status(400)
+						.json({ message: "deliveryAddress parameter is missing" });
+				case !req.body.products:
+					return res.status(400).json({ message: "products parameter is missing" });
+			}
+
 			const { userId, deliveryAddress, products } = req.body;
 			const user = await User.findOne({ where: { id: userId } });
 			const userMongo = await UserMongodb.findOne({ _id: new ObjectId(userId) });
 			const mongoProducts = [];
-			if (!user || !deliveryAddress) {
-				return res
-					.status(400)
-					.json({ message: "userId, or deliveryAddress is missing" });
+
+			if (!user) {
+				return res.status(404).json({ message: "User not found" });
 			}
 
 			const order = await Order.create({
@@ -26,21 +36,26 @@ export default (
 			});
 
 			for (const product of products) {
-				const mongoProduct = await ProductMongoDB.findOne({
-					_id: new ObjectId(product.id),
-				});
-				mongoProducts.push(mongoProduct);
-
 				const sqlProduct = await Product.findOne({
 					where: { id: product.id },
 				});
-				
+
+				if (!sqlProduct) {
+					return res.status(404).json({ message: "Product not found" });
+				}
+
 				await order.addProduct(sqlProduct.id, {
 					through: {
 						quantity: product.quantity,
 						price: product.price,
 					},
 				});
+
+				const mongoProduct = await ProductMongoDB.findOne({
+					_id: new ObjectId(product.id),
+				});
+				mongoProducts.push(mongoProduct);
+
 			}
 
 			const orderMongo = await OrderMongodb({
@@ -50,11 +65,18 @@ export default (
 				products: mongoProducts,
 			}).save();
 
-			res.json(order);
+			res.status(201).json(order);
+
 		} catch (error) {
-			res.status(500).json({
-				message: `An error occurred while creating the order : ${error.message}`,
-			});
+			if (error.name == "SequelizeValidationError") {
+				res.status(422).json({
+					message: `An error occurred while creating the order : ${error.message}`,
+				});
+			} else {
+				res.status(500).json({
+					message: `An error occurred while creating the order : ${error.message}`,
+				});
+			}
 		}
 	},
 
@@ -63,8 +85,12 @@ export default (
 			const { id } = req.params;
 			const user = await User.findOne({ where: { id: id } });
 
+			if (!id) {
+				return res.status(400).json({ message: "id parameter is missing" });
+			}
+
 			if (!user) {
-				return res.status(400).json({ message: "userId is missing" });
+				return res.status(404).json({ message: "User not found" });
 			}
 
 			const orders = await Order.findAll({
@@ -72,7 +98,11 @@ export default (
 				include: "products",
 			});
 
-			res.json(orders);
+			if (orders.length === 0) {
+				return res.status(404).json({ message: `No orders found for user with id : ${id} ` });
+			}
+
+			res.status(200).json(orders);
 		} catch (error) {
 			res.status(500).json({
 				message: `An error occurred while retrieving the orders : ${error.message}`,
@@ -89,11 +119,15 @@ export default (
 				include: ["products", "user"],
 			});
 
-			if (!order) {
-				return res.status(400).json({ message: "orderId is missing" });
+			if (!id) {
+				return res.status(400).json({ message: "id is missing" });
 			}
 
-			res.json(order);
+			if (!order) {
+				return res.status(404).json({ message: "Order not found" });
+			}
+
+			res.status(200).json(order);
 		} catch (error) {
 			res.status(500).json({
 				message: `An error occurred while retrieving the order : ${error.message}`,
@@ -104,7 +138,11 @@ export default (
 	getOrders: async (req, res) => {
 		try {
 			const orders = await Order.findAll({ include: "products" });
-			res.json(orders);
+			if (orders.length === 0) {
+				res.status(404).json({ message: "No orders found" });
+			}
+
+			res.status(200).json(orders);
 		} catch (error) {
 			res.status(500).json({
 				message: `An error occurred while retrieving the orders : ${error.message}`,
@@ -115,24 +153,38 @@ export default (
 	updateOrder: async (req, res) => {
 		try {
 			const { id } = req.params;
+			if (!id) {
+				return res.status(400).json({ message: "id is missing" });
+			}
+
 			const { status } = req.body;
+			if (!status) {
+				return res.status(400).json({ message: "status is missing" });
+			}
+
 			const order = await Order.findOne({ where: { id: id } });
+			if (!order) {
+				return res.status(404).json({ message: "Order not found" });
+			}
 			const orderMongo = await OrderMongodb.findOne({ _id: new ObjectId(id) });
 
-			if (!order) {
-				return res.status(400).json({ message: "orderId is missing" });
-			}
 
 			order.status = status;
 			await order.save();
 
 			await orderMongo.updateOne({ status });
 
-			res.json(order);
+			res.status(200).json({ message: "Order updated successfully" });
 		} catch (error) {
-			res.status(500).json({
-				message: `An error occurred while updating the order : ${error.message}`,
-			});
+			if (error.name == "SequelizeValidationError") {
+				res.status(422).json({
+					message: `An error occurred while updating the order : ${error.message}`,
+				});
+			} else {
+				res.status(500).json({
+					message: `An error occurred while updating the order : ${error.message}`,
+				});
+			}
 		}
 	},
 });

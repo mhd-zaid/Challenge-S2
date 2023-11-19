@@ -4,7 +4,11 @@ export default (Model,ObjectId) => ({
 			const models = await Model.findAll({
 				include: ["Brand", "Category"],
 			});
-			res.json(models);
+			if (models.length === 0) {
+				res.status(404).json({ message: "No models found" });
+			}
+
+			res.status(200).json(models);
 		} catch (error) {
 			res.status(500).json({
 				message: `An error occurred while retrieving the models : ${error.message}`,
@@ -14,13 +18,29 @@ export default (Model,ObjectId) => ({
 
 	createModel: async (req, res) => {
 		try {
+			switch (req.body){
+				case !req.body.name:
+					return res.status(400).json({ message: "Name parameter is missing" });
+				case !req.body.BrandId:
+					return res.status(400).json({ message: "BrandId parameter is missing" });
+				case !req.body.CategoryId:
+					return res.status(400).json({ message: "CategoryId parameter is missing" });
+			}
+
 			const id = new ObjectId().toString();
 			const model = await Model.create({ id, ...req.body});
-			res.json(model);
+			res.status(201).json(model);
+
 		} catch (error) {
-			res.status(500).json({
-				message: `An error occurred while creating the model : ${error.message}`,
-			});
+			if (error.name == "SequelizeValidationError") {
+				res.status(422).json({
+					message: `An error occurred while creating the model : ${error.message}`,
+				});
+			}else{
+				res.status(500).json({
+					message: `An error occurred while creating the model : ${error.message}`,
+				});
+			}
 		}
 },
 
@@ -33,17 +53,32 @@ export default (Model,ObjectId) => ({
 				return res.status(400).json({ message: "Id parameter is missing" });
 			}
 
+			switch (modelDataToUpdate){
+				case !modelDataToUpdate.name:
+					return res.status(400).json({ message: "Name parameter is missing" });
+				case !modelDataToUpdate.BrandId:
+					return res.status(400).json({ message: "BrandId parameter is missing" });
+				case !modelDataToUpdate.CategoryId:
+					return res.status(400).json({ message: "CategoryId parameter is missing" });
+			}
+
 			const model = await Model.findOne({ where: { id } });
 
 			if (!model) return res.status(404).json({ message: "Model not found" });
 
 			await model.update(modelDataToUpdate);
 
-			res.json({ message: "Model updated successfully" });
+			res.status(200).json({ message: "Model updated successfully" });
 		} catch (error) {
-			res.status(500).json({
-				message: `An error occurred while updating the model : ${error.message}`,
-			});
+			if (error.name == "SequelizeValidationError") {
+				res.status(422).json({
+					message: `An error occurred while creating the model : ${error.message}`,
+				});
+			}else {
+				res.status(500).json({
+					message: `An error occurred while updating the model : ${error.message}`,
+				});
+			}
 		}
 	},
 
@@ -61,9 +96,7 @@ export default (Model,ObjectId) => ({
 
 			await model.destroy();
 
-			res.json({
-				message: "Model deleted successfully",
-			});
+			res.status(204).json({ message: "Model deleted successfully" });
 		} catch (error) {
 			res.status(500).json({
 				message: `An error occurred while deleting the model : ${error.message}`,
@@ -86,7 +119,7 @@ export default (Model,ObjectId) => ({
 
 			if (!model) return res.status(404).json({ message: "Model not found" });
 
-			res.json(model);
+			res.status(200).json(model);
 		} catch (error) {
 			res.status(500).json({
 				message: `An error occurred while retrieving the model : ${error.message}`,

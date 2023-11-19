@@ -2,14 +2,27 @@ export default (Payment, Order, User, stripe, OrderMongodb, ObjectId) => ({
 	createPayment: async (req, res) => {
 		try {
 			const { orderId } = req.body;
+			if (!orderId) {
+				return res.status(400).json({ message: "orderId parameter is missing" });
+			}
+
 			const status = "unpaid";
 			const order = await Order.findOne({
 				where: { id: orderId },
 				include: "products",
 			});
+
+			if (!order) {
+				return res.status(404).json({ message: "Order not found" });
+			}
+
 			const products = order.products;
 			const storeItems = new Map([]);
 			const user = await User.findOne({ where: { id: order.userId } });
+			
+			if (!user) {
+				return res.status(404).json({ message: "User not found" });
+			}
 
 			products.map((item) => {
 				storeItems.set(item.id, {
@@ -66,22 +79,35 @@ export default (Payment, Order, User, stripe, OrderMongodb, ObjectId) => ({
 				status: status,
 			});
 
-			return res.json(payment);
+			return res.status(201).json(payment);
 		} catch (error) {
-			res.status(500).json({
-				message: `An error occurred while creating the payment : ${error.message}`,
-			});
+			if (error.name == "SequelizeValidationError") {
+				return res.status(422).json({ message: error.message });
+			}else{
+				return res.status(500).json({
+					message: `An error occurred while creating the payment : ${error.message}`,
+				});
+			}
+			
 		}
 	},
 
 	getPayment: async (req, res) => {
 		try {
 			const { id } = req.params;
+			if (!id) {
+				return res.status(400).json({ message: "id parameter is missing" });
+			}
+
 			const payment = await Payment.findOne({
 				where: { id: id },
 				include: "order",
 			});
-			return res.json(payment);
+			if (!payment) {
+				return res.status(404).json({ message: "Payment not found" });
+			}
+
+			return res.status(200).json(payment);
 		} catch (error) {
 			res.status(500).json({
 				message: `An error occurred while getting the payment : ${error.message}`,
@@ -91,20 +117,33 @@ export default (Payment, Order, User, stripe, OrderMongodb, ObjectId) => ({
 
 	getStripeSession: async (req, res) => {
 		try {
+			if (!req.params.session) {
+				return res.status(400).json({ message: "session parameter is missing" });
+			}
+
 			const payment = await Payment.findOne({
 				where: { id: req.params.session },
 			});
+			if (!payment) {
+				return res.status(404).json({ message: "Payment not found" });
+			}
+
 			const session = await stripe.checkout.sessions.retrieve(
 				payment.stripePaymentId
 			);
-			return res.json(session);
+			
+			if(!session)
+				return res.status(404).json({ message: "Session not found" }
+			);
+
+			return res.status(200).json(session);
 		} catch (error) {
 			res.status(500).json({
 				message: `An error occurred while getting the payment url : ${error.message}`,
 			});
 		}
 	},
-
+	// a revoir
 	stripeSuccess: async (req, res) => {
 		try {
 			const { session_id } = req.query;
@@ -135,7 +174,7 @@ export default (Payment, Order, User, stripe, OrderMongodb, ObjectId) => ({
 			});
 		}
 	},
-
+	// a revoir
 	stripeFailed: async (req, res) => {
 		try {
 			const { session_id } = req.query;
@@ -164,7 +203,11 @@ export default (Payment, Order, User, stripe, OrderMongodb, ObjectId) => ({
 	getPayments: async (req, res) => {
 		try {
 			const payments = await Payment.findAll();
-			return res.json(payments);
+			if (payments.length === 0) {
+				res.status(404).json({ message: "No payments found" });
+			}
+
+			return res.status(200).json(payments);
 		} catch (error) {
 			res.status(500).json({
 				message: `An error occurred while getting the payments : ${error.message}`,
