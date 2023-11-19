@@ -1,14 +1,14 @@
 import express from "express";
 import categoriesRoutes from "../routes/categoriesRoutes.js";
 import Category from "../models/postgres-category.js";
-import CategoryMongodb from "../models/mongodb-category.js";
+import { ObjectId } from "mongodb";
 const {
 	getCategories,
 	createCategory,
 	updateCategory,
 	deleteCategory,
 	getCategory,
-} = categoriesRoutes(Category, CategoryMongodb);
+} = categoriesRoutes(Category, ObjectId);
 
 const router = express.Router();
 

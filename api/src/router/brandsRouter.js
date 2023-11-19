@@ -1,9 +1,9 @@
 import express from "express";
 import brandsRoutes from "../routes/brandsRoutes.js";
 import Brand from "../models/postgres-brand.js";
-import MongoBrandb from "../models/mongodb-brand.js";
+import { ObjectId } from "mongodb";
 const { getBrands, createBrand, updateBrand, deleteBrand, getBrand } =
-	brandsRoutes(Brand, MongoBrandb);
+	brandsRoutes(Brand, ObjectId);
 
 const router = express.Router();
 

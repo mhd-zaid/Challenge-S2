@@ -4,7 +4,7 @@ import Product from "../models/postgres-product.js";
 import Model from "../models/postgres-model.js";
 import Product_Images from "../models/postgres-product-images.js";
 import ProductMongodb from "../models/mongodb-product.js";
-import mongoose from "mongoose";
+import {ObjectId} from "mongodb";
 const {
     getProducts,
     createProduct,
@@ -12,7 +12,7 @@ const {
     deleteProduct,
     getProduct,
     uploadImage
-} = productsRoutes(Product, Model, Product_Images, ProductMongodb, mongoose);
+} = productsRoutes(Product, Model, Product_Images, ProductMongodb, ObjectId);
 
 import multer from "multer";
 import path from "path";

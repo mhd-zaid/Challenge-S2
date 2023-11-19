@@ -2,31 +2,24 @@ export default (
 	Order,
 	OrderMongodb,
 	User,
+	UserMongodb,
 	ProductMongoDB,
-	ModelMongodb,
-	BrandMongodb,
-	CategoryMongodb,
 	ObjectId
 ) => ({
 	createOrder: async (req, res) => {
 		try {
 			const { userId, deliveryAddress, products } = req.body;
 			const user = await User.findOne({ where: { id: userId } });
-
+			const userMongo = await UserMongodb.findOne({ _id: new ObjectId(userId) });
+			const mongoProducts = [];
 			if (!user || !deliveryAddress) {
 				return res
 					.status(400)
 					.json({ message: "userId, or deliveryAddress is missing" });
 			}
-			const orderMongo = await OrderMongodb({
-				status: "payment pending",
-				deliveryAddress,
-				user: user.id,
-				products: products,
-			}).save();
 
 			const order = await Order.create({
-				id: orderMongo._id.toString(),
+				id: new ObjectId().toString(),
 				status: "payment pending",
 				userId: user.id,
 				deliveryAddress,
@@ -36,14 +29,26 @@ export default (
 				const mongoProduct = await ProductMongoDB.findOne({
 					_id: new ObjectId(product.id),
 				});
+				mongoProducts.push(mongoProduct);
+
+				const sqlProduct = await Product.findOne({
+					where: { id: product.id },
+				});
 				
-				await order.addProduct(product.id, {
+				await order.addProduct(sqlProduct.id, {
 					through: {
 						quantity: product.quantity,
 						price: product.price,
 					},
 				});
 			}
+
+			const orderMongo = await OrderMongodb({
+				status: "payment pending",
+				deliveryAddress,
+				user: userMongo,
+				products: mongoProducts,
+			}).save();
 
 			res.json(order);
 		} catch (error) {
@@ -112,6 +117,7 @@ export default (
 			const { id } = req.params;
 			const { status } = req.body;
 			const order = await Order.findOne({ where: { id: id } });
+			const orderMongo = await OrderMongodb.findOne({ _id: new ObjectId(id) });
 
 			if (!order) {
 				return res.status(400).json({ message: "orderId is missing" });
@@ -119,6 +125,8 @@ export default (
 
 			order.status = status;
 			await order.save();
+
+			await orderMongo.updateOne({ status });
 
 			res.json(order);
 		} catch (error) {
