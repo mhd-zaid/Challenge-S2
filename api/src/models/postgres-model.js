@@ -1,6 +1,5 @@
 import {DataTypes, Model} from "sequelize";
 import sequelize from "../config/sequelize-config.js";
-import Sequelize from "sequelize";
 
 class Modele extends Model {
 }
@@ -14,14 +13,38 @@ Modele.init(
         name: {
             type: DataTypes.STRING,
             allowNull: false,
+            validate: {
+				notEmpty: {
+					msg: "Field 'name' cannot be empty.",
+				},
+				len: {
+					args: [2, 100],
+					msg: "Field 'name' must be between 2 and 100 characters long.",
+				},
+			},
         },
         gender: {
             type: DataTypes.STRING,
             allowNull: false,
+            validate: {
+				notEmpty: {
+					msg: "Field 'name' cannot be empty.",
+				},
+				isIn: {
+					args: [["male", "female"]],
+					msg: "The 'gender' field must be 'male' or 'female'.",
+				},
+			},
         },
         description: {
             type: DataTypes.STRING,
             allowNull: true,
+            validate: {
+                len: {
+					args: [70, 300],
+					msg: "Field 'description' must be between 70 and 300 characters long.",
+				},
+            },
         },
     },
     {

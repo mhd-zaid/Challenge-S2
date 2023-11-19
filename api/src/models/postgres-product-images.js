@@ -13,6 +13,11 @@ Product_Images.init(
         url: {
             type: DataTypes.STRING,
             allowNull: false,
+            validate: {
+                notEmpty: {
+                    msg: "Field 'url' cannot be empty.",
+                },
+            },
         }
     }, 
     {

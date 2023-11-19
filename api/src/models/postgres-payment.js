@@ -15,10 +15,25 @@ Payment.init(
 		status: {
 			type: DataTypes.ENUM("unpaid","paid", "failed"),
 			allowNull: false,
+			validate: {
+				notEmpty: {
+					msg: "Field 'status' cannot be empty.",
+				},
+				isIn: {
+					args: [["unpaid","paid", "failed"]],
+					msg: "The 'status' field must be 'unpaid','paid', 'failed'.",
+				},
+			}
 		},
 		stripePaymentId: {
 			type: DataTypes.STRING,
 			allowNull: false,
+			validate: {
+				notEmpty: {
+					msg: "Field 'stripePaymentId' cannot be empty.",
+				},
+				
+			}
 		},
 	},
 	{
