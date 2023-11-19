@@ -20,6 +20,6 @@ router.get("/", getOrders);
 router.get("/user/:id", getUserOrders);
 router.get("/:id", getOrder);
 router.post("/", createOrder);
-router.put("/:id", updateOrder);
+router.patch("/:id", updateOrder);
 
 export default router;
