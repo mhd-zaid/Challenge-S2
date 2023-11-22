@@ -41,8 +41,8 @@ Modele.init(
             allowNull: true,
             validate: {
                 len: {
-					args: [0, 300],
-					msg: "Field 'description' must be between 0 and 300 characters long.",
+					args: [15, 300],
+					msg: "Field 'description' must be between 15 and 300 characters long.",
 				},
             },
         },
@@ -76,5 +76,5 @@ import("./postgres-brand.js")
     .catch((error) => {
         console.error("Erreur lors de l'importation du modèle Brand :", error);
     });
-
+    
 export default Modele;
