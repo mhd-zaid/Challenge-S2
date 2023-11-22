@@ -10,18 +10,26 @@ export default (
 		try {
 			switch (req.body) {
 				case !req.body.userId:
-					return res.status(400).json({ message: "userId parameter is missing" });
+					return res
+						.status(400)
+						.json({ message: "userId parameter is missing" });
 				case !req.body.deliveryAddress:
 					return res
 						.status(400)
-						.json({ message: "deliveryAddress parameter is missing" });
+						.json({
+							message: "deliveryAddress parameter is missing",
+						});
 				case !req.body.products:
-					return res.status(400).json({ message: "products parameter is missing" });
+					return res
+						.status(400)
+						.json({ message: "products parameter is missing" });
 			}
 
 			const { userId, deliveryAddress, products } = req.body;
 			const user = await User.findOne({ where: { id: userId } });
-			const userMongo = await UserMongodb.findOne({ _id: new ObjectId(userId) });
+			const userMongo = await UserMongodb.findOne({
+				_id: new ObjectId(userId),
+			});
 			const mongoProducts = [];
 
 			if (!user) {
@@ -41,7 +49,9 @@ export default (
 				});
 
 				if (!sqlProduct) {
-					return res.status(404).json({ message: "Product not found" });
+					return res
+						.status(404)
+						.json({ message: "Product not found" });
 				}
 
 				await order.addProduct(sqlProduct.id, {
@@ -55,7 +65,6 @@ export default (
 					_id: new ObjectId(product.id),
 				});
 				mongoProducts.push(mongoProduct);
-
 			}
 
 			const orderMongo = await OrderMongodb({
@@ -66,7 +75,6 @@ export default (
 			}).save();
 
 			res.status(201).json(order);
-
 		} catch (error) {
 			if (error.name == "SequelizeValidationError") {
 				res.status(422).json({
@@ -86,7 +94,9 @@ export default (
 			const user = await User.findOne({ where: { id: id } });
 
 			if (!id) {
-				return res.status(400).json({ message: "id parameter is missing" });
+				return res
+					.status(400)
+					.json({ message: "id parameter is missing" });
 			}
 
 			if (!user) {
@@ -99,7 +109,11 @@ export default (
 			});
 
 			if (orders.length === 0) {
-				return res.status(404).json({ message: `No orders found for user with id : ${id} ` });
+				return res
+					.status(404)
+					.json({
+						message: `No orders found for user with id : ${id} `,
+					});
 			}
 
 			res.status(200).json(orders);
@@ -138,9 +152,6 @@ export default (
 	getOrders: async (req, res) => {
 		try {
 			const orders = await Order.findAll({ include: "products" });
-			if (orders.length === 0) {
-				res.status(404).json({ message: "No orders found" });
-			}
 
 			res.status(200).json(orders);
 		} catch (error) {
@@ -166,8 +177,9 @@ export default (
 			if (!order) {
 				return res.status(404).json({ message: "Order not found" });
 			}
-			const orderMongo = await OrderMongodb.findOne({ _id: new ObjectId(id) });
-
+			const orderMongo = await OrderMongodb.findOne({
+				_id: new ObjectId(id),
+			});
 
 			order.status = status;
 			await order.save();

@@ -7,7 +7,7 @@ export default (Product, Model, Product_Images, ProductMongodb, ObjectId) => ({
 			if (!products)
 				return res.status(404).json({ message: "Products not found" });
 
-			res.status.json(
+			res.json(
 				products.map((product) => ({
 					...product.dataValues,
 					price: (product.dataValues.price / 100).toFixed(2),
@@ -59,7 +59,7 @@ export default (Product, Model, Product_Images, ProductMongodb, ObjectId) => ({
 				size: req.body.size,
 				color: req.body.color,
 				discount: req.body.discount,
-				alerteQuantity: req.body.alerteQuantity,
+				alertQuantity: req.body.alertQuantity,
 				sku: req.body.sku,
 				modelId: model.id,
 			};
@@ -114,7 +114,7 @@ export default (Product, Model, Product_Images, ProductMongodb, ObjectId) => ({
 				size: req.body.size,
 				color: req.body.color,
 				discount: req.body.discount,
-				alerteQuantity: req.body.alerteQuantity,
+				alertQuantity: req.body.alertQuantity,
 				sku: req.body.sku,
 				modelId: model.id,
 			};
@@ -133,7 +133,7 @@ export default (Product, Model, Product_Images, ProductMongodb, ObjectId) => ({
 
 			await productMongo.updateOne(productDataToUpdate);
 
-			res.status.(200).json({ message: "Product updated successfully" });
+			res.status(200).json({ message: "Product updated successfully" });
 		} catch (error) {
 			if (error.name == "SequelizeValidationError") {
 				return res.status(422).json({ message: error.message });

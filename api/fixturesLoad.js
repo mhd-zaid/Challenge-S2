@@ -1,5 +1,5 @@
 import sequelize from "./src/config/sequelize-config.js";
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 import dotenv from "dotenv";
 import { ObjectId } from "mongodb";
 // Models
@@ -18,132 +18,169 @@ import ProductHistoryMongodb from "./src/models/mongodb-productHistory.js";
 // Fixtures
 import brandsFixture from "./src/fixtures/brand.js";
 import categoriesFixture from "./src/fixtures/category.js";
+import Product_Images from "./src/models/postgres-product-images.js";
 
 dotenv.config();
 
 const connectDatabase = async () => {
-    try {
-        await mongoose.connect(process.env.MONGODB_URI);
-        console.log("MongoDB connected");
-    } catch (err) {
-        console.error(err);
-    }
+	try {
+		await mongoose.connect(process.env.MONGODB_URI);
+		console.log("MongoDB connected");
+	} catch (err) {
+		console.error(err);
+	}
 };
 
 const dropCollections = async () => {
-    try {
-        await ProductMongoDB.collection.drop();
-        await OrderMongodb.collection.drop();
-        await UserMongodb.collection.drop();
-        await ProductHistoryMongodb.collection.drop();
-        console.log("Collections dropped");
-    } catch (err) {
-        console.error(err);
-    }
+	try {
+		await ProductMongoDB.collection.drop();
+		await OrderMongodb.collection.drop();
+		await UserMongodb.collection.drop();
+		await ProductHistoryMongodb.collection.drop();
+		console.log("Collections dropped");
+	} catch (err) {
+		console.error(err);
+	}
 };
 
 const createCollections = async () => {
-    try {
-        await ProductMongoDB.createCollection();
-        await OrderMongodb.createCollection();
-        await UserMongodb.createCollection();
-        await ProductHistoryMongodb.createCollection();
-        console.log("Collections created");
-    } catch (err) {
-        console.error(err);
-    }
+	try {
+		await ProductMongoDB.createCollection();
+		await OrderMongodb.createCollection();
+		await UserMongodb.createCollection();
+		await ProductHistoryMongodb.createCollection();
+		console.log("Collections created");
+	} catch (err) {
+		console.error(err);
+	}
 };
 
 const syncDatabase = async () => {
-    try {
-        await sequelize.sync({ force: true });
-        console.log("Database dropped");
-    } catch (err) {
-        console.error(err);
-    }
+	try {
+		await sequelize.sync({ force: true });
+		console.log("Database dropped");
+	} catch (err) {
+		console.error(err);
+	}
 };
 
 const loadBrands = async () => {
-    try {
-        await Promise.all(brandsFixture.map(brand => Brand.create(brand)));
-        console.log("Brands loaded");
-    } catch (err) {
-        console.error(err);
-    }
+	try {
+		await Promise.all(brandsFixture.map((brand) => Brand.create(brand)));
+		console.log("Brands loaded");
+	} catch (err) {
+		console.error(err);
+	}
 };
 
 const loadCategories = async () => {
-    try {
-        await Promise.all(categoriesFixture.map(category => Category.create(category)));
-        console.log("Categories loaded");
-    } catch (err) {
-        console.error(err);
-    }
+	try {
+		await Promise.all(
+			categoriesFixture.map((category) => Category.create(category))
+		);
+		console.log("Categories loaded");
+	} catch (err) {
+		console.error(err);
+	}
 };
 
 const loadModels = async () => {
-    try {
-        const modelsFixtureModule = await import("./src/fixtures/model.js");
-        const modelsFixture = modelsFixtureModule.default;
-        await Promise.all(modelsFixture.map(model => Model.create(model)));
-        console.log("Models loaded");
-    } catch (err) {
-        console.error(err);
-    }
+	try {
+		const modelsFixtureModule = await import("./src/fixtures/model.js");
+		const modelsFixture = modelsFixtureModule.default;
+		await Promise.all(modelsFixture.map((model) => Model.create(model)));
+		console.log("Models loaded");
+	} catch (err) {
+		console.error(err);
+	}
 };
 
 const loadProducts = async () => {
-    try {
-        const productsFixtureModule = await import("./src/fixtures/product.js");
-        const productsFixture = productsFixtureModule.default;
+	try {
+		const productsFixtureModule = await import("./src/fixtures/product.js");
+		const productsFixture = productsFixtureModule.default;
 
-        await Promise.all(productsFixture.map(async (product) => {
-            const sqlProduct = await Product.create(product);
-            const model = await Model.findOne({ where: { id: sqlProduct.modelId }, include: ["Category", "Brand"] });
-            const category = model.Category;
-            const brand = model.Brand;
-            const productMongo = {
-                _id: new ObjectId(product.id),
-                name: sqlProduct.name,
-                price: sqlProduct.price,
-                vat: sqlProduct.vat,
-                quantity: sqlProduct.quantity,
-                size: sqlProduct.size,
-                color: sqlProduct.color,
-                discount: sqlProduct.discount,
-                alerteQuantity: sqlProduct.alerteQuantity,
-                sku: sqlProduct.sku,
-                model: model.dataValues,
-                category: category.dataValues,
-                brand: brand.dataValues,
-                deletedAt: sqlProduct.deletedAt,
-                
-            };
+		await Promise.all(
+			productsFixture.map(async (product) => {
+				const sqlProduct = await Product.create(product);
+				const model = await Model.findOne({
+					where: { id: sqlProduct.modelId },
+					include: ["Category", "Brand"],
+				});
+				const category = model.Category;
+				const brand = model.Brand;
+				const productMongo = {
+					_id: new ObjectId(product.id),
+					name: sqlProduct.name,
+					price: sqlProduct.price,
+					vat: sqlProduct.vat,
+					quantity: sqlProduct.quantity,
+					size: sqlProduct.size,
+					color: sqlProduct.color,
+					discount: sqlProduct.discount,
+					alertQuantity: sqlProduct.alertQuantity,
+					sku: sqlProduct.sku,
+					model: model.dataValues,
+					category: category.dataValues,
+					brand: brand.dataValues,
+					deletedAt: sqlProduct.deletedAt,
+				};
 
-            await ProductMongoDB(productMongo).save();
-        }));
-        console.log("Products loaded");
-    } catch (err) {
-        console.error(err);
-    }
+				await ProductMongoDB(productMongo).save();
+			})
+		);
+		console.log("Products loaded");
+	} catch (err) {
+		console.error(err);
+	}
+};
+
+const loadProductsImages = async () => {
+	try {
+		const productsImagesFixtureModule = await import(
+			"./src/fixtures/product-image.js"
+		);
+		const productsImagesFixture = productsImagesFixtureModule.default;
+		await Promise.all(
+			productsImagesFixture.map((productImage) =>
+				Product_Images.create(productImage)
+			)
+		);
+		console.log("Products images loaded");
+	} catch (err) {
+		console.error(err);
+	}
+};
+
+const loadUsers = async () => {
+	try {
+		const usersFixtureModule = await import("./src/fixtures/user.js");
+		const usersFixture = usersFixtureModule.default;
+		await Promise.all(usersFixture.map((user) => User.create(user)));
+		console.log("Users loaded");
+	} catch (err) {
+		console.error(err);
+	}
 };
 
 const main = async () => {
-    try {
-        await connectDatabase();
-        await dropCollections();
-        await createCollections();
-        await syncDatabase();
-        await loadBrands();
-        await loadCategories();
-        await loadModels();
-        await loadProducts();
-    } catch (error) {
-        console.error(error);
-    } finally {
-        sequelize.close();
-        mongoose.connection.close();
-    }
+	try {
+		await connectDatabase();
+		await dropCollections();
+		await createCollections();
+		await syncDatabase();
+		await loadBrands();
+		await loadCategories();
+		await loadModels();
+		await loadProducts();
+		await loadProductsImages();
+		await loadUsers();
+	} catch (error) {
+		console.error(error);
+	} finally {
+		sequelize.close();
+		mongoose.connection.close();
+	}
 };
 
 main();

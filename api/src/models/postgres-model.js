@@ -41,8 +41,8 @@ Modele.init(
             allowNull: true,
             validate: {
                 len: {
-					args: [70, 300],
-					msg: "Field 'description' must be between 70 and 300 characters long.",
+					args: [0, 300],
+					msg: "Field 'description' must be between 0 and 300 characters long.",
 				},
             },
         },

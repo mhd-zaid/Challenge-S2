@@ -4,9 +4,6 @@ export default (Category, ObjectId) => ({
 			const categories = await Category.findAll({
 				include: "models",
 			});
-			if (categories.length === 0) {
-				res.status(404).json({ message: "No categories found" });
-			}
 			res.status(200).json(categories);
 		} catch (error) {
 			res.status(500).json({
@@ -18,19 +15,21 @@ export default (Category, ObjectId) => ({
 	createCategory: async (req, res) => {
 		try {
 			if (!req.body.name) {
-				return res.status(400).json({ message: "Name parameter is missing" });
+				return res
+					.status(400)
+					.json({ message: "Name parameter is missing" });
 			}
 
 			const id = new ObjectId().toString();
 			const category = await Category.create({ id, ...req.body });
-			
+
 			res.status(201).json(category);
 		} catch (error) {
 			if (error.name == "SequelizeValidationError") {
 				res.status(422).json({
 					message: `An error occurred while creating the category : ${error.message}`,
 				});
-			}else {
+			} else {
 				res.status(500).json({
 					message: `An error occurred while creating the category : ${error.message}`,
 				});
@@ -40,16 +39,19 @@ export default (Category, ObjectId) => ({
 
 	updateCategory: async (req, res) => {
 		try {
-
 			const { id } = req.params;
 			const categoryDataToUpdate = req.body;
 
 			if (!id) {
-				return res.status(400).json({ message: "Id parameter is missing" });
+				return res
+					.status(400)
+					.json({ message: "Id parameter is missing" });
 			}
 
 			if (!categoryDataToUpdate.name) {
-				return res.status(400).json({ message: "Name parameter is missing" });
+				return res
+					.status(400)
+					.json({ message: "Name parameter is missing" });
 			}
 
 			const category = await Category.findOne({ where: { id } });
@@ -65,7 +67,7 @@ export default (Category, ObjectId) => ({
 				res.status(422).json({
 					message: `An error occurred while creating the category : ${error.message}`,
 				});
-			}else {
+			} else {
 				res.status(500).json({
 					message: `An error occurred while creating the category : ${error.message}`,
 				});
@@ -78,7 +80,9 @@ export default (Category, ObjectId) => ({
 			const { id } = req.params;
 
 			if (!id) {
-				return res.status(400).json({ message: "Id parameter is missing" });
+				return res
+					.status(400)
+					.json({ message: "Id parameter is missing" });
 			}
 
 			const category = await Category.findOne({ where: { id } });
@@ -102,7 +106,9 @@ export default (Category, ObjectId) => ({
 			const { id } = req.params;
 
 			if (!id) {
-				return res.status(400).json({ message: "Id parameter is missing" });
+				return res
+					.status(400)
+					.json({ message: "Id parameter is missing" });
 			}
 
 			const category = await Category.findOne({

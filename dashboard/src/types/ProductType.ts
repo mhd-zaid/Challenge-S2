@@ -14,5 +14,5 @@ export type ProductType = {
     modelId: string;
     model: ModelType;
     productImages: ProductImageType[];
-    alerteQuantity: number;
+    alertQuantity: number;
 }

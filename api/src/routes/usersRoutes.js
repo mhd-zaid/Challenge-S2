@@ -30,7 +30,8 @@ export default (
 				where: { id: req.params.id },
 				attributes: { exclude: ["password", "encryptionKey"] },
 			});
-			if (!user) return res.status(404).json({ message: "User not found" });
+			if (!user)
+				return res.status(404).json({ message: "User not found" });
 			res.json(user);
 		} catch (error) {
 			res.status(500).json({
@@ -63,7 +64,9 @@ export default (
 			});
 
 			if (existingUser)
-				return res.status(409).json({ message: `Email is already taken` });
+				return res
+					.status(409)
+					.json({ message: `Email is already taken` });
 
 			const authentificationToken = generateToken();
 
@@ -100,17 +103,32 @@ export default (
 			const { id } = req.params;
 			const userDataToUpdate = req.body;
 
+			console.log(userDataToUpdate);
 			if (!id) {
-				return res.status(400).json({ message: "Id parameter is missing" });
+				return res
+					.status(400)
+					.json({ message: "Id parameter is missing" });
 			}
 
 			const user = await User.findOne({ where: { id } });
 
-			if (!user) return res.status(404).json({ message: "User not found" });
+			if (!user)
+				return res.status(404).json({ message: "User not found" });
 
 			const userMongo = await UserMongo.findOne({
 				_id: new Types.ObjectId(id),
 			});
+
+			if (!userMongo) {
+				await UserMongo.create({
+					_id: new Types.ObjectId(id),
+					firstname: user.firstname,
+					lastname: user.lastname,
+					role: user.role,
+					isValidate: user.isValidate,
+					disabled: user.disabled,
+				}).save();
+			}
 
 			if (userDataToUpdate.email) {
 				// Check if email is updated and if it is, check if it is already taken
@@ -120,7 +138,9 @@ export default (
 						where: { email: userDataToUpdate.email },
 					}));
 				if (existingUser)
-					return res.status(409).json({ message: `Email already taken` });
+					return res
+						.status(409)
+						.json({ message: `Email already taken` });
 			}
 
 			if (userDataToUpdate.password) {
@@ -129,7 +149,10 @@ export default (
 					return res.status(400).json({
 						message: "Invalid password",
 					});
-				const hashedPassword = await bcrypt.hash(userDataToUpdate.password, await bcrypt.genSalt(10));
+				const hashedPassword = await bcrypt.hash(
+					userDataToUpdate.password,
+					await bcrypt.genSalt(10)
+				);
 				userDataToUpdate.password = hashedPassword;
 				userDataToUpdate.passwordUpdatedAt = new Date();
 			}
@@ -137,7 +160,9 @@ export default (
 			if (userDataToUpdate.birthdate) {
 				// Check if birthdate is updated and if it is, check if user is major
 				if (!isUserMajor(userDataToUpdate.birthdate))
-					return res.status(400).json({ message: "Invalid birthdate" });
+					return res
+						.status(400)
+						.json({ message: "Invalid birthdate" });
 			}
 
 			if (userDataToUpdate.role) {
@@ -154,7 +179,9 @@ export default (
 					userDataToUpdate.isValidate !== true &&
 					userDataToUpdate.isValidate !== false
 				)
-					return res.status(400).json({ message: "Invalid isValidate" });
+					return res
+						.status(400)
+						.json({ message: "Invalid isValidate" });
 			}
 
 			if (userDataToUpdate.disabled) {
@@ -162,7 +189,9 @@ export default (
 					userDataToUpdate.disabled !== true &&
 					userDataToUpdate.disabled !== false
 				)
-					return res.status(400).json({ message: "Invalid disabled" });
+					return res
+						.status(400)
+						.json({ message: "Invalid disabled" });
 			}
 
 			if (userDataToUpdate.firstname) {
@@ -204,16 +233,22 @@ export default (
 			const { oldPassword, newPassword } = req.body;
 
 			if (!id)
-				return res.status(400).json({ message: "Id parameter is missing" });
+				return res
+					.status(400)
+					.json({ message: "Id parameter is missing" });
 
 			const user = await User.findOne({ where: { id } });
 
-			if (!user) return res.status(404).json({ message: "User not found" });
+			if (!user)
+				return res.status(404).json({ message: "User not found" });
 
 			if (!oldPassword || !newPassword)
 				return res.status(400).json({ message: "Invalid arguments" });
 
-			const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+			const isPasswordValid = await bcrypt.compare(
+				oldPassword,
+				user.password
+			);
 
 			if (!isPasswordValid)
 				return res.status(400).json({ message: "Invalid password" });
@@ -243,11 +278,14 @@ export default (
 			const { id } = req.params;
 
 			if (!id)
-				return res.status(400).json({ message: "Id parameter is missing" });
+				return res
+					.status(400)
+					.json({ message: "Id parameter is missing" });
 
 			const user = await User.findOne({ where: { id } });
 
-			if (!user) return res.status(404).json({ message: "User not found" });
+			if (!user)
+				return res.status(404).json({ message: "User not found" });
 
 			const userMongo = await UserMongo.findOne({
 				_id: new Types.ObjectId(id),
@@ -255,7 +293,10 @@ export default (
 
 			const encryptionKey = generateEncryptionKey();
 
-			const anonymizedData = anonymizeUserData(user.toJSON(), encryptionKey);
+			const anonymizedData = anonymizeUserData(
+				user.toJSON(),
+				encryptionKey
+			);
 
 			await sendDeletedAccountEmail(user.email, encryptionKey);
 
@@ -283,20 +324,29 @@ export default (
 			const { encryptionKey } = req.body;
 
 			if (!id)
-				return res.status(400).json({ message: "Id parameter is missing" });
+				return res
+					.status(400)
+					.json({ message: "Id parameter is missing" });
 
 			const user = await User.findOne({ where: { id } });
 
-			if (!user) return res.status(404).json({ message: "User not found" });
+			if (!user)
+				return res.status(404).json({ message: "User not found" });
 
 			if (!user.disabled)
-				return res.status(400).json({ message: "User is not disabled" });
+				return res
+					.status(400)
+					.json({ message: "User is not disabled" });
 
 			if (!encryptionKey)
-				return res.status(400).json({ message: "Encryption key is missing" });
+				return res
+					.status(400)
+					.json({ message: "Encryption key is missing" });
 
 			if (encryptionKey !== user.encryptionKey)
-				return res.status(400).json({ message: "Invalid encryption key" });
+				return res
+					.status(400)
+					.json({ message: "Invalid encryption key" });
 
 			const decryptedData = decryptUserData(user.toJSON(), encryptionKey);
 

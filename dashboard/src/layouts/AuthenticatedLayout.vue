@@ -124,7 +124,7 @@ const sidebarOpen = ref(false)
               <div
                 class="flex grow flex-col gap-y-5 overflow-y-auto bg-primary px-6 pb-2 ring-1 ring-white/10"
               >
-                <RouterLink to="dashboard" class="flex h-16 shrink-0 items-center mt-4">
+                <RouterLink to="/" class="flex h-16 shrink-0 items-center mt-4">
                   <img class="h-8 w-auto" src="/images/sneakpeak_logo_white.png" alt="Sneak Peak" />
                 </RouterLink>
                 <nav class="flex flex-1 flex-col">
@@ -164,7 +164,7 @@ const sidebarOpen = ref(false)
     <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
       <!-- Sidebar component, swap this element with another sidebar if you like -->
       <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-primary px-6">
-        <RouterLink to="dashboard" class="flex h-16 shrink-0 items-center mt-5">
+        <RouterLink to="/" class="flex h-16 shrink-0 items-center mt-5">
           <img class="h-8 w-auto" src="/images/sneakpeak_logo_white.png" alt="Your Company" />
         </RouterLink>
         <nav class="flex flex-1 flex-col">

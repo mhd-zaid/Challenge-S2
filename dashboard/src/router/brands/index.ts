@@ -9,29 +9,11 @@ export const BrandsRoutes = [
         }
     },
     {
-        path: '/brands/create',
-        name: 'create-brand',
-        component: import('@/views/brands/BrandsSidebarForm.vue'),
-        meta: {
-          title: 'Create Brand',
-          requiresAuthentication: true
-        }
-      },
-    {
         path: '/brands/:id',
         name: 'brand',
         component: () => import('@/views/brands/BrandView.vue'),
         meta: {
             title: 'Brand',
-            requiresAuthentication: true,
-        }
-    },
-    {
-        path: '/brands/:id/edit',
-        name: 'edit-brand',
-        component: () => import('@/views/brands/BrandsSidebarForm.vue'),
-        meta: {
-            title: 'Edit Brand :id',
             requiresAuthentication: true,
         }
     },

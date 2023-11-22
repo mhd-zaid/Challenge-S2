@@ -107,16 +107,16 @@ Product.init(
                 },
             },
         },
-        alerteQuantity: {
+        alertQuantity: {
             type: INTEGER,
             allowNull: false,
             defaultValue: 0,
             validate: {
                 notEmpty: {
-                    msg: "Field 'alerteQuantity' cannot be empty.",
+                    msg: "Field 'alertQuantity' cannot be empty.",
                 },
                 isInt: {
-                    msg: "Field 'alerteQuantity' must be an integer.",
+                    msg: "Field 'alertQuantity' must be an integer.",
                 },
             },
         }

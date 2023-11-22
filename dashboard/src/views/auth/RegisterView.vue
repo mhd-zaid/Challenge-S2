@@ -156,3 +156,4 @@ const submit = async () => {
     </div>
   </GuestLayout>
 </template>
+@/utils/schemas/userSchema
