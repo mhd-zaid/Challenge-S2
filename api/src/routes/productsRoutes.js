@@ -1,9 +1,55 @@
-export default (Product, Model, Product_Images, ProductMongodb, ObjectId) => ({
-	getProducts: async (req, res) => {
+export default (
+	Product,
+	Model,
+	Product_Images,
+	ProductMongodb,
+	ObjectId,
+	Op
+) => {
+	const addFiltersToQuery = (query, filters) => {
+		if (filters.price) {
+			query.price = {
+				[Op.lte]: filters.price * 100,
+			};
+		}
+		if (filters.color) {
+			const colors = filters.color.split(",");
+
+			query.color = {
+				[Op.or]: colors.map((color) => ({ [Op.iLike]: color })),
+			};
+		}
+		// if (filters.size) {
+		// 	query.where("size", "like", `%${filters.size}%`);
+		// }
+		// if (filters.name) {
+		// 	query.where("name", "like", `%${filters.name}%`);
+		// }
+		// if (filters.discount) {
+		// 	query.where("discount", "<=", filters.discount);
+		// }
+		// if (filters.gender) {
+		// 	query.where("gender", "like", `%${filters.gender}%`);
+		// }
+		// if (filters.brand) {
+		// 	query.where("brand", "like", `%${filters.brand}%`);
+		// }
+		// if (filters.category) {
+		// 	query.push("category", "like", `%${filters.category}%`);
+		// }
+	};
+
+	const getProducts = async (req, res) => {
 		try {
+			const query = {};
+			const filters = req.query;
+			addFiltersToQuery(query, filters);
+
 			const products = await Product.findAll({
+				where: query,
 				include: ["model", "productImages"],
 			});
+
 			if (!products)
 				return res.status(404).json({ message: "Products not found" });
 
@@ -18,32 +64,43 @@ export default (Product, Model, Product_Images, ProductMongodb, ObjectId) => ({
 				message: `An error occurred while retrieving the products : ${error.message}`,
 			});
 		}
-	},
+	};
 
-	createProduct: async (req, res) => {
+	const createProduct = async (req, res) => {
 		try {
 			switch (req.body) {
 				case !req.body.name:
 					return res.status(400).json({ message: "name is missing" });
 				case !req.body.price:
-					return res.status(400).json({ message: "price is missing" });
+					return res
+						.status(400)
+						.json({ message: "price is missing" });
 				case !req.body.vat:
 					return res.status(400).json({ message: "vat is missing" });
 				case !req.body.quantity:
-					return res.status(400).json({ message: "quantity is missing" });
+					return res
+						.status(400)
+						.json({ message: "quantity is missing" });
 				case !req.body.size:
 					return res.status(400).json({ message: "size is missing" });
 				case !req.body.color:
-					return res.status(400).json({ message: "color is missing" });
+					return res
+						.status(400)
+						.json({ message: "color is missing" });
 				case !req.body.sku:
 					return res.status(400).json({ message: "sku is missing" });
 				case !req.body.modelId:
-					return res.status(400).json({ message: "modelId is missing" });
+					return res
+						.status(400)
+						.json({ message: "modelId is missing" });
 			}
 
-			const model = await Model.findOne({
-				where: { id: req.body.model },
-			}, {include: ["Brand", "Category"]});
+			const model = await Model.findOne(
+				{
+					where: { id: req.body.model },
+				},
+				{ include: ["Brand", "Category"] }
+			);
 
 			if (!model) {
 				return res.status(404).json({ message: "Model not found" });
@@ -65,7 +122,7 @@ export default (Product, Model, Product_Images, ProductMongodb, ObjectId) => ({
 			};
 			const product = await Product.create({
 				id: id.toString(),
-				...productDataToCreate
+				...productDataToCreate,
 			});
 
 			productDataToCreate.model = model;
@@ -77,30 +134,35 @@ export default (Product, Model, Product_Images, ProductMongodb, ObjectId) => ({
 				_id: id,
 				...productDataToCreate,
 			}).save();
-			
+
 			res.status(201).json(product);
 		} catch (error) {
 			if (error.name == "SequelizeValidationError") {
 				return res.status(422).json({ message: error.message });
-			}else{
+			} else {
 				return res.status(500).json({
 					message: `An error occurred while creating the product : ${error.message}`,
 				});
 			}
 		}
-	},
+	};
 
-	updateProduct: async (req, res) => {
+	const updateProduct = async (req, res) => {
 		try {
 			const { id } = req.params;
 
 			if (!id) {
-				return res.status(400).json({ message: "Id parameter is missing" });
+				return res
+					.status(400)
+					.json({ message: "Id parameter is missing" });
 			}
 
-			const model = await Model.findOne({
-				where: { id: req.body.model },
-			}, {include: ["Brand", "Category"]});
+			const model = await Model.findOne(
+				{
+					where: { id: req.body.model },
+				},
+				{ include: ["Brand", "Category"] }
+			);
 
 			if (!model) {
 				return res.status(404).json({ message: "Model not found" });
@@ -124,7 +186,9 @@ export default (Product, Model, Product_Images, ProductMongodb, ObjectId) => ({
 			if (!product)
 				return res.status(404).json({ message: "Product not found" });
 
-			const productMongo = await ProductMongodb.findOne({ _id: new ObjectId(id) });
+			const productMongo = await ProductMongodb.findOne({
+				_id: new ObjectId(id),
+			});
 
 			await product.update(req.body);
 			productDataToUpdate.model = model;
@@ -137,15 +201,15 @@ export default (Product, Model, Product_Images, ProductMongodb, ObjectId) => ({
 		} catch (error) {
 			if (error.name == "SequelizeValidationError") {
 				return res.status(422).json({ message: error.message });
-			}else{
+			} else {
 				return res.status(500).json({
 					message: `An error occurred while updating the product : ${error.message}`,
 				});
 			}
 		}
-	},
+	};
 
-	deleteProduct: async (req, res) => {
+	const deleteProduct = async (req, res) => {
 		try {
 			const { id } = req.params;
 
@@ -160,8 +224,9 @@ export default (Product, Model, Product_Images, ProductMongodb, ObjectId) => ({
 			if (!product)
 				return res.status(404).json({ message: "Product not found" });
 
-			const productMongo = await ProductMongodb.findOne({ _id: new ObjectId(id) });
-
+			const productMongo = await ProductMongodb.findOne({
+				_id: new ObjectId(id),
+			});
 
 			await product.destroy();
 			await productMongo.updateOne({ deletedAt: Date.now() });
@@ -172,9 +237,9 @@ export default (Product, Model, Product_Images, ProductMongodb, ObjectId) => ({
 				message: `An error occurred while deleting the product : ${error.message}`,
 			});
 		}
-	},
+	};
 
-	getProduct: async (req, res) => {
+	const getProduct = async (req, res) => {
 		try {
 			const { id } = req.params;
 
@@ -199,9 +264,9 @@ export default (Product, Model, Product_Images, ProductMongodb, ObjectId) => ({
 				message: `An error occurred while retrieving the product : ${error.message}`,
 			});
 		}
-	},
+	};
 
-	uploadImage: async (req, res) => {
+	const uploadImage = async (req, res) => {
 		const { id } = req.params;
 		if (!id) {
 			return res.status(400).json({ message: "Id parameter is missing" });
@@ -213,7 +278,16 @@ export default (Product, Model, Product_Images, ProductMongodb, ObjectId) => ({
 		for (const image of images) {
 			await Product_Images.create({ url: image, ProductId: id });
 		}
-		
+
 		res.status(201).json({ message: "Images uploaded successfully" });
-	},
-});
+	};
+
+	return {
+		getProducts,
+		createProduct,
+		updateProduct,
+		deleteProduct,
+		getProduct,
+		uploadImage,
+	};
+};

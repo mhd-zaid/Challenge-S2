@@ -5,14 +5,15 @@ import Model from "../models/postgres-model.js";
 import Product_Images from "../models/postgres-product-images.js";
 import ProductMongodb from "../models/mongodb-product.js";
 import {ObjectId} from "mongodb";
+import { Op } from 'sequelize';
 const {
     getProducts,
     createProduct,
     updateProduct,
     deleteProduct,
     getProduct,
-    uploadImage
-} = productsRoutes(Product, Model, Product_Images, ProductMongodb, ObjectId);
+    uploadImage,
+} = productsRoutes(Product, Model, Product_Images, ProductMongodb, ObjectId, Op);
 
 import multer from "multer";
 import path from "path";

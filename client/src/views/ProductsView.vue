@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import LayoutComponent from '@/layout/LayoutComponent.vue'
-import { reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import {
   Dialog,
   DialogPanel,
@@ -17,26 +17,52 @@ import type { ProductType } from '@/types/ProductType'
 import type { BrandType } from '@/types/BrandType'
 import type { CategoryType } from '@/types/CategoryTypes'
 import type { ModelType } from '@/types/ModelType'
+import { useRoute, useRouter } from 'vue-router'
 
 const state = reactive({
   products: [] as ProductType[],
   brands: [] as BrandType[],
   categories: [] as CategoryType[],
-  models: [] as ModelType[]
+  models: [] as ModelType[],
+  filters: [
+    {
+      id: 'color',
+      name: 'Color',
+      options: [
+        { value: 'white', label: 'White', selected: false },
+        { value: 'beige', label: 'Beige', selected: false },
+        { value: 'blue', label: 'Blue', selected: false },
+        { value: 'brown', label: 'Brown', selected: false },
+        { value: 'green', label: 'Green', selected: false },
+        { value: 'purple', label: 'Purple', selected: false }
+      ]
+    },
+    {
+      id: 'category',
+      name: 'Category',
+      options: [
+        { value: 'new-arrivals', label: 'All New Arrivals', selected: false },
+        { value: 'tees', label: 'Tees', selected: false },
+        { value: 'crewnecks', label: 'Crewnecks', selected: false },
+        { value: 'sweatshirts', label: 'Sweatshirts', selected: false },
+        { value: 'pants-shorts', label: 'Pants & Shorts', selected: false }
+      ]
+    },
+    {
+      id: 'sizes',
+      name: 'Sizes',
+      options: [
+        { value: 'xs', label: 'XS', selected: false },
+        { value: 's', label: 'S', selected: false },
+        { value: 'm', label: 'M', selected: false },
+        { value: 'l', label: 'L', selected: false },
+        { value: 'xl', label: 'XL', selected: false },
+        { value: '2xl', label: '2XL', selected: false }
+      ]
+    }
+  ]
 })
 const mobileFiltersOpen = ref(false)
-
-const init = async () => {
-  await axiosInstance
-    .get('/products')
-    .then((res) => {
-      state.products = res.data
-    })
-    .catch((err) => {
-      console.log(err)
-    })
-}
-init()
 
 const getImage = (product: any) => {
   if (product.productImages.length > 0) {
@@ -45,43 +71,96 @@ const getImage = (product: any) => {
     return '/images/no-image.jpeg'
   }
 }
-const filters = [
-  {
-    id: 'color',
-    name: 'Color',
-    options: [
-      { value: 'white', label: 'White' },
-      { value: 'beige', label: 'Beige' },
-      { value: 'blue', label: 'Blue' },
-      { value: 'brown', label: 'Brown' },
-      { value: 'green', label: 'Green' },
-      { value: 'purple', label: 'Purple' }
-    ]
-  },
-  {
-    id: 'category',
-    name: 'Category',
-    options: [
-      { value: 'new-arrivals', label: 'All New Arrivals' },
-      { value: 'tees', label: 'Tees' },
-      { value: 'crewnecks', label: 'Crewnecks' },
-      { value: 'sweatshirts', label: 'Sweatshirts' },
-      { value: 'pants-shorts', label: 'Pants & Shorts' }
-    ]
-  },
-  {
-    id: 'sizes',
-    name: 'Sizes',
-    options: [
-      { value: 'xs', label: 'XS' },
-      { value: 's', label: 'S' },
-      { value: 'm', label: 'M' },
-      { value: 'l', label: 'L' },
-      { value: 'xl', label: 'XL' },
-      { value: '2xl', label: '2XL' }
-    ]
+
+const updateFilterSelection = (sectionId: string, optionValue: string) => {
+  const section: any = state.filters.find((filter) => filter.id === sectionId)
+  const option = section.options.find((opt: any) => opt.value === optionValue)
+  option.selected = !option.selected
+}
+
+const performSearch = () => {
+  const activeFilters = getActiveFilters()
+  updateURL(activeFilters)
+  getProducts(activeFilters)
+}
+
+const currentRoute = useRoute()
+const router = useRouter()
+
+const updateURL = (activeFilters: any) => {
+  const currentQuery = { ...currentRoute.query }
+
+  for (const filterId in activeFilters) {
+    if (activeFilters[filterId].length > 0) {
+      currentQuery[filterId] = activeFilters[filterId]
+    } else {
+      delete currentQuery[filterId]
+    }
   }
-]
+
+  router.replace({
+    ...currentRoute,
+    query: currentQuery
+  })
+}
+
+const getActiveFilters = () => {
+  const activeFilters: any = {}
+  for (const filter of state.filters) {
+    const selectedOptions = filter.options.filter((option) => option.selected)
+    if (selectedOptions.length > 0) {
+      activeFilters[filter.id] = selectedOptions.map((option) => option.value)
+    }
+  }
+  return activeFilters
+}
+
+const getActiveFiltersFromURL = () => {
+  const activeFilters: any = {}
+  for (const filter of state.filters) {
+    const filterId = filter.id
+    const filterValuesFromURL = currentRoute.query[filterId]
+    if (filterValuesFromURL) {
+      activeFilters[filterId] = Array.isArray(filterValuesFromURL)
+        ? filterValuesFromURL
+        : [filterValuesFromURL]
+    }
+  }
+  return activeFilters
+}
+
+const getProducts = async (filters: any = null) => {
+  const params = new URLSearchParams()
+  for (const [key, value] of Object.entries(filters)) {
+    if (Array.isArray(value)) {
+      const concatenatedValues = value.map((item) => item.toString()).join(',')
+      params.append(key, concatenatedValues)
+    } else {
+      params.append(key, value.toString())
+    }
+  }
+  await axiosInstance
+    .get(`/products?${params.toString()}`)
+    .then((res) => {
+      state.products = res.data
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
+
+onMounted(() => {
+  const activeFiltersFromURL = getActiveFiltersFromURL()
+  for (const filterId in activeFiltersFromURL) {
+    const filter = state.filters.find((f) => f.id === filterId)
+    if (filter) {
+      filter.options.forEach((option) => {
+        option.selected = activeFiltersFromURL[filterId].includes(option.value)
+      })
+    }
+  }
+  getProducts(getActiveFilters())
+})
 </script>
 
 <template>
@@ -132,7 +211,7 @@ const filters = [
                 <form class="mt-4">
                   <Disclosure
                     as="div"
-                    v-for="section in filters"
+                    v-for="section in state.filters"
                     :key="section.name"
                     class="border-t border-gray-200 pb-4 pt-4"
                     v-slot="{ open }"
@@ -208,7 +287,7 @@ const filters = [
             <div class="hidden lg:block">
               <form class="space-y-10 divide-y divide-gray-200">
                 <div
-                  v-for="(section, sectionIdx) in filters"
+                  v-for="(section, sectionIdx) in state.filters"
                   :key="section.name"
                   :class="sectionIdx === 0 ? null : 'pt-10'"
                 >
@@ -228,6 +307,7 @@ const filters = [
                           :value="option.value"
                           type="checkbox"
                           class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                          @change="updateFilterSelection(section.id, option.value)"
                         />
                         <label
                           :for="`${section.id}-${optionIdx}`"
@@ -237,6 +317,11 @@ const filters = [
                       </div>
                     </div>
                   </fieldset>
+                </div>
+                <div class="pt-10">
+                  <button type="button" class="btn-primary" @click="performSearch">
+                    Rechercher
+                  </button>
                 </div>
               </form>
             </div>
