@@ -58,7 +58,7 @@ export default (
 			if (!products)
 				return res.status(404).json({ message: "Products not found" });
 
-			res.json(
+			res.status(200).json(
 				products.map((product) => ({
 					...product.dataValues,
 					price: (product.dataValues.price / 100).toFixed(2),
@@ -160,6 +160,33 @@ export default (
 				return res
 					.status(400)
 					.json({ message: "Id parameter is missing" });
+			}
+
+			switch (req.body) {
+				case !req.body.name:
+					return res.status(400).json({ message: "name is missing" });
+				case !req.body.price:
+					return res
+						.status(400)
+						.json({ message: "price is missing" });
+				case !req.body.vat:
+					return res.status(400).json({ message: "vat is missing" });
+				case !req.body.quantity:
+					return res
+						.status(400)
+						.json({ message: "quantity is missing" });
+				case !req.body.size:
+					return res.status(400).json({ message: "size is missing" });
+				case !req.body.color:
+					return res
+						.status(400)
+						.json({ message: "color is missing" });
+				case !req.body.sku:
+					return res.status(400).json({ message: "sku is missing" });
+				case !req.body.modelId:
+					return res
+						.status(400)
+						.json({ message: "modelId is missing" });
 			}
 
 			const model = await Model.findOne(
