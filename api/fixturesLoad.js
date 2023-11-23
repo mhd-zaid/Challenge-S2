@@ -163,6 +163,49 @@ const loadUsers = async () => {
 	}
 };
 
+const loadOrders = async () => {
+	try {
+		const ordersFixtureModule = await import("./src/fixtures/order.js");
+		const ordersFixture = ordersFixtureModule.default;
+		const productsFixture = await Product.findAll();
+		await Promise.all(ordersFixture.map(async (order) => {
+			let sqlOrder = await Order.create(order);
+			for (let i = 0; i < Math.floor(Math.random() * 5) +1 ; i++) {
+				const product = productsFixture[Math.floor(Math.random() * productsFixture.length)];
+				await sqlOrder.addProduct(product, {
+					through: {
+						quantity: Math.floor(Math.random() * 5) + 1,
+						price: parseInt(product.price),
+					}
+				});
+			}
+			sqlOrder = await Order.findOne({where: {id: sqlOrder.id}, include: ["user","products"]});
+			const orderMongo = {
+				_id: new ObjectId(sqlOrder.id),
+				user: sqlOrder.user.dataValues,
+				status: sqlOrder.status,
+				deliveryAddress: sqlOrder.deliveryAddress,
+				products: sqlOrder.products.map((product) => {
+					return {
+						id: "655fa0ca6ec65e5a6c725ef1",
+						sku: "f5edce59-3a64-4a27-b539-e774599d6c9b",
+						name: "Energy Walk 41 Yellow",
+						quantity: product.Orders_Products.quantity,
+						price: product.Orders_Products.price,
+						size: product.size,
+						color: product.color,
+						modelId: product.modelId,
+					};
+				}),
+			};
+			await OrderMongodb(orderMongo).save();
+		}));
+		console.log("Orders loaded");
+	} catch (err) {
+		console.error(err);
+	}
+};
+
 const main = async () => {
 	try {
 		await connectDatabase();
@@ -175,6 +218,7 @@ const main = async () => {
 		await loadProducts();
 		await loadProductsImages();
 		await loadUsers();
+		await loadOrders();
 	} catch (error) {
 		console.error(error);
 	} finally {
