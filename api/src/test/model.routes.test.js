@@ -48,7 +48,7 @@ const res = {
 };
 
 describe("getModels", () => {
-    it("should models", async () => {
+    it("should get models", async () => {
         await modelsRoutes(Model, ObjectId).getModels(req, res);
         expect(res.status).toHaveBeenCalledWith(200);
         expect(res.json).toHaveBeenCalledWith(models);
