@@ -19,6 +19,14 @@ export default (
 				[Op.or]: colors.map((color) => ({ [Op.iLike]: color })),
 			};
 		}
+		if (filters.size) {
+			query.size = {
+				[Op.or]: filters.size.split(","),
+			};
+		}
+		//if (filters.gender) {
+		// 	query.where("gender", "like", `%${filters.gender}%`);
+		// }
 		// if (filters.size) {
 		// 	query.where("size", "like", `%${filters.size}%`);
 		// }
@@ -27,9 +35,6 @@ export default (
 		// }
 		// if (filters.discount) {
 		// 	query.where("discount", "<=", filters.discount);
-		// }
-		// if (filters.gender) {
-		// 	query.where("gender", "like", `%${filters.gender}%`);
 		// }
 		// if (filters.brand) {
 		// 	query.where("brand", "like", `%${filters.brand}%`);
