@@ -1,7 +1,6 @@
 import { Sequelize } from "sequelize";
 import brandsRoutes from "../routes/brandsRoutes";
 import { ObjectId } from "mongodb";
-import e from "express";
 
 jest.mock("../models/postgres-brand.js");
 
