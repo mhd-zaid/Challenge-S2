@@ -22,6 +22,7 @@ import {
 import { Bars3Icon, MagnifyingGlassIcon, ShoppingCartIcon, UserIcon, XMarkIcon } from '@heroicons/vue/24/outline'
 import { ChevronDownIcon, StarIcon } from '@heroicons/vue/20/solid'
 import {useRouter} from "vue-router";
+import axiosInstance from "@/utils/axiosInstance";
 const currencies = ['CAD', 'USD', 'AUD', 'EUR', 'GBP']
 const navigation = {
   categories: [
@@ -231,6 +232,17 @@ if (isAuthenticated) {
   const payload = JSON.parse(atob(token.split('.')[1]))
   userId = payload.userId
 }
+
+const addProductToWishlist = async (userId: string, productId: string) => {
+  try {
+    await axiosInstance.post(`/wishlist/${userId}`, {
+      productId: productId
+    });
+    console.log('Produit ajouté à la liste de souhaits avec succès.');
+  } catch (error) {
+    console.error('Erreur lors de l\'ajout du produit à la liste de souhaits :', error);
+  }
+};
 </script>
 
 <template>
@@ -321,13 +333,10 @@ if (isAuthenticated) {
             </div>
 
             <button type="submit" class="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-primary-600 px-8 py-3 text-base font-medium text-white hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">Add to bag</button>
-            </form>
-            <form class="mt-3" method="post" :action="'/wishlist/' + userId">
-              <input type="hidden" name="productId" :value="router.currentRoute.value.params.id">
-              <button type="submit" class="flex w-full items-center justify-center rounded-md border border-gray-300 bg-white px-8 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-                Add to wishlist
-              </button>
-            </form>
+            <a v-on:click="addProductToWishlist(userId,router.currentRoute.value.params.id)" class="flex w-full items-center justify-center rounded-md border border-gray-300 bg-white px-8 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+              Add to wishlist
+            </a>  
+          </form>
         </div>
 
         <div class="py-10 lg:col-span-2 lg:col-start-1 lg:border-r lg:border-gray-200 lg:pb-16 lg:pr-8 lg:pt-6">
