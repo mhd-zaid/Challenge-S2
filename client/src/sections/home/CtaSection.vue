@@ -14,7 +14,7 @@
                 jusqu'à -50%
               </h2>
               <div class="mt-6 text-base">
-                <a href="#" class="font-semibold text-white">
+                <a href="/products?discount=50" class="font-semibold text-white">
                   Profitez des promotions
                   <span aria-hidden="true"> &rarr;</span>
                 </a>

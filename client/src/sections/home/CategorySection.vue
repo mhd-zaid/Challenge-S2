@@ -32,7 +32,7 @@
           <div class="flex items-end p-6 sm:absolute sm:inset-0">
             <div>
               <h3 class="font-semibold text-white">
-                <a href="#">
+                <a href="/products?new=true">
                   <span class="absolute inset-0" />
                   Nos nouveaux produits
                 </a>
@@ -58,7 +58,7 @@
           <div class="flex items-end p-6 sm:absolute sm:inset-0">
             <div>
               <h3 class="font-semibold text-white">
-                <a href="#">
+                <a href="/products?category=lifestyle">
                   <span class="absolute inset-0" />
                   Lifestyle
                 </a>
@@ -84,7 +84,7 @@
           <div class="flex items-end p-6 sm:absolute sm:inset-0">
             <div>
               <h3 class="font-semibold text-white">
-                <a href="#">
+                <a href="/products?category=football">
                   <span class="absolute inset-0" />
                   Football
                 </a>

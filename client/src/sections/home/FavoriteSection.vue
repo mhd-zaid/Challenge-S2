@@ -34,7 +34,7 @@ const props = defineProps({
             />
           </div>
           <h3 class="mt-4 text-base font-semibold text-gray-900">
-            <a :href="favorite.href">
+            <a :href="'/products/' + favorite.id">
               <span class="absolute inset-0" />
               {{ favorite.name }}
             </a>
