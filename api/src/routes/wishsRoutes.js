@@ -6,7 +6,7 @@ export default (Wish, Product) => ({
 				return res.status(400).json({ message: "id parameter is missing" });
 			}
 			const wish = await Wish.findOne({
-				where: { userId: id },
+				where: { UserId: id },
 				include: "products",
 			});
 
@@ -37,7 +37,7 @@ export default (Wish, Product) => ({
 					.json({ message: "productId parameter is missing" });
 			}
 
-			const wish = await Wish.findOne({ where: { userId: userId } });
+			const wish = await Wish.findOne({ where: { UserId: userId } });
 			if (!wish)
 				return res.status(404).json({ message: "Wish not found" });
 
@@ -73,7 +73,7 @@ export default (Wish, Product) => ({
 					.json({ message: "productId parameter is missing" });
 			}
 
-			const wish = await Wish.findOne({ where: { userId: userId } });
+			const wish = await Wish.findOne({ where: { UserId: userId } });
 			if (!wish)
 				return res.status(404).json({ message: "Wish not found" });
 

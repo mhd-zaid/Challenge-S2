@@ -235,7 +235,7 @@ if (isAuthenticated) {
 
 const addProductToWishlist = async (userId: string, productId: string) => {
   try {
-    await axiosInstance.post(`/wishlist/${userId}`, {
+    await axiosInstance.post(`/wishes/${userId}`, {
       productId: productId
     });
     console.log('Produit ajouté à la liste de souhaits avec succès.');
