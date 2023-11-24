@@ -45,6 +45,14 @@ const router = createRouter({
             }
         },
         {
+            path: '/wishlist/:userId',
+            name: 'wishlist-add-product',
+            component: () => import('@/views/ProductView.vue'),
+            meta: {
+                requiresAuth: true
+            }
+        },
+        {
             path: '/checkout',
             name: 'checkout',
             component: () => import('@/views/CheckoutView.vue'),

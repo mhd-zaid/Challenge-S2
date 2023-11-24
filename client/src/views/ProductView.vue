@@ -21,7 +21,7 @@ import {
 } from '@headlessui/vue'
 import { Bars3Icon, MagnifyingGlassIcon, ShoppingCartIcon, UserIcon, XMarkIcon } from '@heroicons/vue/24/outline'
 import { ChevronDownIcon, StarIcon } from '@heroicons/vue/20/solid'
-
+import {useRouter} from "vue-router";
 const currencies = ['CAD', 'USD', 'AUD', 'EUR', 'GBP']
 const navigation = {
   categories: [
@@ -222,6 +222,15 @@ const footerNavigation = {
 const open = ref(false)
 const selectedColor = ref(product.colors[0])
 const selectedSize = ref(product.sizes[2])
+const router  = useRouter()
+const token = window.localStorage.getItem('token')
+const isAuthenticated = !!token
+//récupére l'id dans le toekn
+let userId = ''
+if (isAuthenticated) {
+  const payload = JSON.parse(atob(token.split('.')[1]))
+  userId = payload.userId
+}
 </script>
 
 <template>
@@ -312,7 +321,13 @@ const selectedSize = ref(product.sizes[2])
             </div>
 
             <button type="submit" class="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-primary-600 px-8 py-3 text-base font-medium text-white hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">Add to bag</button>
-          </form>
+            </form>
+            <form class="mt-3" method="post" :action="'/wishlist/' + userId">
+              <input type="hidden" name="productId" :value="router.currentRoute.value.params.id">
+              <button type="submit" class="flex w-full items-center justify-center rounded-md border border-gray-300 bg-white px-8 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                Add to wishlist
+              </button>
+            </form>
         </div>
 
         <div class="py-10 lg:col-span-2 lg:col-start-1 lg:border-r lg:border-gray-200 lg:pb-16 lg:pr-8 lg:pt-6">

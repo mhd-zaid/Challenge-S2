@@ -12,6 +12,9 @@ const navigation = [
 ]
 
 const mobileMenuOpen = ref(false)
+
+const token = window.localStorage.getItem('token')
+const isAuthenticated = !!token
 </script>
 <template>
   <header :class="router.currentRoute.value.path === '/' ? '' : 'bg-white border-b-2 border-b-gray-200' " >
@@ -38,7 +41,8 @@ const mobileMenuOpen = ref(false)
           <UserIcon class="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500" aria-hidden="true"/>
         </a>
       </div>
-      <div class="ml-4 flow-root lg:ml-6">
+      <!-- Vérifier s'il l'utilisateur est connecter -->
+      <div class="ml-4 flow-root lg:ml-6" v-if="isAuthenticated">
         <a href="/wishlist" class="group -m-2 flex items-center p-2">
           <HeartIcon class="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500" aria-hidden="true"/>
           <span class="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">0</span>
