@@ -99,7 +99,7 @@ const loadProducts = async () => {
 	try {
 		const productsFixtureModule = await import("./src/fixtures/product.js");
 		const productsFixture = productsFixtureModule.default;
-
+		
 		await Promise.all(
 			productsFixture.map(async (product) => {
 				const sqlProduct = await Product.create(product);

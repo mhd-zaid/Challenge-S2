@@ -2,6 +2,8 @@ import express from "express";
 import productsRoutes from "../routes/productsRoutes.js";
 import Product from "../models/postgres-product.js";
 import Model from "../models/postgres-model.js";
+import Brand from "../models/postgres-brand.js";
+import Category from "../models/postgres-category.js";
 import Product_Images from "../models/postgres-product-images.js";
 import ProductMongodb from "../models/mongodb-product.js";
 import {ObjectId} from "mongodb";
@@ -13,7 +15,7 @@ const {
     deleteProduct,
     getProduct,
     uploadImage,
-} = productsRoutes(Product, Model, Product_Images, ProductMongodb, ObjectId, Op);
+} = productsRoutes(Product, Model, Brand, Category, Product_Images, ProductMongodb, ObjectId, Op);
 
 import multer from "multer";
 import path from "path";

@@ -1,19 +1,20 @@
-import {DataTypes, Model} from "sequelize";
+import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/sequelize-config.js";
+import Category from "./postgres-category.js";
+import Brand from "./postgres-brand.js";
 
-class Modele extends Model {
-}
+class Modele extends Model {}
 
 Modele.init(
-    {
-        id: {
-            type: DataTypes.STRING,
-            primaryKey: true,
-        },
-        name: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
+	{
+		id: {
+			type: DataTypes.STRING,
+			primaryKey: true,
+		},
+		name: {
+			type: DataTypes.STRING,
+			allowNull: false,
+			validate: {
 				notEmpty: {
 					msg: "Field 'name' cannot be empty.",
 				},
@@ -22,11 +23,11 @@ Modele.init(
 					msg: "Field 'name' must be between 2 and 100 characters long.",
 				},
 			},
-        },
-        gender: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
+		},
+		gender: {
+			type: DataTypes.STRING,
+			allowNull: false,
+			validate: {
 				notEmpty: {
 					msg: "Field 'name' cannot be empty.",
 				},
@@ -35,46 +36,49 @@ Modele.init(
 					msg: "The 'gender' field must be 'male' or 'female'.",
 				},
 			},
-        },
-        description: {
-            type: DataTypes.STRING,
-            allowNull: true,
-            validate: {
-                len: {
+		},
+		description: {
+			type: DataTypes.STRING,
+			allowNull: true,
+			validate: {
+				len: {
 					args: [15, 300],
 					msg: "Field 'description' must be between 15 and 300 characters long.",
 				},
-            },
-        },
-    },
-    {
-        sequelize,
-        timestamps: true,
-        paranoid: true,
-        modelName: "Model",
-    }
+			},
+		},
+	},
+	{
+		sequelize,
+		timestamps: true,
+		paranoid: true,
+		modelName: "Model",
+	}
 );
 
-let Category;
-let Brand;
-import("./postgres-category.js")
-    .then((module) => {
-        Category = module.default;
+// let Category;
+// let Brand;
+// import("./postgres-category.js")
+//     .then((module) => {
+//         Category = module.default;
 
-        Modele.belongsTo(Category);
-    })
-    .catch((error) => {
-        console.error("Erreur lors de l'importation du modèle Category :", error);
-    });
+//         Modele.belongsTo(Category);
+//     })
+//     .catch((error) => {
+//         console.error("Erreur lors de l'importation du modèle Category :", error);
+//     });
 
-import("./postgres-brand.js")
-    .then((module) => {
-        Brand = module.default;
+// import("./postgres-brand.js")
+//     .then((module) => {
+//         Brand = module.default;
 
-        Modele.belongsTo(Brand);
-    })
-    .catch((error) => {
-        console.error("Erreur lors de l'importation du modèle Brand :", error);
-    });
-    
+//         Modele.belongsTo(Brand);
+//     })
+//     .catch((error) => {
+//         console.error("Erreur lors de l'importation du modèle Brand :", error);
+//     });
+
+Modele.belongsTo(Category);
+Modele.belongsTo(Brand);
+
 export default Modele;

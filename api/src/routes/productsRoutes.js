@@ -1,47 +1,62 @@
 export default (
 	Product,
 	Model,
+	Brand,
+	Category,
 	Product_Images,
 	ProductMongodb,
 	ObjectId,
 	Op
 ) => {
 	const addFiltersToQuery = (query, filters) => {
-		if (filters.price) {
+		if (filters.maxPrice) {
 			query.price = {
-				[Op.lte]: filters.price * 100,
+				[Op.lte]: filters.maxPrice * 100,
+			};
+		}
+		if (filters.minPrice) {
+			query.price = {
+				[Op.gte]: filters.minPrice * 100,
 			};
 		}
 		if (filters.color) {
 			const colors = filters.color.split(",");
-
 			query.color = {
 				[Op.or]: colors.map((color) => ({ [Op.iLike]: color })),
 			};
 		}
 		if (filters.size) {
+			const sizes = filters.size.split(",");
 			query.size = {
-				[Op.or]: filters.size.split(","),
+				[Op.or]: sizes.map((size) => ({ [Op.iLike]: size })),
 			};
 		}
-		//if (filters.gender) {
-		// 	query.where("gender", "like", `%${filters.gender}%`);
-		// }
-		// if (filters.size) {
-		// 	query.where("size", "like", `%${filters.size}%`);
-		// }
-		// if (filters.name) {
-		// 	query.where("name", "like", `%${filters.name}%`);
-		// }
-		// if (filters.discount) {
-		// 	query.where("discount", "<=", filters.discount);
-		// }
-		// if (filters.brand) {
-		// 	query.where("brand", "like", `%${filters.brand}%`);
-		// }
-		// if (filters.category) {
-		// 	query.push("category", "like", `%${filters.category}%`);
-		// }
+		if (filters.gender) {
+			const genders = filters.gender.split(",");
+			query["$model.gender$"] = {
+				[Op.or]: genders.map((gender) => ({ [Op.iLike]: gender })),
+			};
+		}
+		if (filters.brand) {
+			const brands = filters.brand.split(",");
+			query["$model.Brand.name$"] = {
+				[Op.or]: brands.map((brand) => ({ [Op.iLike]: brand })),
+			};
+		}
+		if (filters.category) {
+			console.log(filters.category);
+			const categories = filters.category.split(",");
+			query["$model.Category.name$"] = {
+				[Op.or]: categories.map((category) => ({
+					[Op.iLike]: category,
+				})),
+			};
+		}
+		if (filters.discount) {
+			query.discount = {
+				[Op.ne]: null || 0,
+			};
+		}
 	};
 
 	const getProducts = async (req, res) => {
@@ -52,7 +67,23 @@ export default (
 
 			const products = await Product.findAll({
 				where: query,
-				include: ["model", "productImages"],
+				include: [
+					{
+						model: Model,
+						as: "model",
+						include: [
+							{
+								model: Brand,
+								attributes: ["name"],
+							},
+							{
+								model: Category,
+								attributes: ["name"],
+							},
+						],
+					},
+					"productImages",
+				],
 			});
 
 			if (!products)
