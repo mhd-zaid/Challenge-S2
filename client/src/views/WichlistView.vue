@@ -1,28 +1,56 @@
 <script setup lang="ts">
 import LayoutComponent from "@/layout/LayoutComponent.vue";
+import axiosInstance from "@/utils/axiosInstance";
+import { onMounted, ref } from "vue";
 
-const products = [
-  {
-    id: 1,
-    name: 'Machined Brass Puzzle',
-    href: '#',
-    price: '$95.00',
-    color: 'Brass',
-    size: '3" x 3" x 3"',
-    imageSrc: '/images/hero-1.jpeg',
-    imageAlt: 'Brass puzzle in the shape of a jack with overlapping rounded posts.',
-  },
-  {
-    id: 1,
-    name: 'Machined Brass Puzzle',
-    href: '#',
-    price: '$95.00',
-    color: 'Brass',
-    size: '3" x 3" x 3"',
-    imageSrc: '/images/hero-2.jpg',
-    imageAlt: 'Brass puzzle in the shape of a jack with overlapping rounded posts.',
-  },
-]
+const token = localStorage.getItem("token");
+const isAuthenticated = !!token
+let userId = ''
+if (isAuthenticated) {
+  const payload = JSON.parse(atob(token.split('.')[1]))
+  userId = payload.userId
+}
+
+const getUserWishes = async (userId: string) => {
+  try {
+    const wishes = await axiosInstance.get(`/wishes/${userId}`).then((res) => res.data);
+    const products =
+      await Promise.all(
+        wishes.products.map(async (product: any) => {
+          const { imageSrc } = await axiosInstance.get(`/products/${product.id}`).then((res) => res.data.productImages[0].url);
+          return {
+            id: product.id,
+            name: product.name,
+            color: product.color,
+            size: product.size,
+            price: product.price / 100,
+            imageSrc,
+            imageAlt: product.name,
+            href: `/products/${product.id}`,
+          };
+        })
+      );
+    return products;
+  } catch (error) {
+    console.error("Erreur lors de la récupération de la liste de souhait :", error);
+  }
+};
+
+const removeFromWishlist = async (productId: string) => {
+  try {
+    await axiosInstance.delete(`/wishes/${userId}/${productId}`);
+    products.value = products.value.filter((product: any) => product.id !== productId);
+    console.log("Produit supprimé de la liste de souhait");
+  } catch (error) {
+    console.error("Erreur lors de la suppression du produit de la liste de souhait :", error);
+  }
+};
+
+const products = ref([]);
+
+onMounted(async () => {
+  products.value = await getUserWishes(userId);
+});
 
 </script>
 <template>
@@ -49,7 +77,7 @@ const products = [
                 {{ ' ' }}
                 <span>{{ product.size }}</span>
               </p>
-              <p class="mt-1 font-medium text-gray-900">{{ product.price }}</p>
+              <p class="mt-1 font-medium text-gray-900">{{ product.price }} €</p>
             </div>
           </div>
           <div class="mt-6 space-y-4 sm:ml-6 sm:mt-0 sm:w-40 sm:flex-none">
@@ -58,8 +86,9 @@ const products = [
               Ajouter au panier
             </button>
             <button type="button"
-                    class="flex w-full items-center justify-center rounded-md border border-gray-300 bg-white px-2.5 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 sm:w-full sm:flex-grow-0">
-              Retirer des favoris
+                    class="flex w-full items-center justify-center rounded-md border border-gray-300 bg-white px-2.5 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 sm:w-full sm:flex-grow-0"
+                    v-on:click="removeFromWishlist(product.id)">
+                    Retirer des favoris
             </button>
           </div>
         </div>

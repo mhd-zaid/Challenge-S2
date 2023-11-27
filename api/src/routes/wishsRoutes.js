@@ -60,8 +60,7 @@ export default (Wish, Product) => ({
 
 	deleteProductFromWish: async (req, res) => {
 		try {
-			const { userId } = req.params;
-			const { productId } = req.body;
+			const { userId, productId} = req.params;
 
 			if(!userId){
 				return res.status(400).json({ message: "userId parameter is missing" });

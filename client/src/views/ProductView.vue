@@ -237,7 +237,7 @@ const addProductToWishlist = async (userId: string, productId: string) => {
   try {
     await axiosInstance.post(`/wishes/${userId}`, {
       productId: productId
-    });
+    }); 
     console.log('Produit ajouté à la liste de souhaits avec succès.');
   } catch (error) {
     console.error('Erreur lors de l\'ajout du produit à la liste de souhaits :', error);
@@ -333,7 +333,7 @@ const addProductToWishlist = async (userId: string, productId: string) => {
             </div>
 
             <button type="submit" class="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-primary-600 px-8 py-3 text-base font-medium text-white hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">Add to bag</button>
-            <a v-on:click="addProductToWishlist(userId,router.currentRoute.value.params.id)" class="flex w-full items-center justify-center rounded-md border border-gray-300 bg-white px-8 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+            <a v-on:click="addProductToWishlist(userId,router.currentRoute.value.params.id.toString())" class="flex w-full items-center justify-center rounded-md border border-gray-300 bg-white px-8 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
               Add to wishlist
             </a>  
           </form>

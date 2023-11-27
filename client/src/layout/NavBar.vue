@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import {ref} from 'vue'
+import {onMounted, ref, watch} from 'vue'
 import {Dialog, DialogPanel} from '@headlessui/vue'
 import {Bars3Icon, XMarkIcon, UserIcon, ShoppingBagIcon, HeartIcon} from '@heroicons/vue/24/outline'
 import {useRouter} from "vue-router";
+import axiosInstance from "@/utils/axiosInstance";
 const router = useRouter()
 const navigation = [
   {name: 'Nouveautés', href: '/products?new=true'},
@@ -15,6 +16,21 @@ const mobileMenuOpen = ref(false)
 
 const token = window.localStorage.getItem('token')
 const isAuthenticated = !!token
+
+const getWishes = async () => {
+  if (isAuthenticated) {
+    const payload = JSON.parse(atob(token.split('.')[1]))
+    const userId = payload.userId
+    const wishes = await axiosInstance.get(`/wishes/${userId}`).then((res) => res.data);
+
+    return wishes.products.length
+  }
+}
+const wishList = ref(0);
+onMounted(async () => {
+  wishList.value = await getWishes()
+})
+
 </script>
 <template>
   <header :class="router.currentRoute.value.path === '/' ? '' : 'bg-white border-b-2 border-b-gray-200' " >
@@ -45,7 +61,7 @@ const isAuthenticated = !!token
       <div class="ml-4 flow-root lg:ml-6" v-if="isAuthenticated">
         <a href="/wishlist" class="group -m-2 flex items-center p-2">
           <HeartIcon class="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500" aria-hidden="true"/>
-          <span class="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">0</span>
+          <span class="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">{{ wishList }}</span>
           <span class="sr-only">produits dans les favoris, voir les favoris</span>
         </a>
       </div>

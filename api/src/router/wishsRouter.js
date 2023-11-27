@@ -11,6 +11,6 @@ const router = express.Router();
 
 router.get("/:id", getUserWish);
 router.post("/:userId", addProductToWish);
-router.delete("/:userId", deleteProductFromWish);
+router.delete("/:userId/:productId", deleteProductFromWish);
 
 export default router;
