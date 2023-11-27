@@ -115,7 +115,7 @@ const router = useRouter()
 const mobileFiltersOpen = ref(false)
 
 watch(
-  state.activeFilters,
+  state.filters,
   () => {
     const activeFilters = state.activeFilters
     router.push({ query: activeFilters })
