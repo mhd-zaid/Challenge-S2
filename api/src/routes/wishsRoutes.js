@@ -1,14 +1,29 @@
-export default (Wish, Product) => ({
+export default (Wish, Product, Product_Images) => ({
 	getUserWish: async (req, res) => {
 		try {
 			const { id } = req.params;
 			if (!id) {
-				return res.status(400).json({ message: "id parameter is missing" });
+				return res
+					.status(400)
+					.json({ message: "id parameter is missing" });
 			}
 			const wish = await Wish.findOne({
 				where: { UserId: id },
-				include: "products",
+				include: [
+					{
+						model: Product,
+						as: "products",
+						include: {
+							model: Product_Images,
+							as: "productImages",
+						},
+					},
+				],
 			});
+
+			for (const product of wish.products) {
+				product.price = (product.price / 100).toFixed(2);;
+			}
 
 			if (!wish) {
 				return res.status(404).json({ message: "Wish not found" });
@@ -27,8 +42,10 @@ export default (Wish, Product) => ({
 			const { userId } = req.params;
 			const { productId } = req.body;
 
-			if(!userId){
-				return res.status(400).json({ message: "userId parameter is missing" });
+			if (!userId) {
+				return res
+					.status(400)
+					.json({ message: "userId parameter is missing" });
 			}
 
 			if (!productId) {
@@ -46,11 +63,13 @@ export default (Wish, Product) => ({
 				return res.status(404).json({ message: "Product not found" });
 
 			await wish.addProduct(product);
-			res.status(201).json({ message: "Product added to wish successfully" });
+			res.status(201).json({
+				message: "Product added to wish successfully",
+			});
 		} catch (error) {
 			if (error.name == "SequelizeValidationError") {
 				return res.status(422).json({ message: error.message });
-			}else{
+			} else {
 				return res.status(500).json({
 					message: `An error occurred while adding the product to the wish : ${error.message}`,
 				});
@@ -60,10 +79,12 @@ export default (Wish, Product) => ({
 
 	deleteProductFromWish: async (req, res) => {
 		try {
-			const { userId, productId} = req.params;
+			const { userId, productId } = req.params;
 
-			if(!userId){
-				return res.status(400).json({ message: "userId parameter is missing" });
+			if (!userId) {
+				return res
+					.status(400)
+					.json({ message: "userId parameter is missing" });
 			}
 
 			if (!productId) {
@@ -81,7 +102,9 @@ export default (Wish, Product) => ({
 				return res.status(404).json({ message: "Product not found" });
 
 			await wish.removeProduct(product);
-			res.status(204).json({ message: "Product deleted from wish successfully" });
+			res.status(204).json({
+				message: "Product deleted from wish successfully",
+			});
 		} catch (error) {
 			res.status(500).json({
 				message: `An error occurred while deleting the product from the wish : ${error.message}`,

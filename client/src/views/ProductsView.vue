@@ -298,9 +298,9 @@ onMounted(async () => {
           </div>
         </Dialog>
       </TransitionRoot>
-      <div class="px-6 py-24 lg:px-8 bg-gray-100">
+      <div class="px-6 py-12 lg:px-8 bg-gray-100">
         <div class="mx-auto max-w-2xl text-center">
-          <h1 class="mt-2 text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
+          <h1 class="mt-2 text-6xl font-bold tracking-tight text-gray-900 sm:text-4xl">
             {{
               Object.keys(state.activeFilters).length > 0
                 ? 'Filtres appliqués'
@@ -397,7 +397,7 @@ onMounted(async () => {
               >
                 <RouterLink :to="'/products/' + product.id">
                   <div
-                    class="aspect-h-4 aspect-w-3 bg-gray-200 sm:aspect-none group-hover:opacity-75 sm:h-96"
+                    class="aspect-h-4 aspect-w-3 bg-gray-200 sm:aspect-none group-hover:opacity-75 sm:h-70"
                   >
                     <img
                       :src="getProductImage(product)"
@@ -411,7 +411,27 @@ onMounted(async () => {
                     </h3>
                     <p class="text-sm text-gray-500">{{ product?.model?.description }}</p>
                     <div class="flex flex-1 flex-col justify-end">
-                      <p class="text-base font-medium text-gray-900">{{ product.price }} €</p>
+                      <p class="text-base font-medium text-gray-900">
+                        {{
+                          parseInt(product.discount)
+                            ? parseInt(product.price) -
+                              (parseInt(product.price) * parseInt(product.discount)) / 100 +
+                              ' €'
+                            : product.price + ' €'
+                        }}
+                      </p>
+                      <p
+                        v-if="parseInt(product.discount)"
+                        class="text-sm font-medium text-red-600 line-through"
+                      >
+                        {{ product.price }} €
+                      </p>
+                      <!-- add to favorites button -->
+                      <button
+                        type="button"
+                        class="mt-4 inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                      > Favoris
+                      </button>
                     </div>
                   </div>
                 </RouterLink>

@@ -68,9 +68,6 @@ const footerNavigation = {
             </div>
           </div>
         </div>
-        <div class="mt-16 xl:mt-0">
-          <img src="/images/sneakpeak_logo_black.png" alt="newsletter" class=" w-full"/>
-        </div>
       </div>
 
       <div class="py-10">
