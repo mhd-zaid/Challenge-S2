@@ -63,7 +63,10 @@ export default (
 		try {
 			const query = {};
 			const filters = req.query;
+			const { page = 1, limit = 12 } = filters;
 			addFiltersToQuery(query, filters);
+
+			const offset = (page - 1) * limit;
 
 			const products = await Product.findAll({
 				where: query,
@@ -84,6 +87,8 @@ export default (
 					},
 					"productImages",
 				],
+				limit: parseInt(limit),
+				offset: offset,
 			});
 
 			if (!products)
