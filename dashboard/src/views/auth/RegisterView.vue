@@ -3,7 +3,7 @@ import GuestLayout from '@/layouts/GuestLayout.vue'
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import axiosInstance from '@/utils/axiosInstance'
-import { userSchema } from '@/schemas/userSchema'
+import { userSchema } from "@/utils/validations/userSchema";
 
 const state: any = reactive({
   form: {
