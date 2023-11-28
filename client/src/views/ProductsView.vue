@@ -10,7 +10,7 @@ import {
   TransitionChild,
   TransitionRoot
 } from '@headlessui/vue'
-import { XMarkIcon } from '@heroicons/vue/24/outline'
+import { HeartIcon, XMarkIcon } from '@heroicons/vue/24/outline'
 import { ChevronDownIcon, PlusIcon } from '@heroicons/vue/20/solid'
 import axiosInstance from '@/utils/axiosInstance'
 import type { ProductType } from '@/types/ProductType'
@@ -19,6 +19,9 @@ import type { CategoryType } from '@/types/CategoryTypes'
 import type { ModelType } from '@/types/ModelType'
 import { useRouter } from 'vue-router'
 import { getProductImage } from '@/types/ProductImageType'
+import { useWishlistStore } from '@/stores/wishlist'
+
+const wishStore = useWishlistStore()
 
 const state = reactive({
   products: [] as ProductType[],
@@ -395,6 +398,21 @@ onMounted(async () => {
                 :key="product.id"
                 class="group relative flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white"
               >
+                <!-- Bouton Cœur -->
+                <button
+                  v-if="!wishStore.isInWishlist(product.id)"
+                  @click="wishStore.addToWishlist(product.id)"
+                  class="absolute top-2 right-2 text-gray-700 z-10 hover:text-red-500"
+                >
+                  <HeartIcon class="h-6 w-6 hover:fill-red-500" />
+                </button>
+                <button
+                  v-else
+                  @click="wishStore.removeFromWishlist(product.id)"
+                  class="absolute top-2 right-2 text-red-500 z-10 hover:text-red-500"
+                >
+                  <HeartIcon class="h-6 w-6 fill-red-500 hover:fill-transparent" />
+                </button>
                 <RouterLink :to="'/products/' + product.id">
                   <div
                     class="aspect-h-4 aspect-w-3 bg-gray-200 sm:aspect-none group-hover:opacity-75 sm:h-70"
@@ -426,12 +444,6 @@ onMounted(async () => {
                       >
                         {{ product.price }} €
                       </p>
-                      <!-- add to favorites button -->
-                      <button
-                        type="button"
-                        class="mt-4 inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-                      > Favoris
-                      </button>
                     </div>
                   </div>
                 </RouterLink>

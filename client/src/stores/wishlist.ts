@@ -13,14 +13,20 @@ if (isAuthenticated) {
 }
 
 export const useWishlistStore = defineStore('wishlist', {
-    state: () => {
-        return { wishlist: [] } as { wishlist: string[] };
+    state: () => ({
+        /** @type {string[]} */
+        wishlist: [] as string[],
+    }),
+    getters: {
+        getWishlist(): string[] {
+            return this.wishlist;
+        },
     },
     actions: {
         async fetchWishlist() {
             try {
                 const response = await axiosInstance.get(`/wishes/${userId}`);
-                this.wishlist = response.data.products;
+                this.wishlist = response.data.products.map((product: any) => product.id);
                 return this.wishlist;
             } catch (error) {
                 console.error('Erreur lors de la récupération de la liste de souhaits :', error);
@@ -28,12 +34,17 @@ export const useWishlistStore = defineStore('wishlist', {
         },
         async addToWishlist(productId: string) {
             try {
+                if (this.wishlist.includes(productId)) {
+                    showToast('Produit déjà présent dans la liste de souhaits', 'warning');
+                    return false;
+                }
                 await axiosInstance.post(`/wishes/${userId}`, {
                     productId: productId
                 });
                 if (productId && !this.wishlist.includes(productId)) {
                     this.wishlist.push(productId);
                 }
+                showToast('Produit ajouté à la liste de souhaits', 'success');
                 return true;
             } catch (error) {
                 console.error('Erreur lors de l\'ajout du produit à la liste de souhaits :', error);
@@ -48,6 +59,9 @@ export const useWishlistStore = defineStore('wishlist', {
             } catch (error) {
                 console.error('Erreur lors de la suppression du produit de la liste de souhaits :', error);
             }
+        },
+        isInWishlist(productId: string) {
+            return this.wishlist.includes(productId);
         },
         clearWishlist() {
             this.wishlist = [];

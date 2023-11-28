@@ -10,6 +10,10 @@ import {
 } from '@heroicons/vue/24/outline'
 import { useRouter } from 'vue-router'
 import { useWishlistStore } from '@/stores/wishlist'
+import { useCartStore } from '@/stores/cart'
+
+const wishStore = useWishlistStore()
+const cartStore = useCartStore()
 
 const router = useRouter()
 const navigation = [
@@ -21,6 +25,7 @@ const navigation = [
 
 const mobileMenuOpen = ref(false)
 const wishList = ref(0) as any
+const cart = ref(0) as any
 
 const token = window.localStorage.getItem('token')
 const isAuthenticated = !!token
@@ -29,19 +34,33 @@ const getWishes = async () => {
   if (isAuthenticated) {
     const payload = JSON.parse(atob(token.split('.')[1]))
     const userId = payload.userId
-    const wishlistStore = useWishlistStore()
-    await wishlistStore.fetchWishlist()
-    return wishlistStore.wishlist.length
+    await wishStore.fetchWishlist()
+  }
+}
+
+const getCart = async () => {
+  if (isAuthenticated) {
+    const payload = JSON.parse(atob(token.split('.')[1]))
+    const userId = payload.userId
+    await cartStore.fetchCart()
   }
 }
 
 onMounted(async () => {
-  wishList.value = await getWishes()
-
+  await getWishes()
+  wishList.value = wishStore.wishlist.length
+  await getCart()
+  cart.value = cartStore.cart.length
   watch(
-    () => useWishlistStore().wishlist.length,
+    () => wishStore.wishlist.length,
     (newVal) => {
       wishList.value = newVal
+    }
+  )
+  watch(
+    () => cartStore.cart.length,
+    (newVal) => {
+      cart.value = newVal
     }
   )
 })
