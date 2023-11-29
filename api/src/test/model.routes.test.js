@@ -25,6 +25,11 @@ const models = [
 
 const newModel = {
     name: "Model 3",
+    gender: "male",
+    descritption: "Description Model 3",
+    BrandId: 2,
+    CategoryId: 1
+
 };
 
 const addedModel = {
@@ -104,6 +109,10 @@ describe("createModel", () => {
     it("should send 422 status", async () => {
         req.body = {
             name: "3",
+            gender: "male",
+            descritption: "Description Model 3",
+            BrandId: 2,
+            CategoryId: 1
         };
         Model.create = jest.fn().mockImplementation(() => {
             throw new Sequelize.ValidationError("Name must be at least 2 characters long");

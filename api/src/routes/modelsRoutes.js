@@ -15,19 +15,14 @@ export default (Model, ObjectId) => ({
 
 	createModel: async (req, res) => {
 		try {
-			switch (req.body) {
-				case !req.body.name:
-					return res
-						.status(400)
-						.json({ message: "Name parameter is missing" });
-				case !req.body.BrandId:
-					return res
-						.status(400)
-						.json({ message: "BrandId parameter is missing" });
-				case !req.body.CategoryId:
-					return res
-						.status(400)
-						.json({ message: "CategoryId parameter is missing" });
+			if (!req.body.name) {
+				return res.status(400).json({ message: "Name parameter is missing" });
+			}
+			if (!req.body.BrandId) {
+				return res.status(400).json({ message: "BrandId parameter is missing" });
+			}
+			if (!req.body.CategoryId) {
+				return res.status(400).json({ message: "CategoryId parameter is missing" });
 			}
 
 			const id = new ObjectId().toString();
