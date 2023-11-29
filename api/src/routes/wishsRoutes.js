@@ -21,13 +21,14 @@ export default (Wish, Product, Product_Images) => ({
 				],
 			});
 
+			if (!wish) {
+				return res.status(404).json({ message: "Wish not found" });
+			}
+			
 			for (const product of wish.products) {
 				product.price = (product.price / 100).toFixed(2);;
 			}
 
-			if (!wish) {
-				return res.status(404).json({ message: "Wish not found" });
-			}
 
 			res.status(200).json(wish);
 		} catch (error) {
