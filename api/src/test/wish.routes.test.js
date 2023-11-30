@@ -1,6 +1,4 @@
-import { Sequelize } from "sequelize";
 import wishRoutes from "../routes/wishsRoutes.js";
-import { ObjectId } from "mongodb";
 
 jest.mock("../models/postgres-model.js");
 
@@ -130,13 +128,14 @@ describe('getUserWish', () => {
 });
 
 describe('addProductToWish', () => {
-    //  test('addProductToWish should add a product to the wish', async () => {
-    //     req.params = { userId: 1 };
-    //     req.body = { productId: 1 };
-    //     await wishRoutes(Wish, Product,Product_Images).addProductToWish(req, res);
-    //     expect(res.status).toHaveBeenCalledWith(201);
-    //     expect(res.json).toHaveBeenCalledWith({ message: "Product added to wish successfully" });
-    // });
+     test('addProductToWish should add a product to the wish', async () => {
+        req.params = { userId: 1 };
+        req.body = { productId: 1 };
+        Wish.findOne = jest.fn().mockReturnValue({ addProduct: jest.fn() });
+        await wishRoutes(Wish, Product,Product_Images).addProductToWish(req, res);
+        expect(res.status).toHaveBeenCalledWith(201);
+        expect(res.json).toHaveBeenCalledWith({ message: "Product added to wish successfully" });
+    });
 
     it('should return a 400 error if the userId is not found', async () => {
         req.params = {};

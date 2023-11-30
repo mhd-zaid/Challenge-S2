@@ -2,11 +2,13 @@ import { Sequelize,Op } from "sequelize";
 import modelsRoutes from "../routes/modelsRoutes.js";
 import categoriesRoutes from "../routes/categoriesRoutes";
 import brandsRoutes from "../routes/brandsRoutes";
+import productsRoutes from "../routes/productsRoutes";
 import { ObjectId } from "mongodb";
 
 jest.mock("../models/postgres-brand.js");
 jest.mock("../models/postgres-category.js");
 jest.mock("../models/postgres-model.js");
+jest.mock("../models/postgres-product.js");
 
 const categoriesFixture = [
     {
@@ -72,8 +74,8 @@ const modelsFixture = [
 ];
 
 const productsFixture = [
-     {
-            dataValues: {
+    {
+        dataValues: {
             id: 1,
             name: "Product 1",
             price: 49.99 * 100,
@@ -91,7 +93,7 @@ const productsFixture = [
         }
     },
     {
-            dataValues: {
+        dataValues: {
             id: 2,
             name: "Product 2",
             price: 79.99 * 100,
@@ -128,6 +130,8 @@ const Model = {
 
 const Product = {
     create: jest.fn().mockReturnValue(null),
+    findAll: jest.fn().mockReturnValue(productsFixture),
+    findOne: jest.fn().mockReturnValue(productsFixture[0]),
 };
 
 const productsMongo = [
@@ -191,12 +195,20 @@ const productsMongo = [
 
 const ProductMongodb = (data) => {
     return {
-        save: jest.fn().mockReturnValue(addedProductMongo),
+        save: jest.fn().mockReturnValue({}),
         findOne: jest.fn().mockReturnValue(productsMongo[0]),
     }
 };
 
-const Product_Images = jest.fn();
+const Product_Images = {
+    findOne: jest.fn().mockReturnValue({
+        dataValues: {
+            id: 1,
+            productId: productsFixture[1].id,
+            url: 'https://www.google.com',
+        },
+    }),
+};
 
 const req = jest.fn();
 const res = {
@@ -206,7 +218,7 @@ const res = {
 beforeEach(() => {
     jest.clearAllMocks();
 });
-describe("Create Model", () => {
+describe("Create Model with Brand & Category", () => {
     it("should create model with brand & category", async () => {
         Model.create = jest.fn().mockReturnValue({
             id: 3,
@@ -272,5 +284,81 @@ describe("Create Model", () => {
         await modelsRoutes(Model, ObjectId).createModel(req, res);
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res.json).toHaveBeenCalledWith({message: "CategoryId parameter is missing"});
+    });
+});
+
+describe("Add Product with Model", () => {
+    it("should add product with model", async () => {
+        await modelsRoutes(Model, ObjectId).getModels(req, res);
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(Model.findAll).toHaveBeenCalled();
+        expect(res.json).toHaveBeenCalledWith(modelsFixture);
+        const model = res.json.mock.calls[0][0];
+        res.status.mockClear();
+        res.json.mockClear();
+        const id = new ObjectId();
+        req.body = {
+            name: "Product 3",
+            price: 49.99 * 100,
+            vat: 0.2,
+            quantity: 10,
+            size: "43",
+            color: "black",
+            discount: 0,
+            alertQuantity: 3,
+            sku: "SKU123",
+            modelId: model[0].id,
+        };
+        ProductMongodb.save = jest.fn().mockReturnValue({
+            _id: id,
+            name: req.body.name,
+            price: req.body.price * 100,
+            vat: req.body.vat,
+            quantity: req.body.quantity,
+            size: req.body.size,
+            color: req.body.color,
+            discount: req.body.discount,
+            alertQuantity: req.body.alertQuantity,
+            sku: req.body.sku,
+            modelId: model[0].id,
+            model: {
+                _id: new ObjectId(model[0].id),
+                name: model[0].name,
+                brandId: model[0].BrandId,
+                categoryId: model[0].CategoryId,
+            },
+            brand: {
+                _id: new ObjectId(model[0].BrandId),
+                name: model[0].Brand.name,
+            },
+            category: {
+                _id: new ObjectId(model[0].CategoryId),
+                name: model[0].Category.name,
+            },
+        });
+        await productsRoutes(Product, Model,Brand,Category, Product_Images, ProductMongodb,ObjectId, Op).createProduct(req, res);
+        expect(res.status).toHaveBeenCalledWith(201);
+        expect(Product.create).toHaveBeenCalled();
+        const newProduct = res.json.mock.calls[0][0];
+        productsFixture.push(newProduct);
+        expect(productsFixture.includes(newProduct)).toBe(true);
+    });
+
+    it("should not add product without model", async () => {
+        req.body = {
+            name: "Product 4",
+            price: 79.99 * 100,
+            vat: 0.2,
+            quantity: 15,
+            size: "41",
+            color: "white",
+            discount: 0,
+            alertQuantity: 3,
+            sku: "SKU456",
+        };
+
+        await productsRoutes(Product, Model,Brand,Category, Product_Images, ProductMongodb,ObjectId, Op).createProduct(req, res);
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({message: "modelId is missing"});
     });
 });

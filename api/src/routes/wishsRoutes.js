@@ -54,7 +54,7 @@ export default (Wish, Product, Product_Images) => ({
 					.status(400)
 					.json({ message: "productId parameter is missing" });
 			}
-
+			
 			const wish = await Wish.findOne({ where: { UserId: userId } });
 			if (!wish)
 				return res.status(404).json({ message: "Wish not found" });

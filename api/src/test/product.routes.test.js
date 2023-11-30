@@ -267,6 +267,15 @@ describe("createProduct", () => {
     it("should send 422 status", async () => {
         req.body = {
             name: "3",
+            price: 109.99 *100,
+            vat: 0.2,
+            quantity: 20,
+            size: "42",
+            color: "black",
+            discount: 0,
+            alertQuantity: 3,
+            sku: "SKU789",
+            modelId: 2,
         };
         Product.create = jest.fn().mockImplementation(() => {
             throw new Sequelize.ValidationError("Name must be at least 2 characters long");
