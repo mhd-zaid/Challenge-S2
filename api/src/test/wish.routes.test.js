@@ -1,6 +1,4 @@
-import { Sequelize } from "sequelize";
 import wishRoutes from "../routes/wishsRoutes.js";
-import { ObjectId } from "mongodb";
 
 jest.mock("../models/postgres-model.js");
 
@@ -86,6 +84,16 @@ const Product = {
     findOne: jest.fn().mockReturnValue(products[1]),
 };
 
+const Product_Images = {
+    findOne: jest.fn().mockReturnValue({
+        dataValues: {
+            id: 1,
+            productId: products[1].id,
+            url: 'https://www.google.com',
+        },
+    }),
+};
+
 const req = jest.fn();
 const res = {
     status: jest.fn().mockReturnThis(),
@@ -95,7 +103,7 @@ const res = {
 describe('getUserWish', () => {
     it('should get user Wishes', async () => {
         req.params = { id: 1 };
-        await wishRoutes(Wish, Product).getUserWish(req, res);
+        await wishRoutes(Wish, Product,Product_Images).getUserWish(req, res);
         expect(res.status).toHaveBeenCalledWith(200);
         expect(res.json).toHaveBeenCalledWith(wishes[0]);
         expect(Wish.findOne).toHaveBeenCalled();
@@ -105,7 +113,7 @@ describe('getUserWish', () => {
     it('should return a 404 error if the wish is not found', async () => {
         Wish.findOne = jest.fn().mockReturnValue(null);
         req.params = { id: 1 };
-        await wishRoutes(Wish, Product).getUserWish(req, res);
+        await wishRoutes(Wish, Product,Product_Images).getUserWish(req, res);
         expect(res.status).toHaveBeenCalledWith(404);
         expect(res.json).toHaveBeenCalledWith({ message: "Wish not found" });
         expect(Wish.findOne).toHaveBeenCalled();
@@ -113,25 +121,26 @@ describe('getUserWish', () => {
 
     it('getUserWish should return a 400', async () => {
         req.params = {};
-        await wishRoutes(Wish, Product).getUserWish(req, res);
+        await wishRoutes(Wish, Product,Product_Images).getUserWish(req, res);
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res.json).toHaveBeenCalledWith({ message: "id parameter is missing" });
     });
 });
 
 describe('addProductToWish', () => {
-    //  test('addProductToWish should add a product to the wish', async () => {
-    //     req.params = { userId: 1 };
-    //     req.body = { productId: 1 };
-    //     await wishRoutes(Wish, Product).addProductToWish(req, res);
-    //     expect(res.status).toHaveBeenCalledWith(201);
-    //     expect(res.json).toHaveBeenCalledWith({ message: "Product added to wish successfully" });
-    // });
+     test('addProductToWish should add a product to the wish', async () => {
+        req.params = { userId: 1 };
+        req.body = { productId: 1 };
+        Wish.findOne = jest.fn().mockReturnValue({ addProduct: jest.fn() });
+        await wishRoutes(Wish, Product,Product_Images).addProductToWish(req, res);
+        expect(res.status).toHaveBeenCalledWith(201);
+        expect(res.json).toHaveBeenCalledWith({ message: "Product added to wish successfully" });
+    });
 
     it('should return a 400 error if the userId is not found', async () => {
         req.params = {};
         req.body = { productId: 1 };
-        await wishRoutes(Wish, Product).addProductToWish(req, res);
+        await wishRoutes(Wish, Product,Product_Images).addProductToWish(req, res);
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res.json).toHaveBeenCalledWith({ message: "userId parameter is missing" });
     });
@@ -139,7 +148,7 @@ describe('addProductToWish', () => {
     it('should return a 400 error if the productId is not found', async () => {
         req.params = { userId: 1 };
         req.body = {};
-        await wishRoutes(Wish, Product).addProductToWish(req, res);
+        await wishRoutes(Wish, Product,Product_Images).addProductToWish(req, res);
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res.json).toHaveBeenCalledWith({ message: "productId parameter is missing" });
     });
@@ -148,7 +157,7 @@ describe('addProductToWish', () => {
         Wish.findOne = jest.fn().mockReturnValue(null);
         req.params = { userId: 1 };
         req.body = { productId: 1 };
-        await wishRoutes(Wish, Product).addProductToWish(req, res);
+        await wishRoutes(Wish, Product,Product_Images).addProductToWish(req, res);
         expect(res.status).toHaveBeenCalledWith(404);
         expect(res.json).toHaveBeenCalledWith({ message: "Wish not found" });
         expect(Wish.findOne).toHaveBeenCalled();
@@ -159,7 +168,7 @@ describe('addProductToWish', () => {
         Product.findOne = jest.fn().mockReturnValue(null);
         req.params = { userId: 1 };
         req.body = { productId: 1 };
-        await wishRoutes(Wish, Product).addProductToWish(req, res);
+        await wishRoutes(Wish, Product,Product_Images).addProductToWish(req, res);
         expect(res.status).toHaveBeenCalledWith(404);
         expect(res.json).toHaveBeenCalledWith({ message: "Product not found" });
         expect(Product.findOne).toHaveBeenCalled();
@@ -171,34 +180,30 @@ describe('deleteProductFromWish', () => {
     it('should delete a product from the wish', async () => {
         Product.findOne = jest.fn().mockReturnValue(products[0]);
         Wish.findOne = jest.fn().mockReturnValue({ removeProduct: jest.fn() });
-        req.params = { userId: 1 };
-        req.body = { productId: 1 };
-        await wishRoutes(Wish, Product).deleteProductFromWish(req, res);
+        req.params = { userId: 1, productId: 1 };
+        await wishRoutes(Wish, Product,Product_Images).deleteProductFromWish(req, res);
         expect(res.status).toHaveBeenCalledWith(204);
         expect(res.json).toHaveBeenCalledWith({ message: "Product deleted from wish successfully" });
     });
 
     it('should return a 400 error if the userId is missing', async () => {
-        req.params = {};
-        req.body = { productId: 1 };
-        await wishRoutes(Wish, Product).deleteProductFromWish(req, res);
+        req.params = {productId: 1};
+        await wishRoutes(Wish, Product,Product_Images).deleteProductFromWish(req, res);
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res.json).toHaveBeenCalledWith({ message: "userId parameter is missing" });
     });
 
     it('should return a 400 error if the productId is missing', async () => {
         req.params = { userId: 1 };
-        req.body = {};
-        await wishRoutes(Wish, Product).deleteProductFromWish(req, res);
+        await wishRoutes(Wish, Product,Product_Images).deleteProductFromWish(req, res);
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res.json).toHaveBeenCalledWith({ message: "productId parameter is missing" });
     });
 
     it('should return a 404 error if the wish is not found', async () => {
         Wish.findOne = jest.fn().mockReturnValue(null);
-        req.params = { userId: 1 };
-        req.body = { productId: 1 };
-        await wishRoutes(Wish, Product).deleteProductFromWish(req, res);
+        req.params = { userId: 1, productId: 1 };
+        await wishRoutes(Wish, Product,Product_Images).deleteProductFromWish(req, res);
         expect(res.status).toHaveBeenCalledWith(404);
         expect(res.json).toHaveBeenCalledWith({ message: "Wish not found" });
         expect(Wish.findOne).toHaveBeenCalled();
@@ -207,9 +212,8 @@ describe('deleteProductFromWish', () => {
     it('should return a 404 error if the product is not found', async () => {
         Wish.findOne = jest.fn().mockReturnValue(wishes[0]);
         Product.findOne = jest.fn().mockReturnValue(null);
-        req.params = { userId: 1 };
-        req.body = { productId: 1 };
-        await wishRoutes(Wish, Product).deleteProductFromWish(req, res);
+        req.params = { userId: 1, productId: 1 };
+        await wishRoutes(Wish, Product,Product_Images).deleteProductFromWish(req, res);
         expect(res.status).toHaveBeenCalledWith(404);
         expect(res.json).toHaveBeenCalledWith({ message: "Product not found" });
         expect(Product.findOne).toHaveBeenCalled();

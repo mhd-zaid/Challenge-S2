@@ -93,7 +93,7 @@ export default (
 
 			if (!products)
 				return res.status(404).json({ message: "Products not found" });
-
+			console.log(products);
 			res.status(200).json(
 				products.map((product) => ({
 					...product.dataValues,
@@ -109,31 +109,29 @@ export default (
 
 	const createProduct = async (req, res) => {
 		try {
-			switch (req.body) {
-				case !req.body.name:
-					return res.status(400).json({ message: "name is missing" });
-				case !req.body.price:
-					return res
-						.status(400)
-						.json({ message: "price is missing" });
-				case !req.body.vat:
-					return res.status(400).json({ message: "vat is missing" });
-				case !req.body.quantity:
-					return res
-						.status(400)
-						.json({ message: "quantity is missing" });
-				case !req.body.size:
-					return res.status(400).json({ message: "size is missing" });
-				case !req.body.color:
-					return res
-						.status(400)
-						.json({ message: "color is missing" });
-				case !req.body.sku:
-					return res.status(400).json({ message: "sku is missing" });
-				case !req.body.modelId:
-					return res
-						.status(400)
-						.json({ message: "modelId is missing" });
+			if(!req.body.name) {
+				return res.status(400).json({ message: "name is missing" });
+			}
+			if(!req.body.price) {
+				return res.status(400).json({ message: "price is missing" });
+			}
+			if(!req.body.vat) {
+				return res.status(400).json({ message: "vat is missing" });
+			}
+			if(!req.body.quantity) {
+				return res.status(400).json({ message: "quantity is missing" });
+			}
+			if(!req.body.size) {
+				return res.status(400).json({ message: "size is missing" });
+			}
+			if(!req.body.color) {
+				return res.status(400).json({ message: "color is missing" });
+			}
+			if(!req.body.sku) {
+				return res.status(400).json({ message: "sku is missing" });
+			}
+			if(!req.body.modelId) {
+				return res.status(400).json({ message: "modelId is missing" });
 			}
 
 			const model = await Model.findOne(

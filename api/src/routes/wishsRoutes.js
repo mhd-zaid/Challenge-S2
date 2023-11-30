@@ -21,13 +21,14 @@ export default (Wish, Product, Product_Images) => ({
 				],
 			});
 
+			if (!wish) {
+				return res.status(404).json({ message: "Wish not found" });
+			}
+			
 			for (const product of wish.products) {
 				product.price = (product.price / 100).toFixed(2);;
 			}
 
-			if (!wish) {
-				return res.status(404).json({ message: "Wish not found" });
-			}
 
 			res.status(200).json(wish);
 		} catch (error) {
@@ -53,7 +54,7 @@ export default (Wish, Product, Product_Images) => ({
 					.status(400)
 					.json({ message: "productId parameter is missing" });
 			}
-
+			
 			const wish = await Wish.findOne({ where: { UserId: userId } });
 			if (!wish)
 				return res.status(404).json({ message: "Wish not found" });

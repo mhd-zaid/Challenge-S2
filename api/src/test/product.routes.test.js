@@ -178,6 +178,14 @@ const Model = {
     findOne: jest.fn().mockReturnValue({ id: 1, name: "Model 1",Brand: { id: 1, name: "Brand 1" }, Category: { id: 1, name: "Category 1" } }),
 };
 
+const Brand = {
+    findOne: jest.fn().mockReturnValue({ id: 1, name: "Brand 1" }),
+};
+
+const Category = {
+    findOne: jest.fn().mockReturnValue({ id: 1, name: "Category 1" }),
+};
+
 const Product_Images = jest.fn();
 
 const req = jest.fn();
@@ -189,7 +197,7 @@ const res = {
 describe("getProducts", () => {
     it("should get products", async () => {
         req.query = {};
-        await productsRoutes(Product, Model, Product_Images, ProductMongodb,ObjectId, Op).getProducts(req, res);
+        await productsRoutes(Product, Model,Brand,Category, Product_Images, ProductMongodb,ObjectId, Op).getProducts(req, res);
         const expectedProducts = products.map((product) => ({
             ...product.dataValues,
             price: (product.dataValues.price / 100).toFixed(2),
@@ -203,7 +211,7 @@ describe("getProducts", () => {
 describe("getProduct", () => {
     it("should get product by id", async () => {
         req.params = { id: products[0].dataValues.id };
-        await productsRoutes(Product, Model, Product_Images,ProductMongodb ,ObjectId, Op).getProduct(req, res);
+        await productsRoutes(Product, Model,Brand,Category, Product_Images,ProductMongodb ,ObjectId, Op).getProduct(req, res);
         products[0].dataValues.price = (products[0].dataValues.price / 100).toFixed(2);
         expect(res.status).toHaveBeenCalledWith(200);
         expect(res.json).toHaveBeenCalledWith(products[0].dataValues);
@@ -213,7 +221,7 @@ describe("getProduct", () => {
     it("should throw error product not found", async () => {
         req.params = { id: 3 };
         Product.findOne = jest.fn().mockReturnValue(null);
-        await productsRoutes(Product, Model, Product_Images,ProductMongodb, ObjectId, Op).getProduct(req, res);
+        await productsRoutes(Product, Model,Brand,Category, Product_Images,ProductMongodb, ObjectId, Op).getProduct(req, res);
         expect(res.status).toHaveBeenCalledWith(404);
         expect(res.json).toHaveBeenCalledWith({ message: "Product not found" });
         expect(Product.findOne).toHaveBeenCalled();
@@ -221,7 +229,7 @@ describe("getProduct", () => {
 
     it("should throw error Id parameter is missing", async () => {
         req.params = {};
-        await productsRoutes(Product, Model, Product_Images,ProductMongodb,  ObjectId, Op).getProduct(req, res);
+        await productsRoutes(Product, Model,Brand,Category, Product_Images,ProductMongodb,  ObjectId, Op).getProduct(req, res);
         expect(res.status).toHaveBeenCalledWith(404);
         expect(res.json).toHaveBeenCalledWith({ message: "Id parameter is missing" });
         expect(Product.findOne).toHaveBeenCalled();
@@ -231,7 +239,7 @@ describe("getProduct", () => {
 describe("createProduct", () => {
     it("should create product", async () => {
         req.body = newProduct;
-        await productsRoutes(Product, Model, Product_Images,ProductMongodb, ObjectId, Op).createProduct(req, res);
+        await productsRoutes(Product, Model,Brand,Category, Product_Images,ProductMongodb, ObjectId, Op).createProduct(req, res);
         expect(res.status).toHaveBeenCalledWith(201);
         expect(res.json).toHaveBeenCalledWith(addedProduct);
         expect(Product.create).toHaveBeenCalled();
@@ -251,7 +259,7 @@ describe("createProduct", () => {
         };
         Product.create = jest.fn().mockReturnValue({ message: "modelId is missing" });
 
-        await productsRoutes(Product, Model, Product_Images,ProductMongodb, ObjectId, Op).createProduct(req, res);
+        await productsRoutes(Product, Model,Brand,Category, Product_Images,ProductMongodb, ObjectId, Op).createProduct(req, res);
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res.json).toHaveBeenCalledWith({ message: "modelId is missing" });
     });
@@ -259,12 +267,21 @@ describe("createProduct", () => {
     it("should send 422 status", async () => {
         req.body = {
             name: "3",
+            price: 109.99 *100,
+            vat: 0.2,
+            quantity: 20,
+            size: "42",
+            color: "black",
+            discount: 0,
+            alertQuantity: 3,
+            sku: "SKU789",
+            modelId: 2,
         };
         Product.create = jest.fn().mockImplementation(() => {
             throw new Sequelize.ValidationError("Name must be at least 2 characters long");
         });
 
-        await productsRoutes(Product, Model, Product_Images,ProductMongodb, ObjectId, Op).createProduct(req, res);
+        await productsRoutes(Product, Model,Brand,Category, Product_Images,ProductMongodb, ObjectId, Op).createProduct(req, res);
         expect(res.status).toHaveBeenCalledWith(422);
     });
 });
@@ -279,7 +296,7 @@ describe("updateProduct", () => {
 
         Product.findOne = jest.fn().mockReturnValue({ update: jest.fn() });
 
-        await productsRoutes(Product, Model, Product_Images, ObjectId, Op).updateProduct(req, res);
+        await productsRoutes(Product, Model,Brand,Category, Product_Images, ObjectId, Op).updateProduct(req, res);
         expect(res.status).toHaveBeenCalledWith(200);
     });
 
@@ -292,7 +309,7 @@ describe("updateProduct", () => {
             findOne: jest.fn().mockReturnValue({ update: jest.fn() }),
         };
         ProductMongodb.findOne = jest.fn().mockReturnValue(null);
-        await productsRoutes(Product, Model, Product_Images, ObjectId, Op).updateProduct(req, res);
+        await productsRoutes(Product, Model,Brand,Category, Product_Images, ObjectId, Op).updateProduct(req, res);
         expect(res.status).toHaveBeenCalledWith(404);
         expect(res.json).toHaveBeenCalledWith({ message: "Product not found" });
     });
@@ -305,7 +322,7 @@ describe("updateProduct", () => {
         const Product = {
             findOne: jest.fn().mockReturnValue({ update: jest.fn() }),
         };
-        await productsRoutes(Product, Model, Product_Images, ObjectId, Op).updateProduct(req, res);
+        await productsRoutes(Product, Model,Brand,Category, Product_Images, ObjectId, Op).updateProduct(req, res);
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res.json).toHaveBeenCalledWith({ message: "Id parameter is missing" });
     });
@@ -326,7 +343,7 @@ describe("updateProduct", () => {
             findOne: jest.fn().mockReturnValue({ update: jest.fn() }),
         };
         ProductMongodb.findOne = jest.fn().mockReturnValue(null);
-        await productsRoutes(Product, Model, Product_Images, ObjectId, Op).updateProduct(req, res);
+        await productsRoutes(Product, Model,Brand,Category, Product_Images, ObjectId, Op).updateProduct(req, res);
         expect(res.status).toHaveBeenCalledWith(400);
     });
 
@@ -338,7 +355,7 @@ describe("updateProduct", () => {
         
         Product.findOne = jest.fn().mockReturnValue({ ...products[1],update: () => { throw new Sequelize.ValidationError("Name must be at least 2 characters long"); } });
 
-        await productsRoutes(Product, Model, Product_Images, ObjectId, Op).updateProduct(req, res);
+        await productsRoutes(Product, Model,Brand,Category, Product_Images, ObjectId, Op).updateProduct(req, res);
         expect(res.status).toHaveBeenCalledWith(422);
     });
 });
@@ -348,7 +365,7 @@ describe("deleteProduct", () => {
         req.params = { id: 2 };
         Product.findOne = jest.fn().mockReturnValue({ destroy: jest.fn() });
         ProductMongodb.findOne = jest.fn().mockReturnValue({ updateOne: jest.fn() });
-        await productsRoutes(Product, Model, Product_Images, ProductMongodb, ObjectId, Op).deleteProduct(req, res);
+        await productsRoutes(Product, Model,Brand,Category, Product_Images, ProductMongodb, ObjectId, Op).deleteProduct(req, res);
         expect(res.status).toHaveBeenCalledWith(204);
         expect(res.json).toHaveBeenCalledWith({ message: "Product deleted successfully" });
         expect(Product.findOne().destroy).toHaveBeenCalled();
@@ -356,14 +373,14 @@ describe("deleteProduct", () => {
     it("should throw error product not found", async () => {
         req.params = { id: 3 };
         Product.findOne = jest.fn().mockReturnValue(null);
-        await productsRoutes(Product, Model, Product_Images,ProductMongodb, ObjectId, Op).deleteProduct(req, res);
+        await productsRoutes(Product, Model,Brand,Category, Product_Images,ProductMongodb, ObjectId, Op).deleteProduct(req, res);
         expect(res.status).toHaveBeenCalledWith(404);
         expect(res.json).toHaveBeenCalledWith({ message: "Product not found" });
     });
 
     it("should throw error Id parameter is missing", async () => {
         req.params = {};
-        await productsRoutes(Product, Model, Product_Images,ProductMongodb, ObjectId, Op).deleteProduct(req, res);
+        await productsRoutes(Product, Model,Brand,Category, Product_Images,ProductMongodb, ObjectId, Op).deleteProduct(req, res);
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res.json).toHaveBeenCalledWith({ message: "Id parameter is missing" });
     });
