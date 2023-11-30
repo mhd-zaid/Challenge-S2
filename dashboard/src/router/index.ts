@@ -6,6 +6,7 @@ import { ModelsRoutes } from '@/router/models'
 import { ProductsRoutes } from './products'
 import { BrandsRoutes } from './brands'
 import { OrderRoutes } from '@/router/orders'
+import { ExportsRoutes } from './exports'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,6 +18,7 @@ const router = createRouter({
     ...ProductsRoutes,
     ...BrandsRoutes,
     ...OrderRoutes,
+    ...ExportsRoutes,
     {
       path: '/',
       name: 'dashboard',

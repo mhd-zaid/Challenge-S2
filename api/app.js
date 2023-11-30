@@ -12,6 +12,7 @@ import stats from "./src/router/statsRouter.js";
 import wishes from "./src/router/wishsRouter.js";
 import orders from "./src/router/ordersRouter.js";
 import payments from "./src/router/paymentsRouter.js";
+import exports from "./src/router/exportsRouter.js";
 import sequelize from "./src/config/sequelize-config.js";
 import mailTransporter from "./src/config/mail-config.js";
 import passwordRenewal from "./src/scripts/passwordRenewal.js";
@@ -53,6 +54,7 @@ app.use("/stats/", stats);
 app.use("/wishes", wishes);
 app.use("/orders", orders);
 app.use("/payments", payments);
+app.use("/exports", exports);
 
 // CRON job
 cron.schedule("0 0 * * *", async () => {

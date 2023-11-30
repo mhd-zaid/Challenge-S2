@@ -96,6 +96,12 @@ export const getEntityName = (entity: string) => {
     brand: 'Marque',
     category: 'Catégorie',
     model: 'Modèle',
+    users: 'Utilisateurs',
+    products: 'Produits',
+    orders: 'Commandes',
+    brands: 'Marques',
+    categories: 'Catégories',
+    models: 'Modèles',
   }
 
   return entityNames[entity]

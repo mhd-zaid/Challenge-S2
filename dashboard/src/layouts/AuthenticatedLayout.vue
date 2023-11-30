@@ -62,6 +62,12 @@ const navigation = [
     href: '/brands',
     icon: Squares2X2Icon,
     current: router.currentRoute.value.path === '/brands'
+  },
+  {
+    name: 'Exports',
+    href: '/exports',
+    icon: DocumentDuplicateIcon,
+    current: router.currentRoute.value.path === '/exports'
   }
 ]
 const logout = () => {

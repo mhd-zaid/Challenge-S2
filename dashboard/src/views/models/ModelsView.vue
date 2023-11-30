@@ -7,6 +7,7 @@ import OTable from "@/components/OTable.vue";
 import {onUnmounted, reactive} from "vue";
 import type {ModelType} from "@/types/ModelType";
 import {useRouter} from "vue-router";
+import { CloudArrowDownIcon } from '@heroicons/vue/24/outline';
 
 const state = reactive({
   openCreation: false,
@@ -71,6 +72,27 @@ const closeCreationDrawer = () => {
   getModels()
 }
 
+const exportModels = async () => {
+  try {
+    await axiosInstance
+      .post('/exports/', {
+        dataScope: 'models'
+      })
+      .then((res) => {
+        const fileName = res.data.fileName
+
+        const downloadLink = document.createElement('a')
+        downloadLink.href = `http://localhost:3000/exports/${fileName}`
+        downloadLink.download = fileName
+        document.body.appendChild(downloadLink)
+        downloadLink.click()
+        document.body.removeChild(downloadLink)
+      })
+  } catch (e: any) {
+    throw e
+  }
+}
+
 getModels()
 
 </script>
@@ -86,6 +108,15 @@ getModels()
           </p>
         </div>
         <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+          <button
+            @click="exportModels"
+            class="bg-white rounded-md text-gray-400 px-3 py-2 text-center text-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            <span class="sr-only">Télécharger l'export</span>
+            <CloudArrowDownIcon class="h-6 w-6" aria-hidden="true" />
+          </button>
+        </div>
+        <div class="mt-4 sm:ml-3 sm:mt-0 sm:flex-none">
           <button
               @click="openCreationDrawer"
               type="button"

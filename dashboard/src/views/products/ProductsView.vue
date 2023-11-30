@@ -6,6 +6,7 @@ import OTable from '@/components/OTable.vue'
 import { useRouter } from 'vue-router'
 import OModal from '@/components/OModal.vue'
 import ProductsSidebarForm from './ProductsSidebarForm.vue'
+import { CloudArrowDownIcon } from '@heroicons/vue/24/outline'
 
 const router = useRouter()
 const state = reactive({
@@ -71,6 +72,27 @@ onMounted(() => {
 onUnmounted(() => {
   abortController.abort()
 })
+
+const exportProducts = async () => {
+  try {
+    await axiosInstance
+      .post('/exports/', {
+        dataScope: 'products'
+      })
+      .then((res) => {
+        const fileName = res.data.fileName
+
+        const downloadLink = document.createElement('a')
+        downloadLink.href = `http://localhost:3000/exports/${fileName}`
+        downloadLink.download = fileName
+        document.body.appendChild(downloadLink)
+        downloadLink.click()
+        document.body.removeChild(downloadLink)
+      })
+  } catch (e: any) {
+    throw e
+  }
+}
 </script>
 
 <template>
@@ -82,6 +104,15 @@ onUnmounted(() => {
           <p class="mt-2 text-sm text-gray-700">Liste des produits</p>
         </div>
         <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+          <button
+            @click="exportProducts"
+            class="bg-white rounded-md text-gray-400 px-3 py-2 text-center text-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            <span class="sr-only">Télécharger l'export</span>
+            <CloudArrowDownIcon class="h-6 w-6" aria-hidden="true" />
+          </button>
+        </div>
+        <div class="mt-4 sm:ml-3 sm:mt-0 sm:flex-none">
           <button
             @click="state.openCreation = true"
             type="button"
