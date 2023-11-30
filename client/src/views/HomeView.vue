@@ -5,6 +5,12 @@ import FeaturedSection from '../sections/home/FeaturedSection.vue'
 import FavoriteSection from '../sections/home/FavoriteSection.vue'
 import CtaSection from '../sections/home/CtaSection.vue'
 import HeroSection from '@/sections/home/HeroSection.vue'
+import { reactive } from 'vue'
+import CookiesModal from '@/components/cookies/CookiesModal.vue'
+
+const state = reactive({
+  cookiesAccepted: false as boolean
+})
 
 const favorites = [
   {
@@ -29,10 +35,26 @@ const favorites = [
     imageSrc: '/images/d01ef37b-c14a-4edd-8787-534f5732294c.webp'
   }
 ]
+
+const getCookiesAccepted = () => {
+  const cookiesAccepted = localStorage.getItem('accept-cookies')
+  if (cookiesAccepted === 'true') {
+    state.cookiesAccepted = true
+  } else {
+    state.cookiesAccepted = false
+  }
+}
+
+getCookiesAccepted()
 </script>
 
 <template>
   <LayoutComponent>
+    <CookiesModal
+      v-if="!state.cookiesAccepted"
+      @acceptCookies="state.cookiesAccepted = true"
+      @declineCookies="state.cookiesAccepted = true"
+    />
     <HeroSection />
     <CategorySection />
     <FeaturedSection />
