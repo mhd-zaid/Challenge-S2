@@ -4,7 +4,31 @@ import Model from "../models/postgres-model.js";
 import Brand from "../models/postgres-brand.js";
 import Category from "../models/postgres-category.js";
 import Order from "../models/postgres-order.js";
+import Orders_Products from "../models/postgres-order-product.js";
 import { columnNames } from "../lib/columnsNames.js";
+
+const formatData = (data) => {
+	data = data.map((item) => {
+		const formattedItem = {};
+
+		for (const key in item) {
+			if (Object.prototype.hasOwnProperty.call(item, key)) {
+				const formattedKey = columnNames[key] || key;
+
+				if (item[key] instanceof Date) {
+					formattedItem[formattedKey] =
+						item[key].toLocaleString("fr-FR");
+				} else {
+					formattedItem[formattedKey] = item[key];
+				}
+			}
+		}
+
+		return formattedItem;
+	});
+
+	return data;
+};
 
 export const exportData = async (dataScope) => {
 	let data;
@@ -47,24 +71,37 @@ export const exportData = async (dataScope) => {
 			console.log("dataScope not found");
 			break;
 	}
-	data = data.map((item) => {
-		const formattedItem = {};
 
-		for (const key in item) {
-			if (Object.prototype.hasOwnProperty.call(item, key)) {
-				const formattedKey = columnNames[key] || key;
+	return formatData(data);
+};
 
-				if (item[key] instanceof Date) {
-					formattedItem[formattedKey] =
-						item[key].toLocaleString("fr-FR");
-				} else {
-					formattedItem[formattedKey] = item[key];
-				}
-			}
-		}
-
-		return formattedItem;
+export const exportPersonalData = async (userId) => {
+	let data = [];
+	const orders = await Order.findAll({
+		where: {
+			userId,
+		},
+		include: ["products", "user"],
+		order: [["createdAt", "DESC"]],
 	});
 
-	return data;
+	const ordersObject = orders.map((order) => order.dataValues);
+	for (const order of ordersObject) {
+		const products = order.products.map((product) => product.dataValues);
+		for (const product of products) {
+			delete order.products;
+			delete order.user;
+			delete product.Orders_Products;
+			delete order.id;
+			delete product.id;
+			delete product.modelId;
+			delete order.userId;
+			data.push({
+				...order,
+				...product,
+			});
+		}
+	}
+
+	return formatData(data);
 };
