@@ -17,9 +17,9 @@ const cartStore = useCartStore()
 
 const router = useRouter()
 const navigation = [
-  { name: 'Nouveautés', href: '/products' },
+  { name: 'Nos produits', href: '/products' },
   { name: 'Homme', href: '/products?gender=male' },
-  { name: 'Femme', href: '/products?gender=women' },
+  { name: 'Femme', href: '/products?gender=female' },
   { name: 'Offres', href: '/products?discount=true' }
 ]
 
