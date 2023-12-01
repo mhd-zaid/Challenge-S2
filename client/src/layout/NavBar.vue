@@ -28,7 +28,6 @@ const state = reactive({
 })
 
 const getWishes = async () => {
-  console.log(isAuthenticated)
   if (isAuthenticated) {
     await wishStore.fetchWishlist()
   }

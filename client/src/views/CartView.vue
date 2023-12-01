@@ -3,8 +3,8 @@ import LayoutComponent from "@/layout/LayoutComponent.vue";
 import {useCartStore} from "@/stores/cart";
 import {onMounted, reactive, watch} from "vue";
 import type {ProductType} from "@/types/ProductType";
-import {getProductImage} from "@/types/ProductImageType";
 import {getProductPrice, getTotalProductsPrice} from "@/types/ProductType";
+import {getProductImage} from "@/types/ProductImageType";
 
 
 const cartStore = useCartStore()
@@ -115,10 +115,10 @@ watch(() => cartStore.cart, async () => {
           </div>
 
           <div class="mt-10">
-            <button type="submit"
-                    class="w-full rounded-md border border-transparent bg-primary-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-gray-50">
+            <RouterLink to="/checkout"
+            class="block text-center w-full rounded-md border border-transparent bg-primary-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-gray-50">
               Passer au paiement
-            </button>
+            </RouterLink>
           </div>
 
           <div class="mt-6 text-center text-sm text-gray-500">
