@@ -1,43 +1,22 @@
 <script setup lang="ts">
 import LayoutComponent from "@/layout/LayoutComponent.vue";
-import {CheckIcon, ClockIcon} from '@heroicons/vue/20/solid'
+import {useCartStore} from "@/stores/cart";
+import {onMounted, reactive, watch} from "vue";
+import type {ProductType} from "@/types/ProductType";
+import {getProductImage} from "@/types/ProductImageType";
+import {getProductPrice, getTotalProductsPrice} from "@/types/ProductType";
 
-const products = [
-  {
-    id: 1,
-    name: 'Artwork Tee',
-    href: '#',
-    price: '$32.00',
-    color: 'Mint',
-    size: 'Medium',
-    inStock: true,
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/checkout-page-03-product-04.jpg',
-    imageAlt: 'Front of mint cotton t-shirt with wavey lines pattern.',
-  },
-  {
-    id: 2,
-    name: 'Basic Tee',
-    href: '#',
-    price: '$32.00',
-    color: 'Charcoal',
-    inStock: false,
-    leadTime: '7-8 Jours',
-    size: 'Large',
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-01-product-02.jpg',
-    imageAlt: 'Front of charcoal cotton t-shirt.',
-  },
-  {
-    id: 3,
-    name: 'Basic Tee',
-    href: '#',
-    price: '$32.00',
-    color: 'Sienna',
-    inStock: true,
-    size: 'Large',
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-01-product-01.jpg',
-    imageAlt: 'Front of sienna cotton t-shirt.',
-  },
-]
+
+const cartStore = useCartStore()
+
+const state = reactive({
+  products: [] as ProductType[],
+})
+
+onMounted(async () => {
+  state.products = await cartStore.fetchCart()
+})
+
 const policies = [
   {
     name: 'Retours gratuits',
@@ -62,6 +41,10 @@ const policies = [
   },
 ]
 
+watch(() => cartStore.cart, async () => {
+  state.products = await cartStore.fetchCart()
+})
+
 </script>
 
 <template>
@@ -69,14 +52,14 @@ const policies = [
     <div class="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:px-0">
       <h1 class="text-center text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Votre panier</h1>
 
-      <form class="mt-12">
+      <div class="mt-12">
         <section aria-labelledby="cart-heading">
           <h2 id="cart-heading" class="sr-only">Items in your shopping cart</h2>
-
+          <h2 v-if="cartStore.cart.length === 0" class="text-center  font-bold tracking-tight text-gray-900">Votre panier est vide</h2>
           <ul role="list" class="divide-y divide-gray-200 border-b border-t border-gray-200">
-            <li v-for="product in products" :key="product.id" class="flex py-6">
+            <li v-for="product in state.products" :key="product.id" class="flex py-6">
               <div class="flex-shrink-0">
-                <img :src="product.imageSrc" :alt="product.imageAlt"
+                <img :src="getProductImage(product)" :alt="product.name"
                      class="h-24 w-24 rounded-md object-cover object-center sm:h-32 sm:w-32"/>
               </div>
 
@@ -84,24 +67,30 @@ const policies = [
                 <div>
                   <div class="flex justify-between">
                     <h4 class="text-sm">
-                      <a :href="product.href" class="font-medium text-gray-700 hover:text-gray-800">{{
+                      <a :href="`/products/${product.id}`" class="font-medium text-gray-700 hover:text-gray-800">{{
                           product.name
                         }}</a>
                     </h4>
-                    <p class="ml-4 text-sm font-medium text-gray-900">{{ product.price }}</p>
+                    <p class="ml-4 text-sm font-medium text-gray-900 flex flex-col">
+                      {{ getProductPrice(product) }}
+                      <span
+                          v-if="parseInt(product.discount)"
+                          class="text-sm font-medium text-red-600 line-through"
+                      >
+                        {{ product.price }}
+                      </span>
+                    </p>
                   </div>
                   <p class="mt-1 text-sm text-gray-500">{{ product.color }}</p>
                   <p class="mt-1 text-sm text-gray-500">{{ product.size }}</p>
                 </div>
 
-                <div class="mt-4 flex flex-1 items-end justify-between">
-                  <p class="flex items-center space-x-2 text-sm text-gray-700">
-                    <CheckIcon v-if="product.inStock" class="h-5 w-5 flex-shrink-0 text-green-500" aria-hidden="true"/>
-                    <ClockIcon v-else class="h-5 w-5 flex-shrink-0 text-gray-300" aria-hidden="true"/>
-                    <span>{{ product.inStock ? 'In stock' : `Will ship in ${product.leadTime}` }}</span>
-                  </p>
+                <div class="flex flex-1 items-end justify-end">
                   <div class="ml-4">
-                    <button type="button" class="text-sm font-medium text-secondary-400 hover:text-secondary-300">
+                    <button
+                        @click="cartStore.removeFromCart(product)"
+                        type="button"
+                        class="flex w-full items-center justify-center rounded-md border border-gray-300 bg-white px-2.5 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 sm:w-full sm:flex-grow-0">
                       <span>Supprimer</span>
                     </button>
                   </div>
@@ -112,14 +101,14 @@ const policies = [
         </section>
 
         <!-- Order summary -->
-        <section aria-labelledby="summary-heading" class="mt-10">
+        <section v-if="cartStore.cart.length > 0" aria-labelledby="summary-heading" class="mt-10">
           <h2 id="summary-heading" class="sr-only">Order summary</h2>
 
           <div>
             <dl class="space-y-4">
               <div class="flex items-center justify-between">
                 <dt class="text-base font-medium text-gray-900">Sous-total</dt>
-                <dd class="ml-4 text-base font-medium text-gray-900">96.00 €</dd>
+                <dd class="ml-4 text-base font-medium text-gray-900">{{getTotalProductsPrice(state.products)}} €</dd>
               </div>
             </dl>
             <p class="mt-1 text-sm text-gray-500">Livraison et taxes calculées à la caisse.</p>
@@ -141,7 +130,7 @@ const policies = [
             </p>
           </div>
         </section>
-      </form>
+      </div>
     </div>
 
     <!-- Policy grid -->

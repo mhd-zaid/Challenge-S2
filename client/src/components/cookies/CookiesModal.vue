@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-
 import { defineEmits } from 'vue'
 
 const emit = defineEmits(['acceptCookies', 'declineCookies'])

@@ -9,9 +9,9 @@ export type ProductImageType = {
     deletedAt: string;
 }
 
-export const getProductImage = (product: ProductType) => {
-    if (product.productImages.length > 0) {
-        return `http://localhost:3000/images/${product.productImages[0].url}`
+export const getProductImage = (product: ProductType, index = 0) => {
+    if (product?.productImages?.length > 0) {
+        return `http://localhost:3000/images/${product.productImages[index].url}`
     } else {
         return '/images/no-image.jpeg'
     }

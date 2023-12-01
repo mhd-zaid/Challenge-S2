@@ -17,7 +17,7 @@ const cartStore = useCartStore()
 
 const router = useRouter()
 const navigation = [
-  { name: 'Nouveautés', href: '/products?new=true' },
+  { name: 'Nouveautés', href: '/products' },
   { name: 'Homme', href: '/products?gender=male' },
   { name: 'Femme', href: '/products?gender=women' },
   { name: 'Offres', href: '/products?discount=true' }
@@ -32,24 +32,13 @@ const isAuthenticated = !!token
 
 const getWishes = async () => {
   if (isAuthenticated) {
-    const payload = JSON.parse(atob(token.split('.')[1]))
-    const userId = payload.userId
     await wishStore.fetchWishlist()
-  }
-}
-
-const getCart = async () => {
-  if (isAuthenticated) {
-    const payload = JSON.parse(atob(token.split('.')[1]))
-    const userId = payload.userId
-    await cartStore.fetchCart()
   }
 }
 
 onMounted(async () => {
   await getWishes()
   wishList.value = wishStore.wishlist.length
-  await getCart()
   cart.value = cartStore.cart.length
   watch(
     () => wishStore.wishlist.length,
@@ -130,7 +119,7 @@ onMounted(async () => {
             class="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
             aria-hidden="true"
           />
-          <span class="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">0</span>
+          <span class="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">{{cart}}</span>
           <span class="sr-only">produits dans le panier, voir le panier</span>
         </a>
       </div>
@@ -167,7 +156,7 @@ onMounted(async () => {
                 aria-hidden="true"
               />
               <span class="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800"
-                >0</span
+                >{{wishList}}</span
               >
               <span class="sr-only">produits dans les favoris, voir les favoris</span>
             </a>
@@ -177,7 +166,7 @@ onMounted(async () => {
                 aria-hidden="true"
               />
               <span class="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800"
-                >0</span
+                >{{cart}}</span
               >
               <span class="sr-only">produits dans le panier, voir le panier</span>
             </a>

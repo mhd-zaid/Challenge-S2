@@ -5,47 +5,28 @@ import FeaturedSection from '../sections/home/FeaturedSection.vue'
 import FavoriteSection from '../sections/home/FavoriteSection.vue'
 import CtaSection from '../sections/home/CtaSection.vue'
 import HeroSection from '@/sections/home/HeroSection.vue'
-import { reactive } from 'vue'
+import {onMounted, reactive} from 'vue'
 import CookiesModal from '@/components/cookies/CookiesModal.vue'
+import type {ProductType} from "@/types/ProductType";
+import axiosInstance from "@/utils/axiosInstance";
 
 const state = reactive({
-  cookiesAccepted: false as boolean
+  cookiesAccepted: false as boolean,
+  products: [] as ProductType[]
 })
 
-const favorites = [
-  {
-    id: 1,
-    name: "Nike Air Force 1 '07",
-    price: '119,99',
-    href: '#',
-    imageSrc: '/images/b7d9211c-26e7-431a-ac24-b0540fb3c00f.webp'
-  },
-  {
-    id: 2,
-    name: "Nike Air Force 1 '07 LV8",
-    price: '129,99',
-    href: '#',
-    imageSrc: '/images/b3546974-0d23-4657-a8a7-8d6abc9fc5e8.webp'
-  },
-  {
-    id: 3,
-    name: 'Nike Dunk Low Retro',
-    price: '119,99',
-    href: '#',
-    imageSrc: '/images/d01ef37b-c14a-4edd-8787-534f5732294c.webp'
-  }
-]
-
-const getCookiesAccepted = () => {
+onMounted(async () => {
   const cookiesAccepted = localStorage.getItem('accept-cookies')
-  if (cookiesAccepted === 'true') {
-    state.cookiesAccepted = true
-  } else {
-    state.cookiesAccepted = false
-  }
-}
+  axiosInstance.get('/products')
+    .then(response => {
+      state.products = response.data.splice(0, 3)
+    })
+    .catch(error => {
+      console.log(error)
+    })
+  state.cookiesAccepted = cookiesAccepted === 'true';
+})
 
-getCookiesAccepted()
 </script>
 
 <template>
@@ -58,7 +39,7 @@ getCookiesAccepted()
     <HeroSection />
     <CategorySection />
     <FeaturedSection />
-    <FavoriteSection :favorites="favorites" />
+    <FavoriteSection :favorites="state.products" />
     <CtaSection />
   </LayoutComponent>
 </template>

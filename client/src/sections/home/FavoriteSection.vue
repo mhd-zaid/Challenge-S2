@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import type {ProductType} from "@/types/ProductType";
+import {getProductImage} from "@/types/ProductImageType";
+
 const props = defineProps({
   favorites: {
-    type: Array as () => Array<any>,
+    type: Array as () => ProductType[],
     required: true
   }
 })
@@ -28,7 +31,7 @@ const props = defineProps({
             class="h-96 w-full overflow-hidden rounded-lg sm:aspect-h-3 sm:aspect-w-2 group-hover:opacity-75 sm:h-auto"
           >
             <img
-              :src="favorite.imageSrc"
+              :src="getProductImage(favorite)"
               :alt="favorite.name"
               class="h-full w-full object-cover object-center"
             />

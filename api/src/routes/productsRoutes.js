@@ -44,7 +44,6 @@ export default (
 			};
 		}
 		if (filters.category) {
-			console.log(filters.category);
 			const categories = filters.category.split(",");
 			query["$model.Category.name$"] = {
 				[Op.or]: categories.map((category) => ({
@@ -74,16 +73,6 @@ export default (
 					{
 						model: Model,
 						as: "model",
-						include: [
-							{
-								model: Brand,
-								attributes: ["name"],
-							},
-							{
-								model: Category,
-								attributes: ["name"],
-							},
-						],
 					},
 					"productImages",
 				],
@@ -93,7 +82,6 @@ export default (
 
 			if (!products)
 				return res.status(404).json({ message: "Products not found" });
-			console.log(products);
 			res.status(200).json(
 				products.map((product) => ({
 					...product.dataValues,

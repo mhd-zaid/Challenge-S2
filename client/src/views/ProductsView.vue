@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import LayoutComponent from '@/layout/LayoutComponent.vue'
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import {computed, nextTick, onMounted, reactive, ref, watch} from 'vue'
 import {
   Dialog,
   DialogPanel,
@@ -119,15 +119,16 @@ const router = useRouter()
 const mobileFiltersOpen = ref(false)
 
 watch(
-  state.filters,
-  () => {
-    const activeFilters = state.activeFilters
-    router.push({ query: { page: state.currentPage, ...activeFilters } })
-    getProducts(activeFilters)
-  },
-  { deep: true }
-)
-
+    state.filters,
+    () => {
+      const activeFilters = state.activeFilters;
+      nextTick(() => {
+        router.push({ query: { page: state.currentPage, ...activeFilters } });
+        getProducts(activeFilters);
+      });
+    },
+    { deep: true }
+);
 watch(
   () => state.currentPage,
   () => {
