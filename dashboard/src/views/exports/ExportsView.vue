@@ -133,7 +133,7 @@ const removeExport = async (id: string) => {
         <div
           v-for="exportItem in state.exports"
           :key="exportItem.id"
-          class="col-span-1 bg-white rounded-lg shadow divide-y divide-gray-200"
+          class="col-span-1 bg-white rounded-lg shadow divide-y divide-gray-200 hover:bg-gray-50"
         >
           <div class="w-full flex items-center justify-between p-6 space-x-6">
             <div class="flex-1 truncate">

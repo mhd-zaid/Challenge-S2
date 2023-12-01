@@ -8,7 +8,9 @@ export default (
 	ObjectId,
 	Op
 ) => {
-	const addFiltersToQuery = (query, filters) => {
+	const addFiltersToQuery = (queries, filters) => {
+		console.log(filters)
+		const { query, modelQuery, brandQuery, categoryQuery } = queries;
 		if (filters.maxPrice) {
 			query.price = {
 				[Op.lte]: filters.maxPrice * 100,
@@ -33,19 +35,19 @@ export default (
 		}
 		if (filters.gender) {
 			const genders = filters.gender.split(",");
-			query["$model.gender$"] = {
-				[Op.or]: genders.map((gender) => ({ [Op.iLike]: gender })),
+			modelQuery.gender = {
+				[Op.or]: genders.map((gender) => ({ [Op.isLike]: gender })),
 			};
 		}
 		if (filters.brand) {
 			const brands = filters.brand.split(",");
-			query["$model.Brand.name$"] = {
+			brandQuery.name = {
 				[Op.or]: brands.map((brand) => ({ [Op.iLike]: brand })),
 			};
 		}
 		if (filters.category) {
 			const categories = filters.category.split(",");
-			query["$model.Category.name$"] = {
+			categoryQuery.name = {
 				[Op.or]: categories.map((category) => ({
 					[Op.iLike]: category,
 				})),
@@ -61,24 +63,46 @@ export default (
 	const getProducts = async (req, res) => {
 		try {
 			const query = {};
+			const modelQuery = {};
+			const brandQuery = {};
+			const categoryQuery = {};
 			const filters = req.query;
-			const { page = 1, limit = 12 } = filters;
-			addFiltersToQuery(query, filters);
+			const page = filters.page || 1;
+			const limit = filters.limit || 10;
+			addFiltersToQuery(
+				{ query, modelQuery, brandQuery, categoryQuery },
+				filters
+			);
 
 			const offset = (page - 1) * limit;
 
 			const products = await Product.findAll({
-				where: query,
 				include: [
 					{
 						model: Model,
 						as: "model",
+						where: modelQuery,
+						include: [
+							{
+								model: Brand,
+								as: "brand",
+								where: brandQuery,
+							},
+							{
+								model: Category,
+								as: "category",
+								where: categoryQuery,
+							},
+						],
 					},
 					"productImages",
 				],
+				where: query,
 				limit: parseInt(limit),
 				offset: offset,
 			});
+
+			// console.log(products.map((product) => product.dataValues.model.dataValues));
 
 			if (!products)
 				return res.status(404).json({ message: "Products not found" });
@@ -97,28 +121,28 @@ export default (
 
 	const createProduct = async (req, res) => {
 		try {
-			if(!req.body.name) {
+			if (!req.body.name) {
 				return res.status(400).json({ message: "name is missing" });
 			}
-			if(!req.body.price) {
+			if (!req.body.price) {
 				return res.status(400).json({ message: "price is missing" });
 			}
-			if(!req.body.vat) {
+			if (!req.body.vat) {
 				return res.status(400).json({ message: "vat is missing" });
 			}
-			if(!req.body.quantity) {
+			if (!req.body.quantity) {
 				return res.status(400).json({ message: "quantity is missing" });
 			}
-			if(!req.body.size) {
+			if (!req.body.size) {
 				return res.status(400).json({ message: "size is missing" });
 			}
-			if(!req.body.color) {
+			if (!req.body.color) {
 				return res.status(400).json({ message: "color is missing" });
 			}
-			if(!req.body.sku) {
+			if (!req.body.sku) {
 				return res.status(400).json({ message: "sku is missing" });
 			}
-			if(!req.body.modelId) {
+			if (!req.body.modelId) {
 				return res.status(400).json({ message: "modelId is missing" });
 			}
 

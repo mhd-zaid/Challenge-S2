@@ -56,29 +56,7 @@ Modele.init(
 	}
 );
 
-// let Category;
-// let Brand;
-// import("./postgres-category.js")
-//     .then((module) => {
-//         Category = module.default;
-
-//         Modele.belongsTo(Category);
-//     })
-//     .catch((error) => {
-//         console.error("Erreur lors de l'importation du modèle Category :", error);
-//     });
-
-// import("./postgres-brand.js")
-//     .then((module) => {
-//         Brand = module.default;
-
-//         Modele.belongsTo(Brand);
-//     })
-//     .catch((error) => {
-//         console.error("Erreur lors de l'importation du modèle Brand :", error);
-//     });
-
-Modele.belongsTo(Category);
-Modele.belongsTo(Brand);
+Modele.belongsTo(Category, { as: "category", foreignKey: "CategoryId" });
+Modele.belongsTo(Brand, { as: "brand", foreignKey: "BrandId" });
 
 export default Modele;
