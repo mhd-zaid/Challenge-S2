@@ -35,7 +35,7 @@ export default (
 		if (filters.gender) {
 			const genders = filters.gender.split(",");
 			modelQuery.gender = {
-				[Op.or]: genders.map((gender) => ({ [Op.isLike]: gender })),
+				[Op.or]: genders.map((gender) => ({ [Op.iLike]: gender })),
 			};
 		}
 		if (filters.brand) {
