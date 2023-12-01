@@ -10,17 +10,20 @@ import {
   TransitionChild,
   TransitionRoot
 } from '@headlessui/vue'
-import { HeartIcon, XMarkIcon } from '@heroicons/vue/24/outline'
-import { ChevronDownIcon, PlusIcon } from '@heroicons/vue/20/solid'
+import {HeartIcon, XMarkIcon} from '@heroicons/vue/24/outline'
+import {ChevronDownIcon, PlusIcon} from '@heroicons/vue/20/solid'
 import axiosInstance from '@/utils/axiosInstance'
-import type { ProductType } from '@/types/ProductType'
-import type { BrandType } from '@/types/BrandType'
-import type { CategoryType } from '@/types/CategoryTypes'
-import type { ModelType } from '@/types/ModelType'
-import { useRouter } from 'vue-router'
-import { getProductImage } from '@/types/ProductImageType'
-import { useWishlistStore } from '@/stores/wishlist'
+import type {ProductType} from '@/types/ProductType'
+import type {BrandType} from '@/types/BrandType'
+import type {CategoryType} from '@/types/CategoryTypes'
+import type {ModelType} from '@/types/ModelType'
+import {useRouter} from 'vue-router'
+import {getProductImage} from '@/types/ProductImageType'
+import {useWishlistStore} from '@/stores/wishlist'
+import ModalComponent from "@/components/RedirectModal.vue";
+import checkAuthentication from "@/utils/checkAuthentication";
 
+const isAuthenticated = checkAuthentication()
 const wishStore = useWishlistStore()
 
 const state = reactive({
@@ -29,6 +32,7 @@ const state = reactive({
   categories: [] as CategoryType[],
   models: [] as ModelType[],
   currentPage: 1 as number,
+  openModal: false,
   filters: [
     {
       id: 'price',
@@ -220,12 +224,21 @@ onMounted(async () => {
       })
     }
   }
-  getProducts(state.activeFilters, activePageFromURL)
+  await getProducts(state.activeFilters, activePageFromURL)
 })
+
+const toggleWishlist = (productId: string) => {
+  if (wishStore.isInWishlist(productId)) {
+    wishStore.removeFromWishlist(productId)
+  } else {
+    wishStore.addToWishlist(productId)
+  }
+}
 </script>
 
 <template>
   <LayoutComponent>
+    <ModalComponent :open="state.openModal" @close="state.openModal = false" />
     <div>
       <!-- Mobile filter dialog -->
       <TransitionRoot as="template" :show="mobileFiltersOpen">
@@ -365,7 +378,7 @@ onMounted(async () => {
                       <template v-if="section.id === 'price'">
                         <div
                           v-for="(field, fieldIdx) in section.fields"
-                          :key="field.id"
+                          :key="fieldIdx"
                           class="flex items-center"
                         >
                           <label :for="field.id" class="text-sm text-gray-600"
@@ -421,18 +434,17 @@ onMounted(async () => {
               >
                 <!-- Bouton Cœur -->
                 <button
-                  v-if="!wishStore.isInWishlist(product.id)"
-                  @click="wishStore.addToWishlist(product.id)"
-                  class="absolute top-2 right-2 text-gray-700 z-10 hover:text-red-500"
+                    @click="isAuthenticated ? toggleWishlist(product.id) : state.openModal = true"
+                    class="absolute top-2 right-2 text-gray-700 z-10 hover:text-red-500"
                 >
-                  <HeartIcon class="h-6 w-6 hover:fill-red-500" />
-                </button>
-                <button
-                  v-else
-                  @click="wishStore.removeFromWishlist(product.id)"
-                  class="absolute top-2 right-2 text-red-500 z-10 hover:text-red-500"
-                >
-                  <HeartIcon class="h-6 w-6 fill-red-500 hover:fill-transparent" />
+                  <HeartIcon
+                      v-if="!wishStore.isInWishlist(product.id)"
+                      class="h-6 w-6 hover:fill-red-500"
+                  />
+                  <HeartIcon
+                      v-else
+                      class="h-6 w-6 fill-red-500 hover:fill-transparent"
+                  />
                 </button>
                 <RouterLink :to="'/products/' + product.id">
                   <div

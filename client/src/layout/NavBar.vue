@@ -1,17 +1,14 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
-import { Dialog, DialogPanel } from '@headlessui/vue'
-import {
-  Bars3Icon,
-  XMarkIcon,
-  UserIcon,
-  ShoppingBagIcon,
-  HeartIcon
-} from '@heroicons/vue/24/outline'
-import { useRouter } from 'vue-router'
-import { useWishlistStore } from '@/stores/wishlist'
-import { useCartStore } from '@/stores/cart'
+import {onMounted, reactive, ref, watch} from 'vue'
+import {Dialog, DialogPanel} from '@headlessui/vue'
+import {Bars3Icon, HeartIcon, ShoppingBagIcon, UserIcon, XMarkIcon} from '@heroicons/vue/24/outline'
+import {useRouter} from 'vue-router'
+import {useWishlistStore} from '@/stores/wishlist'
+import {useCartStore} from '@/stores/cart'
+import ModalComponent from "@/components/RedirectModal.vue";
+import checkAuthentication from "@/utils/checkAuthentication";
 
+const isAuthenticated = checkAuthentication()
 const wishStore = useWishlistStore()
 const cartStore = useCartStore()
 
@@ -26,11 +23,12 @@ const navigation = [
 const mobileMenuOpen = ref(false)
 const wishList = ref(0) as any
 const cart = ref(0) as any
-
-const token = window.localStorage.getItem('token')
-const isAuthenticated = !!token
+const state = reactive({
+  openModal: false,
+})
 
 const getWishes = async () => {
+  console.log(isAuthenticated)
   if (isAuthenticated) {
     await wishStore.fetchWishlist()
   }
@@ -53,9 +51,11 @@ onMounted(async () => {
     }
   )
 })
+
 </script>
 
 <template>
+  <ModalComponent :open="state.openModal" @close="state.openModal = false" />
   <header
     :class="router.currentRoute.value.path === '/' ? '' : 'bg-white border-b-2 border-b-gray-200'"
   >
@@ -93,12 +93,24 @@ onMounted(async () => {
         </div>
       </div>
       <div class="flex flex-1 justify-end">
-        <a href="/profile" class="group flex items-center p-2">
+        <!-- Vérifier s'il l'utilisateur est connecter -->
+        <a v-if="isAuthenticated" href="/profile" class="group flex items-center p-2">
           <UserIcon
             class="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
             aria-hidden="true"
           />
         </a>
+        <button
+          v-else
+          @click="state.openModal = true"
+          class="group flex items-center p-2 text-sm font-semibold leading-6 text-gray-900"
+        >
+          <UserIcon
+              class="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+              aria-hidden="true"
+          />
+        </button>
+
       </div>
       <!-- Vérifier s'il l'utilisateur est connecter -->
       <div class="ml-4 flow-root lg:ml-6" v-if="isAuthenticated">
@@ -113,7 +125,7 @@ onMounted(async () => {
           <span class="sr-only">produits dans les favoris, voir les favoris</span>
         </a>
       </div>
-      <div class="ml-4 flow-root lg:ml-6">
+      <div class="ml-4 flow-root lg:ml-6" v-if="isAuthenticated">
         <a href="/cart" class="group -m-2 flex items-center p-2">
           <ShoppingBagIcon
             class="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"

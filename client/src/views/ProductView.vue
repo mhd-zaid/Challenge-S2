@@ -5,9 +5,11 @@ import {useRouter} from 'vue-router'
 import {useWishlistStore} from '@/stores/wishlist'
 import axiosInstance from "@/utils/axiosInstance";
 import type {ProductType} from "@/types/ProductType";
-import {getProductImage} from "@/types/ProductImageType";
 import {getProductColor, getProductPrice} from "@/types/ProductType";
+import {getProductImage} from "@/types/ProductImageType";
 import {useCartStore} from "@/stores/cart";
+import RedirectModal from "@/components/RedirectModal.vue";
+import checkAuthentication from "@/utils/checkAuthentication";
 
 const product = {
   highlights: [
@@ -24,9 +26,11 @@ const product = {
 
 const state = reactive({
   product: {} as ProductType,
-  products: {} as ProductType[]
+  products: {} as ProductType[],
+  openModal: false,
 })
 const router = useRouter()
+const isAuthenticated = checkAuthentication()
 const wishStore = useWishlistStore()
 const cartStore = useCartStore()
 
@@ -60,6 +64,7 @@ init()
 
 <template>
   <LayoutComponent>
+    <RedirectModal :open="state.openModal" @close="state.openModal = false"/>
     <div v-show="state.product.model" class="pt-10 sm:pt-16">
       <!-- Image gallery -->
       <div
@@ -126,13 +131,13 @@ init()
             </div>
 
             <button
-                @click="addProductToCart(router.currentRoute.value.params.id.toString())"
+                @click="isAuthenticated ? addProductToCart(router.currentRoute.value.params.id.toString()) : state.openModal = true"
                 class="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-primary-600 px-8 py-3 text-base font-medium text-white hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
             >
               Ajouter au panier
             </button>
             <button
-                @click="addProductToWishlist(router.currentRoute.value.params.id.toString())"
+                @click="isAuthenticated ? addProductToWishlist(router.currentRoute.value.params.id.toString()) : state.openModal = true"
                 class="flex mt-2 w-full items-center justify-center rounded-md border border-gray-300 bg-white px-8 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
             >
               Ajouter à la liste d'envie
