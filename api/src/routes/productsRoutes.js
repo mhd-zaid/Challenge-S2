@@ -9,7 +9,6 @@ export default (
 	Op
 ) => {
 	const addFiltersToQuery = (queries, filters) => {
-		console.log(filters)
 		const { query, modelQuery, brandQuery, categoryQuery } = queries;
 		if (filters.maxPrice) {
 			query.price = {
@@ -101,8 +100,6 @@ export default (
 				limit: parseInt(limit),
 				offset: offset,
 			});
-
-			// console.log(products.map((product) => product.dataValues.model.dataValues));
 
 			if (!products)
 				return res.status(404).json({ message: "Products not found" });
