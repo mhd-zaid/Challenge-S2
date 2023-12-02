@@ -130,7 +130,7 @@ export default (
 
 			const order = await Order.findOne({
 				where: { id: id },
-				include: ["products", "user"],
+				include: ["products","user","payment"],
 			});
 
 			if (!id) {

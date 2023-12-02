@@ -85,7 +85,7 @@ const downloadInvoice = async (orderId:string) => {
       </div>
     </div>
   </AuthenticatedLayout>
-  <div id="invoice-template">
+  <div id="invoice-template" style="display: none;">
       <OrderPdf v-if="props.data" :data="props.data" />
   </div>
 </template>

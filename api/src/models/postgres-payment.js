@@ -46,6 +46,11 @@ Payment.init(
 Payment.belongsTo(Order, {
 	as: "order",
 });
+
+Order.hasOne(Payment, {
+	foreignKey: "orderId",
+	as: "payment",
+});
 	  
 
 export default Payment;
