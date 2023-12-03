@@ -51,7 +51,7 @@ export default (Payment, Order, User, stripe, OrderMongodb, ObjectId) => ({
 								},
 							},
 							unit_amount: parseInt(
-								storeItem.price * (1 + parseFloat(storeItem.vat))
+								storeItem.price * (1 + parseFloat(storeItem.vat) / 100)
 							),
 						},
 						quantity: storeItem.quantity,
