@@ -5,34 +5,90 @@ import {TrashIcon} from '@heroicons/vue/20/solid'
 import {useCartStore} from "@/stores/cart";
 import {getProductPrice, getTotalProductsPrice, ProductType} from "@/types/ProductType";
 import {getProductImage} from "@/types/ProductImageType";
+import axios from "axios";
+import axiosInstance from "@/utils/axiosInstance";
+import type {UserType} from "@/types/UserType";
+
 
 const cartStore = useCartStore()
 
 const state = reactive({
+  user: {} as UserType,
   products: [] as ProductType[],
+  address: {},
+  search: '',
+  addresses: [] as any,
+  street: '',
+  postcode: '',
+  country: '',
+  order: {
+    userId: '',
+    deliveryAddress: '',
+    products: [
+      {
+        id: '' as any,
+        quantity: '' as any
+      }
+    ]
+  }
+})
+
+const onSubmit = () => {
+  const token = localStorage.getItem('token')
+  const isAuthenticated = !!token
+  let userId = ''
+  if (isAuthenticated) {
+    const payload = JSON.parse(atob(token.split('.')[1]))
+    userId = payload.userId
+  }
+  state.order.userId = userId
+  state.order.deliveryAddress = state.address.label
+  state.order.products = state.products.map(e => {
+    return {
+      id: e.id,
+      quantity: 1
+    }
+  })
+  console.log(state.order)
+  axiosInstance.post('/orders', state.order).then(res => {
+    console.log(res)
+  })
+}
+
+const checkAddress = (e) => {
+  const address = encodeURIComponent(e.target.value);
+  state.addresses = []
+  if (address.length > 10) {
+    axios.get(`https://api-adresse.data.gouv.fr/search/?q=${address}&type=housenumber&autocomplete=1&limit=5`)
+        .then((response) => {
+          response.data.features.map(e => {
+            state.addresses.push(
+                {
+                  label: e.properties.label,
+                  value: e.properties,
+                }
+            )
+          })
+        })
+  }
+}
+
+watch(() => state.address, (newVal) => {
+  state.street = newVal.name
+  state.postcode = newVal.postcode
+  state.country = newVal.city
 })
 
 onMounted(async () => {
   state.products = await cartStore.fetchCart()
+  axiosInstance.get('/auth/me').then(res => {
+    state.user = res.data
+  })
 })
 
 watch(() => cartStore.cart, async () => {
   state.products = await cartStore.fetchCart()
 })
-
-const products = [
-  {
-    id: 1,
-    title: 'Basic Tee',
-    href: '#',
-    price: '$32.00',
-    color: 'Black',
-    size: 'Large',
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/checkout-page-02-product-01.jpg',
-    imageAlt: "Front of men's Basic Tee in black.",
-  },
-]
-
 </script>
 
 <template>
@@ -40,7 +96,7 @@ const products = [
     <div class="bg-gray-50">
       <div class="mx-auto max-w-2xl px-4 pb-24 pt-16 sm:px-6 lg:max-w-7xl lg:px-8">
         <h2 class="sr-only">Checkout</h2>
-        <form class="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16">
+        <form class="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16" @submit.prevent="onSubmit">
           <div>
             <div class="pt-10">
               <h2 class="text-lg font-medium text-gray-900">Information de livraison</h2>
@@ -49,7 +105,7 @@ const products = [
                 <div>
                   <label for="first-name" class="block text-sm font-medium text-gray-700">Nom</label>
                   <div class="mt-1">
-                    <input type="text" id="first-name" name="first-name" autocomplete="given-name"
+                    <input v-model="state.user.firstname" type="text" id="first-name" name="first-name" autocomplete="given-name"
                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"/>
                   </div>
                 </div>
@@ -57,40 +113,57 @@ const products = [
                 <div>
                   <label for="last-name" class="block text-sm font-medium text-gray-700">Prénom</label>
                   <div class="mt-1">
-                    <input type="text" id="last-name" name="last-name" autocomplete="family-name"
+                    <input v-model="state.user.lastname" type="text" id="last-name" name="last-name" autocomplete="family-name"
                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"/>
                   </div>
                 </div>
 
                 <div class="sm:col-span-2">
-                  <label for="address" class="block text-sm font-medium text-gray-700">Adresse</label>
+                  <label for="search" class="block text-sm font-medium text-gray-700">Rechercher votre adresse</label>
                   <div class="mt-1">
-                    <input type="text" name="address" id="address" autocomplete="street-address"
+                    <input @blur="checkAddress" type="text" name="search" id="search"
                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"/>
                   </div>
                 </div>
-
                 <div class="sm:col-span-2">
-                  <label for="apartment" class="block text-sm font-medium text-gray-700">Appartement, suite,
-                    etc.</label>
+                  <label for="address" class="block text-sm font-medium text-gray-700">Séléctionner votre
+                    adresse</label>
                   <div class="mt-1">
-                    <input type="text" name="apartment" id="apartment"
+                    <select
+                        v-model="state.address"
+                        id="address"
+                        name="address"
+                        :disabled="state.addresses.length === 0"
+                        class="disabled:bg-gray-200 mt-2 block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    >
+                      <option v-for="address in state.addresses" :key="address.value" :value="address.value">
+                        {{ address.label }}
+                      </option>
+                    </select>
+                    <pre class="text-blue-500">{{  }}</pre>
+                  </div>
+                </div>
+                <div v-if="Object.keys(state.address).length > 0" class="sm:col-span-2">
+                  <label for="apartment" class="block text-sm font-medium text-gray-700">Rue</label>
+                  <div class="mt-1">
+                    <input v-model="state.street" type="text" name="apartment" id="apartment"
                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"/>
                   </div>
                 </div>
 
-                <div>
+                <div v-if="Object.keys(state.address).length > 0">
                   <label for="postal-code" class="block text-sm font-medium text-gray-700">Code postal</label>
                   <div class="mt-1">
-                    <input type="text" name="postal-code" id="postal-code" autocomplete="postal-code"
+                    <input v-model="state.postcode" type="text" name="postal-code" id="postal-code"
+                           autocomplete="postal-code"
                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"/>
                   </div>
                 </div>
 
-                <div>
+                <div v-if="Object.keys(state.address).length > 0">
                   <label for="city" class="block text-sm font-medium text-gray-700">Ville</label>
                   <div class="mt-1">
-                    <input type="text" name="city" id="city" autocomplete="address-level2"
+                    <input v-model="state.country" type="text" name="city" id="city" autocomplete="address-level2"
                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"/>
                   </div>
                 </div>
@@ -98,7 +171,7 @@ const products = [
                 <div class="sm:col-span-2">
                   <label for="phone" class="block text-sm font-medium text-gray-700">Numéro de téléphone</label>
                   <div class="mt-1">
-                    <input type="text" name="phone" id="phone" autocomplete="tel"
+                    <input v-model="state.user.phone" type="text" name="phone" id="phone" autocomplete="tel"
                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"/>
                   </div>
                 </div>
@@ -149,6 +222,20 @@ const products = [
                         </span>
                         </p>
                       </div>
+                      <div class="ml-4">
+                        <label for="quantity" class="sr-only">Quantity</label>
+                        <select id="quantity" name="quantity"
+                                class="rounded-md border border-gray-300 text-left text-base font-medium text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm">
+                          <option value="1">1</option>
+                          <option value="2">2</option>
+                          <option value="3">3</option>
+                          <option value="4">4</option>
+                          <option value="5">5</option>
+                          <option value="6">6</option>
+                          <option value="7">7</option>
+                          <option value="8">8</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
                 </li>
@@ -156,7 +243,7 @@ const products = [
               <dl class="space-y-6 border-t border-gray-200 px-4 py-6 sm:px-6">
                 <div class="flex items-center justify-between">
                   <dt class="text-sm">Total</dt>
-                  <dd class="text-sm font-medium text-gray-900">{{getTotalProductsPrice(state.products)}} €</dd>
+                  <dd class="text-sm font-medium text-gray-900">{{ getTotalProductsPrice(state.products) }} €</dd>
                 </div>
                 <div class="flex items-center justify-between">
                   <dt class="text-sm">Livraison</dt>
@@ -164,10 +251,9 @@ const products = [
                 </div>
                 <div class="flex items-center justify-between border-t border-gray-200 pt-6">
                   <dt class="text-base font-medium">Total</dt>
-                  <dd class="text-base font-medium text-gray-900">{{getTotalProductsPrice(state.products)}} €</dd>
+                  <dd class="text-base font-medium text-gray-900">{{ getTotalProductsPrice(state.products) }} €</dd>
                 </div>
               </dl>
-
               <div class="border-t border-gray-200 px-4 py-6 sm:px-6">
                 <button type="submit"
                         class="w-full rounded-md border border-transparent bg-primary-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-gray-50">
