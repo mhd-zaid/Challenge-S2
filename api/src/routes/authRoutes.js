@@ -280,7 +280,10 @@ export default (
 
 	getMe: async (req, res) => {
 		try {
-			const user = await User.findOne({ where: { id: req.user.userId } });
+			const user = await User.findOne({
+				where: { id: req.params.id },
+				attributes: { exclude: ["password", "encryptionKey"] },
+			});
 			if (!user)
 				return res.status(404).json({ message: "User not found" });
 
