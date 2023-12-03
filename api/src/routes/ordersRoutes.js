@@ -104,8 +104,8 @@ export default (
 			}
 
 			const orders = await Order.findAll({
-				where: { user: user },
-				include: "products",
+				where: { userId: user.id },
+				include: ["products","user","payment"],
 			});
 
 			if (orders.length === 0) {
