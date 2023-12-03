@@ -104,8 +104,8 @@ export default (
 			}
 
 			const orders = await Order.findAll({
-				where: { user: user },
-				include: "products",
+				where: { userId: user.id },
+				include: ["products","user","payment"],
 			});
 
 			if (orders.length === 0) {
@@ -130,7 +130,7 @@ export default (
 
 			const order = await Order.findOne({
 				where: { id: id },
-				include: ["products", "user"],
+				include: ["products","user","payment"],
 			});
 
 			if (!id) {
