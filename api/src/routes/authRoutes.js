@@ -281,7 +281,7 @@ export default (
 	getMe: async (req, res) => {
 		try {
 			const user = await User.findOne({
-				where: { id: req.params.id },
+				where: { id: req.user.userId },
 				attributes: { exclude: ["password", "encryptionKey"] },
 			});
 			if (!user)

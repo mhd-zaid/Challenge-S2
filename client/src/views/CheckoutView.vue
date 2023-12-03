@@ -18,6 +18,7 @@ const state = reactive({
   address: {},
   search: '',
   addresses: [] as any,
+  sessionId: '',
   street: '',
   postcode: '',
   country: '',
@@ -27,7 +28,8 @@ const state = reactive({
     products: [
       {
         id: '' as any,
-        quantity: '' as any
+        quantity: '' as any,
+        price: '' as any
       }
     ]
   }
@@ -46,12 +48,27 @@ const onSubmit = () => {
   state.order.products = state.products.map(e => {
     return {
       id: e.id,
-      quantity: 1
+      quantity: 1,
+      price: e.price
     }
   })
-  console.log(state.order)
+  let OrderId = ''
   axiosInstance.post('/orders', state.order).then(res => {
-    console.log(res)
+    OrderId = res.data.id
+  }).then(() => {
+    axiosInstance.post('payments', {orderId: OrderId}).then(res => {
+      if (res.data.error) {
+        alert(res.data.error)
+        return
+      }
+      state.sessionId = res.data.id
+    })
+  })
+}
+
+const getSession = (sessionId) => {
+  axiosInstance.get(`/payments/session/${sessionId}`).then(res => {
+    window.location.href = res.data.url
   })
 }
 
@@ -70,7 +87,7 @@ const checkAddress = (e) => {
             )
           })
         })
-  }
+    }
 }
 
 watch(() => state.address, (newVal) => {
@@ -105,7 +122,8 @@ watch(() => cartStore.cart, async () => {
                 <div>
                   <label for="first-name" class="block text-sm font-medium text-gray-700">Nom</label>
                   <div class="mt-1">
-                    <input v-model="state.user.firstname" type="text" id="first-name" name="first-name" autocomplete="given-name"
+                    <input v-model="state.user.firstname" type="text" id="first-name" name="first-name"
+                           autocomplete="given-name"
                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"/>
                   </div>
                 </div>
@@ -113,7 +131,8 @@ watch(() => cartStore.cart, async () => {
                 <div>
                   <label for="last-name" class="block text-sm font-medium text-gray-700">Prénom</label>
                   <div class="mt-1">
-                    <input v-model="state.user.lastname" type="text" id="last-name" name="last-name" autocomplete="family-name"
+                    <input v-model="state.user.lastname" type="text" id="last-name" name="last-name"
+                           autocomplete="family-name"
                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"/>
                   </div>
                 </div>
@@ -255,9 +274,16 @@ watch(() => cartStore.cart, async () => {
                 </div>
               </dl>
               <div class="border-t border-gray-200 px-4 py-6 sm:px-6">
-                <button type="submit"
+                <button v-if="state.sessionId === ''" type="submit"
                         class="w-full rounded-md border border-transparent bg-primary-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-gray-50">
                   Payer
+                </button>
+                <button
+                    v-else
+                    type="button"
+                    @click="getSession(state.sessionId)"
+                    class="w-full rounded-md border border-transparent bg-indigo-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-gray-50">
+                  Payer avec Stripe
                 </button>
               </div>
             </div>
