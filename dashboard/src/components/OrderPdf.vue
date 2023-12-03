@@ -26,7 +26,7 @@ const paymentTotal = () => {
   <div class="invoice-box">
     <table>
       <tr class="top">
-        <td colspan="3">
+        <td colspan="4">
           <table>
             <tr>
               <td class="title">
@@ -36,6 +36,7 @@ const paymentTotal = () => {
                   style="width: 100%; max-width: 300px"
                 />
               </td>
+              <td></td>
               <td></td>
               <td v-if="props.data.payment">
                 Facture #{{props.data.payment.id.toUpperCase() }}<br />
@@ -47,7 +48,7 @@ const paymentTotal = () => {
       </tr>
 
       <tr class="information">
-        <td colspan="3">
+        <td colspan="4">
           <table>
             <tr>
               <td>
@@ -55,6 +56,7 @@ const paymentTotal = () => {
                 242 Rue du Faubourg Saint-Antoine, <br />
                 75012 Paris
               </td>
+              <td></td>
               <td></td>
               <td v-if="props.data.user">
                 {{ props.data.user.firstname }}  {{ props.data.user.lastname.toUpperCase() }}<br />
@@ -71,22 +73,26 @@ const paymentTotal = () => {
       <tr class="heading">
         <td> Méthode de Payment :</td>
         <td></td>
+        <td></td>
         <td>Carte</td>
       </tr>
       <tr><br></tr>
       <tr class="heading">
+        <td>Référence</td>
         <td>Produit</td>
         <td>Quantité</td>
         <td>Prix Unitaire</td>
       </tr>
 
       <tr class="item" v-if="props.data.products" v-for="product in props.data.products">
+        <td>{{ product.sku }}</td>
         <td>{{ product.name }} - {{ product.size }}</td>
         <td>{{ product.Orders_Products.quantity }}</td>
         <td> {{ (product.Orders_Products.price / 100).toFixed(2) }} €</td>
       </tr>
       <tr><br></tr>
       <tr class="total">
+        <td></td>
         <td></td>
         <td></td>
         <td>Total: {{ paymentTotal() }} </td>
@@ -136,7 +142,7 @@ a {
     vertical-align: top;
 }
 
-.invoice-box table tr td:nth-child(3) {
+.invoice-box table tr td:nth-child(4) {
     text-align: right;
 }
 
@@ -172,7 +178,7 @@ a {
     border-bottom: none;
 }
 
-.invoice-box table tr.total td:nth-child(3) {
+.invoice-box table tr.total td:nth-child(4) {
     border-top: 2px solid #eee;
     font-weight: bold;
 }
