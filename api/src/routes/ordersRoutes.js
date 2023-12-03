@@ -4,6 +4,7 @@ export default (
 	User,
 	UserMongodb,
 	ProductMongoDB,
+	Product,
 	ObjectId
 ) => ({
 	createOrder: async (req, res) => {
@@ -24,49 +25,46 @@ export default (
 						.status(400)
 						.json({ message: "products parameter is missing" });
 			}
-
 			const { userId, deliveryAddress, products } = req.body;
 			const user = await User.findOne({ where: { id: userId } });
-			const userMongo = await UserMongodb.findOne({
-				_id: new ObjectId(userId),
-			});
+			const userMongo = await UserMongodb.findOne({_id: userId});
 			const mongoProducts = [];
-
+			
 			if (!user) {
 				return res.status(404).json({ message: "User not found" });
 			}
-
+			
 			const order = await Order.create({
 				id: new ObjectId().toString(),
 				status: "payment pending",
 				userId: user.id,
 				deliveryAddress,
 			});
-
+			
 			for (const product of products) {
 				const sqlProduct = await Product.findOne({
 					where: { id: product.id },
 				});
-
+				
 				if (!sqlProduct) {
 					return res
-						.status(404)
-						.json({ message: "Product not found" });
+					.status(404)
+					.json({ message: "Product not found" });
 				}
-
+				
 				await order.addProduct(sqlProduct.id, {
 					through: {
 						quantity: product.quantity,
-						price: product.price,
+						price: parseFloat(product.price),
 					},
 				});
-
+				
 				const mongoProduct = await ProductMongoDB.findOne({
-					_id: new ObjectId(product.id),
+					_id: product.id,
 				});
+
 				mongoProducts.push(mongoProduct);
 			}
-
 			const orderMongo = await OrderMongodb({
 				status: "payment pending",
 				deliveryAddress,

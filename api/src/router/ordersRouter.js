@@ -5,6 +5,7 @@ import OrderMongodb from "../models/mongodb-order.js";
 import User from "../models/postgres-user.js";
 import UserMongodb from "../models/mongodb-user.js";
 import ProductMongoDB from "../models/mongodb-product.js";
+import Product from "../models/postgres-product.js";
 import { ObjectId } from "mongodb";
 const { 
     getOrders,
@@ -12,7 +13,7 @@ const {
     getOrder,
     createOrder,
     updateOrder,
-} =  ordersRoutes(Order, OrderMongodb, User, UserMongodb,ProductMongoDB, ObjectId);
+} =  ordersRoutes(Order, OrderMongodb, User, UserMongodb,ProductMongoDB,Product, ObjectId);
 
 const router = express.Router();
 

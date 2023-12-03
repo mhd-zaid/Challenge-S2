@@ -2,7 +2,7 @@ export default (Model, ObjectId) => ({
 	getModels: async (req, res) => {
 		try {
 			const models = await Model.findAll({
-				include: ["Brand", "Category", "products"],
+				include: ["brand", "category", "products"],
 			});
 
 			res.status(200).json(models);
@@ -125,7 +125,7 @@ export default (Model, ObjectId) => ({
 
 			const model = await Model.findOne({
 				where: { id },
-				include: ["Brand", "Category", "products"],
+				include: ["brand", "category", "products"],
 			});
 
 			if (!model)

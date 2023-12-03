@@ -105,10 +105,10 @@ const loadProducts = async () => {
 				const sqlProduct = await Product.create(product);
 				const model = await Model.findOne({
 					where: { id: sqlProduct.modelId },
-					include: ["Category", "Brand"],
+					include: ["category", "brand"],
 				});
-				const category = model.Category;
-				const brand = model.Brand;
+				const category = model.category;
+				const brand = model.brand;
 				const productMongo = {
 					_id: new ObjectId(product.id),
 					name: sqlProduct.name,
@@ -156,7 +156,13 @@ const loadUsers = async () => {
 	try {
 		const usersFixtureModule = await import("./src/fixtures/user.js");
 		const usersFixture = usersFixtureModule.default;
-		await Promise.all(usersFixture.map((user) => User.create(user)));
+		await Promise.all(usersFixture.map(async (user) => {
+			const sqlUser = await User.create(user);
+			await UserMongodb({
+				_id: new ObjectId(sqlUser.id),
+				...sqlUser.dataValues,
+			}).save();
+		}));
 		console.log("Users loaded");
 	} catch (err) {
 		console.error(err);
