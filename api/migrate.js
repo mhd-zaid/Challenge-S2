@@ -7,7 +7,8 @@ import User from "./src/models/postgres-user.js";
 import Wish from "./src/models/postgres-wish.js";
 import Order from "./src/models/postgres-order.js";
 import Payment from "./src/models/postgres-payment.js";
-import brandFixture from "./src/fixtures/brand.js";
+import Consent from "./src/models/postgres-consent.js";
+import ConsentType from "./src/models/postgres-consentType.js";
 
 sequelize
   .sync({ alter: true })
