@@ -76,6 +76,25 @@ export default (
 			const offset = (page - 1) * limit;
 
 			const totalProducts = await Product.count({
+				include: [
+					{
+						model: Model,
+						as: "model",
+						where: modelQuery,
+						include: [
+							{
+								model: Brand,
+								as: "brand",
+								where: brandQuery,
+							},
+							{
+								model: Category,
+								as: "category",
+								where: categoryQuery,
+							},
+						],
+					},
+				],
 				where: query,
 			});
 

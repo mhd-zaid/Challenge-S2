@@ -513,7 +513,7 @@ const toggleWishlist = (productId: string) => {
                     à
                     <span class="font-medium">{{
                       state.productsPerPage > state.products.length
-                        ? state.products.length + (state.currentPage - 1) * state.productsPerPage
+                        ?  (state.currentPage - 1) * state.productsPerPage + state.products.length
                         : state.currentPage * state.productsPerPage
                     }}</span>
                     parmis
