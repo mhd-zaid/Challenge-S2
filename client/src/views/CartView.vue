@@ -86,7 +86,7 @@ watch(
                       >
                     </h4>
                     <p class="ml-4 text-sm font-medium text-gray-900 flex flex-col">
-                      {{ getProductPrice(cartItem) }} €
+                      {{ cartItem.product.price }} €
                       <span
                         v-if="parseInt(cartItem.product.discount)"
                         class="text-sm font-medium text-red-600 line-through"
