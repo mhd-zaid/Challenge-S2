@@ -36,7 +36,7 @@ services:
       - ./api:/app
     command: sh -c "npm install && npm run dev"
     ports:
-      - 3000:3000
+      - 127.0.0.1:3000:3000
 
   #service vuejs
   client:
