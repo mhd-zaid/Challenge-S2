@@ -7,20 +7,25 @@ import UserMongodb from "../models/mongodb-user.js";
 import ProductMongoDB from "../models/mongodb-product.js";
 import Product from "../models/postgres-product.js";
 import { ObjectId } from "mongodb";
-const { 
-    getOrders,
-    getUserOrders,
-    getOrder,
-    createOrder,
-    updateOrder,
-} =  ordersRoutes(Order, OrderMongodb, User, UserMongodb,ProductMongoDB,Product, ObjectId);
+import authMiddleware from "../middlewares/authMiddleware.js";
+import storeKeeperOrAdminMiddleware from "../middlewares/storeKeeperOrAdminMiddleware.js";
+const { getOrders, getUserOrders, getOrder, createOrder, updateOrder } =
+	ordersRoutes(
+		Order,
+		OrderMongodb,
+		User,
+		UserMongodb,
+		ProductMongoDB,
+		Product,
+		ObjectId
+	);
 
 const router = express.Router();
 
-router.get("/", getOrders);
-router.get("/user/:id", getUserOrders);
-router.get("/:id", getOrder);
-router.post("/", createOrder);
-router.patch("/:id", updateOrder);
+router.get("/", authMiddleware, storeKeeperOrAdminMiddleware, getOrders);
+router.get("/user/:id", authMiddleware, getUserOrders);
+router.get("/:id", authMiddleware, getOrder);
+router.post("/", authMiddleware, createOrder);
+router.patch("/:id", authMiddleware, updateOrder);
 
 export default router;

@@ -26,6 +26,13 @@ export default (
 
 	getUser: async (req, res) => {
 		try {
+			const loggedUser = await User.findOne({
+				where: { id: req.user.userId },
+			});
+
+			if (req.user.userId !== req.params.id && loggedUser.role !== "ROLE_ADMIN")
+				return res.sendStatus(401);
+
 			const user = await User.findOne({
 				where: { id: req.params.id },
 				attributes: { exclude: ["password", "encryptionKey"] },
@@ -97,13 +104,18 @@ export default (
 		}
 	},
 
-	// TODO: add admin verification before updating user role
 	updateUser: async (req, res) => {
 		try {
+			const loggedUser = await User.findOne({
+				where: { id: req.user.userId },
+			});
+
+			if (req.user.userId !== req.params.id && loggedUser.role !== "ROLE_ADMIN")
+				return res.sendStatus(401);
+
 			const { id } = req.params;
 			const userDataToUpdate = req.body;
 
-			console.log(userDataToUpdate);
 			if (!id) {
 				return res
 					.status(400)
@@ -229,6 +241,13 @@ export default (
 
 	updatePassword: async (req, res) => {
 		try {
+			const loggedUser = await User.findOne({
+				where: { id: req.user.userId },
+			});
+
+			if (req.user.userId !== req.params.id && loggedUser.role !== "ROLE_ADMIN")
+				return res.sendStatus(401);
+
 			const { id } = req.params;
 			const { oldPassword, newPassword } = req.body;
 
@@ -275,6 +294,13 @@ export default (
 
 	deleteUser: async (req, res) => {
 		try {
+			const loggedUser = await User.findOne({
+				where: { id: req.user.userId },
+			});
+
+			if (req.user.userId !== req.params.id && loggedUser.role !== "ROLE_ADMIN")
+				return res.sendStatus(401);
+			
 			const { id } = req.params;
 
 			if (!id)

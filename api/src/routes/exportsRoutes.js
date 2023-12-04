@@ -4,7 +4,8 @@ export default (
 	Export,
 	dataToCSV,
 	path,
-	fs
+	fs,
+	User
 ) => {
 	const createExport = async (dataScope, csv) => {
 		const currentModuleFile = new URL(import.meta.url).pathname;
@@ -34,6 +35,14 @@ export default (
 		requestExport: async (req, res) => {
 			try {
 				const dataScope = req.body.dataScope;
+				if (dataScope === "users") {
+					const user = await User.findOne({
+						where: { id: req.user.userId },
+					});
+					if (user.role !== "ROLE_ADMIN") {
+						return res.status(403).send("Not authorized");
+					}
+				}
 				const data = await exportData(dataScope);
 				const csv = await dataToCSV(data);
 				const { exportId, fileName } = await createExport(
@@ -65,8 +74,14 @@ export default (
 		},
 		getExports: async (req, res) => {
 			try {
+				const user = await User.findOne({
+					where: { id: req.user.userId },
+				});
+				const query = { dataScope: { $ne: "personalData" } };
+				if (user.role !== "ROLE_ADMIN")
+					query.dataScope = { $nin: ["personalData", "users"] };
 				const exports = await Export.find({
-					dataScope: { $ne: "personalData" },
+					dataScope: query.dataScope,
 				});
 				return res.status(200).json(exports);
 			} catch (err) {
@@ -78,7 +93,16 @@ export default (
 		},
 		getExport: async (req, res) => {
 			try {
+				const user = await User.findOne({
+					where: { id: req.user.userId },
+				});
 				const exportToFind = await Export.findById(req.params.id);
+				if (!exportToFind) return res.sendStatus(404);
+				if (
+					user.role !== "ROLE_ADMIN" &&
+					exportToFind.dataScope === "users"
+				)
+					return res.sendStatus(403);
 				return res.status(200).json(exportToFind);
 			} catch (err) {
 				console.error(err);

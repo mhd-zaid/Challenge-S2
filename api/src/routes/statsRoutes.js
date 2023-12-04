@@ -34,7 +34,7 @@ export default (User, ProductHistory, months, Order) => ({
 					$lte: new Date(),
 				},
 			};
-			const usersCount = await User.count(query);
+			const usersCount = await User.countDocuments(query);
 			res.status(200).json(usersCount);
 		} catch (error) {
 			res.status(500).json({
@@ -61,7 +61,7 @@ export default (User, ProductHistory, months, Order) => ({
 				},
 			};
 
-			const usersCount = await User.count(query);
+			const usersCount = await User.countDocuments(query);
 			res.status(200).json(usersCount);
 		} catch (error) {
 			res.status(500).json({
@@ -88,7 +88,7 @@ export default (User, ProductHistory, months, Order) => ({
 						$lte: endDate,
 					},
 				};
-				const users = await User.count(query);
+				const users = await User.countDocuments(query);
 				newUsers.push(users);
 			}
 			res.status(200).json(newUsers.reverse());
@@ -236,7 +236,7 @@ export default (User, ProductHistory, months, Order) => ({
 					$lte: new Date(),
 				},
 			};
-			const ordersCount = await Order.count(query);
+			const ordersCount = await Order.countDocuments(query);
 			res.status(200).json(ordersCount);
 		} catch (error) {
 			res.status(500).json({
@@ -264,7 +264,7 @@ export default (User, ProductHistory, months, Order) => ({
 				},
 			};
 
-			const ordersCount = await Order.count(query);
+			const ordersCount = await Order.countDocuments(query);
 			res.status(200).json(ordersCount);
 		} catch (error) {
 			res.status(500).json({
@@ -292,7 +292,7 @@ export default (User, ProductHistory, months, Order) => ({
 						$lte: endDate,
 					},
 				};
-				const orders = await Order.count(query);
+				const orders = await Order.countDocuments(query);
 				newOrders.push(orders);
 			}
 			res.status(200).json(newOrders.reverse());
