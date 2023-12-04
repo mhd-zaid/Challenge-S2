@@ -7,9 +7,9 @@ import UserProfileSwitchField from '@/components/profile/UserProfileSwitchField.
 import LayoutComponent from '@/layout/LayoutComponent.vue'
 import HistorySection from '@/sections/profile/HistorySection.vue'
 import { CloudArrowDownIcon } from '@heroicons/vue/24/outline'
-import axios from 'axios'
 
-const state: { user: any; tabs: any[]; currentModifications: any } = reactive({
+const state: { user: any; tabs: any[]; currentModifications: any; notifications: { label: string, value: boolean }[] } = reactive({
+
   user: null,
   tabs: [
     { name: 'Compte', href: '#', current: true },
@@ -26,7 +26,29 @@ const state: { user: any; tabs: any[]; currentModifications: any } = reactive({
     address: false,
     city: false,
     postalCode: false
-  }
+  },
+  notifications: [
+    {
+      label: 'Arrivée de nouveaux produits',
+      value: false
+    },
+    {
+      label: 'Restockage de produits',
+      value: false
+    },
+    {
+      label: 'Newsletter',
+      value: true
+    },
+    {
+      label: 'Promotions',
+      value: false
+    },
+    {
+      label: 'Offres spéciales',
+      value: false
+    }
+  ]
 })
 
 const fields = {
@@ -95,8 +117,10 @@ getUser()
                   @click="exportPersonalData"
                   class="bg-white rounded-md text-gray-400 px-3 py-2 text-center text-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ml-auto"
                 >
-                  <span class="sr-only">Télécharger l'export</span>
-                  <CloudArrowDownIcon class="h-6 w-6" aria-hidden="true" />
+                  <div class="flex items-center space-x-2">
+                    <CloudArrowDownIcon class="w-5 h-5" />
+                    <span>Exporter mes données</span>
+                  </div>
                 </button>
               </div>
               <!-- Account / Password / Notifications menu -->
@@ -249,7 +273,7 @@ getUser()
                   </div>
                   <div class="mt-6">
                     <dl class="divide-y divide-gray-200">
-                      <UserProfileSwitchField v-for="i in 5" :id="i" />
+                      <UserProfileSwitchField v-for="notification of state.notifications" :notification="notification" />
                     </dl>
                   </div>
                 </div>

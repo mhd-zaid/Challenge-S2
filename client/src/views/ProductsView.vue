@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import LayoutComponent from '@/layout/LayoutComponent.vue'
-import {computed, nextTick, onMounted, reactive, ref, watch} from 'vue'
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
 import {
   Dialog,
   DialogPanel,
@@ -10,18 +10,18 @@ import {
   TransitionChild,
   TransitionRoot
 } from '@headlessui/vue'
-import {HeartIcon, XMarkIcon} from '@heroicons/vue/24/outline'
-import {ChevronDownIcon, PlusIcon} from '@heroicons/vue/20/solid'
+import { ChevronLeftIcon, ChevronRightIcon, HeartIcon, XMarkIcon } from '@heroicons/vue/24/outline'
+import { ChevronDownIcon, PlusIcon } from '@heroicons/vue/20/solid'
 import axiosInstance from '@/utils/axiosInstance'
-import type {ProductType} from '@/types/ProductType'
-import type {BrandType} from '@/types/BrandType'
-import type {CategoryType} from '@/types/CategoryTypes'
-import type {ModelType} from '@/types/ModelType'
-import {useRouter} from 'vue-router'
-import {getProductImage} from '@/types/ProductImageType'
-import {useWishlistStore} from '@/stores/wishlist'
-import ModalComponent from "@/components/RedirectModal.vue";
-import checkAuthentication from "@/utils/checkAuthentication";
+import type { ProductType } from '@/types/ProductType'
+import type { BrandType } from '@/types/BrandType'
+import type { CategoryType } from '@/types/CategoryTypes'
+import type { ModelType } from '@/types/ModelType'
+import { useRouter } from 'vue-router'
+import { getProductImage } from '@/types/ProductImageType'
+import { useWishlistStore } from '@/stores/wishlist'
+import ModalComponent from '@/components/RedirectModal.vue'
+import checkAuthentication from '@/utils/checkAuthentication'
 
 const isAuthenticated = checkAuthentication()
 const wishStore = useWishlistStore()
@@ -33,6 +33,8 @@ const state = reactive({
   models: [] as ModelType[],
   currentPage: 1 as number,
   openModal: false,
+  productsPerPage: 12 as number,
+  totalProducts: 12 as number,
   filters: [
     {
       id: 'price',
@@ -182,8 +184,9 @@ const getProducts = async (filters: any = null, page: number = 1) => {
 
   try {
     const res = await axiosInstance.get(`/products?page=${page}&${params.toString()}`)
-    state.products = res.data
+    state.products = res.data.products
     state.currentPage = page
+    state.totalProducts = res.data.totalProducts
   } catch (err) {
     console.log(err)
   }
@@ -209,24 +212,23 @@ onMounted(async () => {
   }
   await getProducts(state.activeFilters, activePageFromURL)
   watch(
-      state.filters,
-      () => {
-        const activeFilters = state.activeFilters;
-        nextTick(() => {
-          router.push({ query: { page: state.currentPage, ...activeFilters } });
-          getProducts(activeFilters);
-        });
-      },
-      { deep: true }
-  );
+    state.filters,
+    () => {
+      const activeFilters = state.activeFilters
+      nextTick(() => {
+        router.push({ query: { page: state.currentPage, ...activeFilters } })
+        getProducts(activeFilters)
+      })
+    },
+    { deep: true }
+  )
   watch(
-      () => state.currentPage,
-      () => {
-        router.push({ query: { page: state.currentPage, ...state.activeFilters } })
-      }
+    () => state.currentPage,
+    () => {
+      router.push({ query: { page: state.currentPage, ...state.activeFilters } })
+    }
   )
 })
-
 
 const toggleWishlist = (productId: string) => {
   if (wishStore.isInWishlist(productId)) {
@@ -433,18 +435,19 @@ const toggleWishlist = (productId: string) => {
                 :key="product.id"
                 class="group relative flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white"
               >
-                <!-- Bouton Cœur -->
+                <!-- Wishlist button -->
                 <button
-                    @click="isAuthenticated ? toggleWishlist(product.id) : state.openModal = true"
-                    class="absolute top-2 right-2 text-gray-700 z-10 hover:text-red-500"
+                  @click="isAuthenticated ? toggleWishlist(product.id) : (state.openModal = true)"
+                  class="absolute top-2 right-2 text-gray-700 z-10 hover:text-red-500"
                 >
                   <HeartIcon
-                      v-if="!wishStore.isInWishlist(product.id)"
-                      class="h-6 w-6 hover:fill-red-500"
-                  />
-                  <HeartIcon
-                      v-else
-                      class="h-6 w-6 fill-red-500 hover:fill-transparent"
+                    class="h-6 w-6"
+                    :class="{
+                      'hover:fill-red-500': !wishStore.isInWishlist(product.id),
+                      'text-red-500 fill-red-500 hover:fill-transparent': wishStore.isInWishlist(
+                        product.id
+                      )
+                    }"
                   />
                 </button>
                 <RouterLink :to="'/products/' + product.id">
@@ -457,49 +460,113 @@ const toggleWishlist = (productId: string) => {
                       class="h-full w-full object-cover object-center sm:h-full sm:w-full"
                     />
                   </div>
-                  <div class="flex flex-1 flex-col space-y-2 p-4">
+                  <div class="flex flex-col space-y-2 p-4">
                     <h3 class="text-sm font-medium text-gray-900">
                       {{ product.name }}
                     </h3>
                     <p class="text-sm text-gray-500">{{ product?.model?.description }}</p>
-                    <div class="flex flex-1 flex-col justify-end">
-                      <p class="text-base font-medium text-gray-900">
-                        {{
-                          parseInt(product.discount)
-                            ? parseInt(product.price) -
-                              (parseInt(product.price) * parseInt(product.discount)) / 100 +
-                              ' €'
-                            : product.price + ' €'
-                        }}
-                      </p>
-                      <p
-                        v-if="parseInt(product.discount)"
-                        class="text-sm font-medium text-red-600 line-through"
-                      >
-                        {{ product.price }} €
-                      </p>
+                    <div class="flex flex-col flex-1 mt-auto">
+                      <div class="flex flex-row">
+                        <p class="text-base font-medium text-gray-900">
+                          {{
+                            parseInt(product.discount)
+                              ? (
+                                  parseInt(product.price) -
+                                  (parseInt(product.price) * parseInt(product.discount)) / 100
+                                ).toFixed(2) + ' €'
+                              : parseFloat(product.price).toFixed(2) + ' €'
+                          }}
+                        </p>
+                        <p
+                          v-if="parseInt(product.discount)"
+                          class="ml-2 font-medium text-red-600 line-through"
+                        >
+                          {{ product.price }} €
+                        </p>
+                      </div>
+                      <div v-if="parseInt(product.discount)" class="flex flex-1 flex-row">
+                        <p class="text-sm text-gray-500">
+                          {{ parseInt(product.discount) }}% de réduction
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </RouterLink>
               </div>
             </div>
             <!-- Pagination -->
-            <div class="mt-6 flex justify-center">
-              <button
-                @click="loadPage(state.currentPage - 1)"
-                :disabled="state.currentPage === 1"
-                :class="{ 'bg-slate-100': state.currentPage === 1 }"
-                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:text-gray-500"
-              >
-                Précédent
-              </button>
-              <button
-                @click="loadPage(state.currentPage + 1)"
-                :class="{ 'bg-slate-100': state.products.length < 12 }"
-                class="ml-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:text-gray-500"
-              >
-                Suivant
-              </button>
+            <div class="flex justify-between items-center mt-4">
+              <div class="flex-1 flex justify-between sm:hidden">
+                <button
+                  type="button"
+                  class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  Previous
+                </button>
+                <button
+                  type="button"
+                  class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  Next
+                </button>
+              </div>
+              <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                  <p class="text-sm text-gray-700">
+                    Affichage de
+                    <span class="font-medium">{{
+                      (state.currentPage - 1) * state.productsPerPage + 1
+                    }}</span>
+                    à
+                    <span class="font-medium">{{
+                      state.productsPerPage > state.products.length
+                        ? (state.currentPage - 1) * state.productsPerPage + state.products.length
+                        : state.currentPage * state.productsPerPage
+                    }}</span>
+                    parmis
+                    <span class="font-medium">{{ state.totalProducts }}</span>
+                    résultats
+                  </p>
+                </div>
+                <div>
+                  <nav
+                    class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+                    aria-label="Pagination"
+                  >
+                    <button
+                      type="button"
+                      class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 text-sm font-medium text-gray-500 hover:bg-gray-50"
+                      :class="{
+                        'bg-gray-50': state.currentPage === 1,
+                        'bg-white': state.currentPage !== 1
+                      }"
+                      @click="state.currentPage -= 1"
+                      :disabled="state.currentPage === 1"
+                    >
+                      <span class="sr-only">Précédent</span>
+                      <ChevronLeftIcon class="h-5 w-5" />
+                    </button>
+                    <button
+                      type="button"
+                      class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+                    >
+                      {{ state.currentPage }}
+                    </button>
+                    <button
+                      type="button"
+                      class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 text-sm font-medium text-gray-500 bg-white hover:bg-gray-50"
+                      :class="{
+                        'bg-gray-50': state.productsPerPage > state.products.length
+                      }"
+                      @click="state.currentPage += 1"
+                      :disabled="state.productsPerPage > state.products.length"
+                    >
+                      <span class="sr-only">Suivant</span>
+                      <ChevronRightIcon class="h-5 w-5" />
+                    </button>
+                  </nav>
+                </div>
+              </div>
             </div>
           </section>
         </div>

@@ -67,13 +67,36 @@ export default (
 			const categoryQuery = {};
 			const filters = req.query;
 			const page = filters.page || 1;
-			const limit = filters.limit || 10;
+			const limit = filters.limit || 12;
 			addFiltersToQuery(
 				{ query, modelQuery, brandQuery, categoryQuery },
 				filters
 			);
 
 			const offset = (page - 1) * limit;
+
+			const totalProducts = await Product.count({
+				include: [
+					{
+						model: Model,
+						as: "model",
+						where: modelQuery,
+						include: [
+							{
+								model: Brand,
+								as: "brand",
+								where: brandQuery,
+							},
+							{
+								model: Category,
+								as: "category",
+								where: categoryQuery,
+							},
+						],
+					},
+				],
+				where: query,
+			});
 
 			const products = await Product.findAll({
 				include: [
@@ -103,12 +126,13 @@ export default (
 
 			if (!products)
 				return res.status(404).json({ message: "Products not found" });
-			res.status(200).json(
-				products.map((product) => ({
+			res.status(200).json({
+				totalProducts,
+				products: products.map((product) => ({
 					...product.dataValues,
 					price: (product.dataValues.price / 100).toFixed(2),
-				}))
-			);
+				})),
+			});
 		} catch (error) {
 			res.status(500).json({
 				message: `An error occurred while retrieving the products : ${error.message}`,
