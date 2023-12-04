@@ -4,8 +4,8 @@ import axiosInstance from '@/utils/axiosInstance'
 import { onMounted, ref } from 'vue'
 import { getProductImage } from '@/types/ProductImageType'
 import { useWishlistStore } from '@/stores/wishlist'
-import {getProductPrice} from "@/types/ProductType";
-import {useCartStore} from "@/stores/cart";
+import { getProductPrice } from '@/types/ProductType'
+import { useCartStore } from '@/stores/cart'
 
 const wishlistStore = useWishlistStore()
 const cartStore = useCartStore()
@@ -82,7 +82,7 @@ onMounted(async () => {
                 {{ ' ' }}
                 <span>{{ product.size }}</span>
               </p>
-              <p class="mt-1 font-medium text-gray-900">{{ getProductPrice(product) }}</p>
+              <p class="mt-1 font-medium text-gray-900">{{ getProductPrice({product, quantity: 1}) }} €</p>
             </div>
           </div>
           <div class="mt-6 space-y-4 sm:ml-6 sm:mt-0 sm:w-40 sm:flex-none">
