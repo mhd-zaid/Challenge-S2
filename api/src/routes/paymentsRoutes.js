@@ -58,9 +58,9 @@ export default (Payment, Order, User, stripe, OrderMongodb, ObjectId) => ({
 					};
 				}),
 				success_url:
-					"http://localhost:5173/checkout?payment=success",
+					"http://localhost:5173/payment/success",
 				cancel_url:
-					"http://localhost:5173/checkout?payment=refused",
+					"http://localhost:5173/payment/failed",
 				expires_at: Math.floor(Date.now() / 1000 + 30 * 60),
 				metadata: {
 					deliveryAdress: order.deliveryAddress,

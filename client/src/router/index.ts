@@ -1,5 +1,5 @@
 import {createRouter, createWebHistory} from 'vue-router'
-
+// @ts-ignore
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
@@ -48,6 +48,22 @@ const router = createRouter({
             path: '/checkout',
             name: 'checkout',
             component: () => import('@/views/CheckoutView.vue'),
+            meta: {
+                requiresAuth: true
+            }
+        },
+        {
+            path: '/payment/success',
+            name: 'payment-success',
+            component: () => import('@/views/PaymentSuccessView.vue'),
+            meta: {
+                requiresAuth: true
+            }
+        },
+        {
+            path: '/payment/failed',
+            name: 'payment-failed',
+            component: () => import('@/views/PaymentFailedView.vue'),
             meta: {
                 requiresAuth: true
             }
@@ -131,7 +147,7 @@ router.beforeEach(async (to, from, next) => {
     const loggedIn = !!token
 
     if (to.meta.requiresAuth && !loggedIn) {
-        next({ name: 'login' })
+        next({name: 'login'})
     } else {
         if (loggedIn) {
             try {
@@ -143,11 +159,11 @@ router.beforeEach(async (to, from, next) => {
                 if (!response.ok) {
                     window.localStorage.removeItem('token')
                     window.localStorage.removeItem('user')
-                    next({ name: 'login' })
+                    next({name: 'login'})
                 }
             } catch (error) {
                 console.error('Error while fetching user', error)
-                next({ name: 'login' })
+                next({name: 'login'})
             }
         }
         next()

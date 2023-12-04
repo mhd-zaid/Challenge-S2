@@ -9,16 +9,12 @@ import axios from "axios";
 import axiosInstance from "@/utils/axiosInstance";
 import type {UserType} from "@/types/UserType";
 import {useRouter} from "vue-router";
-import OModal from "@/components/OModal.vue";
 
 
 const cartStore = useCartStore()
 const router = useRouter();
 
 const state = reactive({
-  open : false,
-  success: false,
-  query: null as any,
   user: {} as UserType,
   products: [] as ProductType[],
   address: {},
@@ -40,20 +36,6 @@ const state = reactive({
     ]
   }
 })
-//watch router query
-watch(
-    () => state.query,
-    (query) => {
-      if (query?.payment === 'success') {
-        state.success = true
-        state.open = true
-        cartStore.clearCart()
-      } else if (query?.payment === 'refused') {
-        state.success = false
-        state.open = true
-      }
-    }
-)
 
 const onSubmit = () => {
   const token = localStorage.getItem('token')
@@ -107,7 +89,7 @@ const checkAddress = (e) => {
             )
           })
         })
-    }
+  }
 }
 
 watch(() => state.address, (newVal) => {
@@ -121,7 +103,6 @@ onMounted(async () => {
   axiosInstance.get('/auth/me').then(res => {
     state.user = res.data
   })
-  state.query = router.currentRoute.value.query
 })
 
 watch(() => cartStore.cart, async () => {
@@ -131,7 +112,6 @@ watch(() => cartStore.cart, async () => {
 
 <template>
   <LayoutComponent>
-    <OModal :success="state.success" :onClose="() => state.open = false" :open="state.open"/>
     <div class="bg-gray-50">
       <div class="mx-auto max-w-2xl px-4 pb-24 pt-16 sm:px-6 lg:max-w-7xl lg:px-8">
         <h2 class="sr-only">Checkout</h2>
