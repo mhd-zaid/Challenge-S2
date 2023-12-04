@@ -117,6 +117,14 @@ const router = createRouter({
             }
         },
         {
+            path: '/delete-policy',
+            name: 'delete-policy',
+            component: () => import('@/views/PolitiqueSuppression.vue'),
+            meta: {
+                requiresAuth: false
+            }
+        },
+        {
             path: '/exchange-policy',
             name: 'exchange-policy',
             component: () => import('@/views/ExchangePolicyView.vue'),

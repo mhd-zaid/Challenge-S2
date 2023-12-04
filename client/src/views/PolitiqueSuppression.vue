@@ -6,7 +6,8 @@ import LayoutComponent from "@/layout/LayoutComponent.vue";
   <LayoutComponent>
     <div class="bg-white px-6 py-10 lg:px-8">
       <div class="mx-auto max-w-3xl text-base leading-7 text-gray-700">
-        <h1 class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-10">Conditions générales de vente</h1>
+        <h1 class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-10">Politique de Suppression de Compte</h1>
+
         <p><span >Les pr&eacute;sentes conditions g&eacute;n&eacute;rales de vente r&eacute;gissent les relations contractuelles entre chaque utilisateur de notre service, ci-apr&egrave;s d&eacute;nomm&eacute; &quot;le Client&quot;, et SneakPeak, ci-apr&egrave;s d&eacute;nomm&eacute; &quot;le Vendeur&quot;. En passant commande sur notre site, le Client reconna&icirc;t avoir pris connaissance et accept&eacute; sans r&eacute;serve les conditions g&eacute;n&eacute;rales de vente &eacute;nonc&eacute;es ci-dessous.</span></p>
         <ul>
           <li >
@@ -15,7 +16,7 @@ import LayoutComponent from "@/layout/LayoutComponent.vue";
         </ul>
         <p><span >Nous proposons une large gamme de chaussures pour hommes et femmes, adapt&eacute;es &agrave; tous les styles et &agrave; toutes les occasions. Notre collection comprend divers types de chaussures, y compris des baskets, des chaussures habill&eacute;es, des chaussures de sport, des chaussures d&eacute;contract&eacute;es et bien plus encore. Chaque produit est soigneusement d&eacute;crit sur notre site, accompagn&eacute; de d&eacute;tails sur les tailles disponibles, les mat&eacute;riaux utilis&eacute;s et les caract&eacute;ristiques distinctives.</span></p>
         <p><span >Les prix de nos chaussures varient en fonction du mod&egrave;le, de la marque et des sp&eacute;cifications. Tous les d&eacute;tails concernant les prix, les descriptions et les sp&eacute;cifications des chaussures sont disponibles sur notre site. Nous nous effor&ccedil;ons de proposer des produits de haute qualit&eacute; &agrave; des prix comp&eacute;titifs, tout en garantissant une exp&eacute;rience d&apos;achat fluide et agr&eacute;able &agrave; nos clients.</span></p>
-        
+
         <ul>
           <li >
             Commandes
@@ -34,11 +35,12 @@ import LayoutComponent from "@/layout/LayoutComponent.vue";
           </li>
         </ul>
         <p><span >Nous nous engageons &agrave; livrer les produits command&eacute;s dans les meilleurs d&eacute;lais &agrave; l&apos;adresse indiqu&eacute;e par le Client lors de la commande. Les frais de livraison sont indiqu&eacute;s lors du processus de commande. Veuillez noter que nos services de livraison sont actuellement limit&eacute;s &agrave; la France m&eacute;tropolitaine.</span></p>
-        
+
         <p><span >Nous utilisons comme partenaire la Poste pour nos services de livraison, ce qui nous permet de garantir des d&eacute;lais de livraison fiables et une tra&ccedil;abilit&eacute; pr&eacute;cise des colis. Le Client recevra un num&eacute;ro de suivi une fois que la commande aura &eacute;t&eacute; exp&eacute;di&eacute;e, lui permettant de suivre l&apos;acheminement de son colis.</span></p>
-        
+
         <p><span >Le Client est enti&egrave;rement responsable de s&apos;assurer que l&apos;adresse de livraison fournie est correcte et compl&egrave;te. Le Vendeur ne pourra &ecirc;tre tenu responsable des retards de livraison ou des erreurs de livraison en cas d&apos;informations incompl&egrave;tes ou incorrectes fournies par le Client.</span></p>
-        
+
+
         <ul>
           <li >
             Droit de r&eacute;tractation
@@ -63,24 +65,25 @@ import LayoutComponent from "@/layout/LayoutComponent.vue";
   </LayoutComponent>
 </template>
 
-
 <style scoped>
-  p {
-    @apply
-    text-gray-700
-      mt-3
-    leading-7
-    max-w-3xl
-    mx-auto
-    mb-6
-  }
-  li {
-    @apply
-    text-gray-700
-    leading-7
-    text-xl
-    max-w-3xl
-    mx-auto
-    mb-1
-  }
+p {
+  @apply
+  text-gray-700
+  mt-3
+  leading-7
+  max-w-3xl
+  mx-auto
+  mb-6
+}
+
+li {
+  @apply
+  text-gray-700
+  leading-7
+  text-xl
+  max-w-3xl
+  mx-auto
+  mb-1
+  font-bold
+}
 </style>

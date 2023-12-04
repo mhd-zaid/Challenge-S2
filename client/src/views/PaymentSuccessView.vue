@@ -37,7 +37,7 @@ watch(() => cartStore.cart, async () => {
           <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-500 mb-10">
             <CheckIcon class="h-6 w-6 text-white" aria-hidden="true" />
           </div>
-          <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">Paiement en cours...</h2>
+          <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">Commande en cours</h2>
           <p class="mx-auto mt-6 max-w-xl text-lg leading-8 text-gray-300">
             Votre paiement a été effectué avec succès, nous vous remercions pour votre achat, Vous pouvez maintenant accéder à votre espace personnel, vous pourrez y retrouver vos factures dans la section "Mon historique". dans votre espace profile.
           </p>
