@@ -1,15 +1,9 @@
 <script setup lang="ts">
-import {
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuItems
-} from '@headlessui/vue'
+import {Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/vue'
 import {EllipsisVerticalIcon} from '@heroicons/vue/24/outline'
-import {CheckCircleIcon} from '@heroicons/vue/20/solid'
 import axiosInstance from '@/utils/axiosInstance'
 import {getProductImage} from "@/types/ProductImageType";
-import { onMounted, ref } from 'vue';
+import {onMounted, ref} from 'vue';
 import OrderPdf from "@/components/profile/OrderPdf.vue";
 import html2pdf from 'html2pdf.js'
 
@@ -25,7 +19,7 @@ const getUserOrders = async () => {
   const {data} = await axiosInstance.get(`/orders/user/${userId}`)
   data.forEach((order: any) => {
     order.products.forEach((product: any) => {
-      product.imageSrc = getProductImage(product,2)
+      product.imageSrc = getProductImage(product)
       product.imageAlt = product.name
       product.price = ((product.Orders_Products.price / 100) * product.Orders_Products.quantity).toFixed(2)
       product.href = `/products/${product.id}`

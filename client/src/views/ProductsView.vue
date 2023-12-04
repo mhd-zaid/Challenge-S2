@@ -122,24 +122,6 @@ const state = reactive({
 const router = useRouter()
 const mobileFiltersOpen = ref(false)
 
-watch(
-  state.filters,
-  () => {
-    const activeFilters = state.activeFilters
-    nextTick(() => {
-      router.push({ query: { page: state.currentPage, ...activeFilters } })
-      getProducts(activeFilters)
-    })
-  },
-  { deep: true }
-)
-watch(
-  () => state.currentPage,
-  () => {
-    router.push({ query: { page: state.currentPage, ...state.activeFilters } })
-  }
-)
-
 const getActiveFiltersFromURL = () => {
   const activeFilters: any = {}
   for (const filter of state.filters) {
@@ -215,6 +197,7 @@ const loadPage = (page: number) => {
 onMounted(async () => {
   await Promise.all([getCategories(), getBrands()])
   const activeFiltersFromURL = getActiveFiltersFromURL()
+  console.log()
   const activePageFromURL = getActivePageFromURL()
   for (const filterId in activeFiltersFromURL) {
     const filter = state.filters.find((f) => f.id === filterId)
@@ -225,7 +208,25 @@ onMounted(async () => {
     }
   }
   await getProducts(state.activeFilters, activePageFromURL)
+  watch(
+      state.filters,
+      () => {
+        const activeFilters = state.activeFilters;
+        nextTick(() => {
+          router.push({ query: { page: state.currentPage, ...activeFilters } });
+          getProducts(activeFilters);
+        });
+      },
+      { deep: true }
+  );
+  watch(
+      () => state.currentPage,
+      () => {
+        router.push({ query: { page: state.currentPage, ...state.activeFilters } })
+      }
+  )
 })
+
 
 const toggleWishlist = (productId: string) => {
   if (wishStore.isInWishlist(productId)) {
@@ -495,7 +496,6 @@ const toggleWishlist = (productId: string) => {
               </button>
               <button
                 @click="loadPage(state.currentPage + 1)"
-                :disabled="state.products.length < 12"
                 :class="{ 'bg-slate-100': state.products.length < 12 }"
                 class="ml-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:text-gray-500"
               >
