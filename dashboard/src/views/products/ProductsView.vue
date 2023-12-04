@@ -31,7 +31,7 @@ const getProducts = async () => {
       'color',
       'discount'
     ]
-    state.rows = res.data
+    state.rows = res.data.products
   })
   // change productImages to productImage to differentiate first image from others
   state.columns[0] = 'productImage'

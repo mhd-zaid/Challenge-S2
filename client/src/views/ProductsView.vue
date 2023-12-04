@@ -10,7 +10,7 @@ import {
   TransitionChild,
   TransitionRoot
 } from '@headlessui/vue'
-import { HeartIcon, XMarkIcon } from '@heroicons/vue/24/outline'
+import { ChevronLeftIcon, ChevronRightIcon, HeartIcon, XMarkIcon } from '@heroicons/vue/24/outline'
 import { ChevronDownIcon, PlusIcon } from '@heroicons/vue/20/solid'
 import axiosInstance from '@/utils/axiosInstance'
 import type { ProductType } from '@/types/ProductType'
@@ -33,6 +33,8 @@ const state = reactive({
   models: [] as ModelType[],
   currentPage: 1 as number,
   openModal: false,
+  productsPerPage: 12 as number,
+  totalProducts: 12 as number,
   filters: [
     {
       id: 'price',
@@ -182,8 +184,9 @@ const getProducts = async (filters: any = null, page: number = 1) => {
 
   try {
     const res = await axiosInstance.get(`/products?page=${page}&${params.toString()}`)
-    state.products = res.data
+    state.products = res.data.products
     state.currentPage = page
+    state.totalProducts = res.data.totalProducts
   } catch (err) {
     console.log(err)
   }
@@ -485,22 +488,78 @@ const toggleWishlist = (productId: string) => {
               </div>
             </div>
             <!-- Pagination -->
-            <div class="mt-6 flex justify-center">
-              <button
-                @click="loadPage(state.currentPage - 1)"
-                :disabled="state.currentPage === 1"
-                :class="{ 'bg-slate-100': state.currentPage === 1 }"
-                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:text-gray-500"
-              >
-                Précédent
-              </button>
-              <button
-                @click="loadPage(state.currentPage + 1)"
-                :class="{ 'bg-slate-100': state.products.length < 12 }"
-                class="ml-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:text-gray-500"
-              >
-                Suivant
-              </button>
+            <div class="flex justify-between items-center mt-4">
+              <div class="flex-1 flex justify-between sm:hidden">
+                <button
+                  type="button"
+                  class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  Previous
+                </button>
+                <button
+                  type="button"
+                  class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  Next
+                </button>
+              </div>
+              <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                  <p class="text-sm text-gray-700">
+                    Affichage de
+                    <span class="font-medium">{{
+                      (state.currentPage - 1) * state.productsPerPage + 1
+                    }}</span>
+                    à
+                    <span class="font-medium">{{
+                      state.productsPerPage > state.products.length
+                        ? state.products.length + (state.currentPage - 1) * state.productsPerPage
+                        : state.currentPage * state.productsPerPage
+                    }}</span>
+                    parmis
+                    <span class="font-medium">{{ state.totalProducts }}</span>
+                    résultats
+                  </p>
+                </div>
+                <div>
+                  <nav
+                    class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+                    aria-label="Pagination"
+                  >
+                    <button
+                      type="button"
+                      class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 text-sm font-medium text-gray-500 hover:bg-gray-50"
+                      :class="{
+                        'bg-gray-50': state.currentPage === 1,
+                        'bg-white': state.currentPage !== 1
+                      }"
+                      @click="state.currentPage -= 1"
+                      :disabled="state.currentPage === 1"
+                    >
+                      <span class="sr-only">Précédent</span>
+                      <ChevronLeftIcon class="h-5 w-5" />
+                    </button>
+                    <button
+                      type="button"
+                      class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+                    >
+                      {{ state.currentPage }}
+                    </button>
+                    <button
+                      type="button"
+                      class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 text-sm font-medium text-gray-500 bg-white hover:bg-gray-50"
+                      :class="{
+                        'bg-gray-50': state.productsPerPage > state.products.length,
+                      }"
+                      @click="state.currentPage += 1"
+                      :disabled="state.productsPerPage > state.products.length"
+                    >
+                      <span class="sr-only">Suivant</span>
+                      <ChevronRightIcon class="h-5 w-5" />
+                    </button>
+                  </nav>
+                </div>
+              </div>
             </div>
           </section>
         </div>
