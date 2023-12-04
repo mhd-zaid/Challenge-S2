@@ -86,7 +86,7 @@ watch(
                       >
                     </h4>
                     <p class="ml-4 text-sm font-medium text-gray-900 flex flex-col">
-                      {{ getProductPrice(cartItem.product) }}
+                      {{ getProductPrice(cartItem) }} €
                       <span
                         v-if="parseInt(cartItem.product.discount)"
                         class="text-sm font-medium text-red-600 line-through"
@@ -133,7 +133,7 @@ watch(
               <div class="flex items-center justify-between">
                 <dt class="text-base font-medium text-gray-900">Sous-total</dt>
                 <dd class="ml-4 text-base font-medium text-gray-900">
-                  {{ getTotalProductsPrice(state.cartItems.map((cartItem) => cartItem.product)) }} €
+                  {{ getTotalProductsPrice(state.cartItems) }} €
                 </dd>
               </div>
             </dl>

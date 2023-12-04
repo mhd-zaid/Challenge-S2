@@ -1,5 +1,5 @@
-import type {ModelType} from "@/types/ModelType";
-import type {ProductImageType} from "@/types/ProductImageType";
+import type { ModelType } from "@/types/ModelType";
+import type { ProductImageType } from "@/types/ProductImageType";
 
 export type ProductType = {
     id: string;
@@ -15,6 +15,11 @@ export type ProductType = {
     model: ModelType;
     productImages: ProductImageType[];
     alertQuantity: number;
+}
+
+type CartItem = {
+    product: ProductType;
+    quantity: number;
 }
 
 export const getProductColor = (color: string) => {
@@ -38,16 +43,24 @@ export const getProductColor = (color: string) => {
     }
 }
 
-export const getProductPrice = (product: ProductType): string => {
-    return parseInt(product.discount)
-        ? parseInt(product.price) -
-        (parseInt(product.price) * parseInt(product.discount)) / 100 +
-        ' €'
-        : product.price + ' €'
+export const getProductPrice = (cartItem: CartItem): string => {
+    const { product, quantity } = cartItem
+    return parseFloat(product.discount)
+        ? ((parseFloat(product.price) -
+            (parseFloat(product.price) * parseFloat(product.discount)) / 100) * quantity).toFixed(2)
+        : (parseFloat(product.price) * quantity).toFixed(2)
 }
 
-export const getTotalProductsPrice = (products: ProductType[]) => {
-    return products.reduce((acc: number, product: ProductType) => {
-        return acc + parseFloat(getProductPrice(product))
-    }, 0).toFixed(2)
+export const getTotalProductsPrice = (cartItems: CartItem[]) => {
+    let totalPrice = 0
+    for (const cartItem of cartItems) {
+        if (parseFloat(cartItem.product.discount)) {
+            totalPrice += (parseFloat(cartItem.product.price) -
+                (parseFloat(cartItem.product.price) * parseFloat(cartItem.product.discount)) / 100) *
+                cartItem.quantity
+        } else {
+            totalPrice += parseFloat(cartItem.product.price) * cartItem.quantity
+        }
+    }
+    return totalPrice.toFixed(2)
 }

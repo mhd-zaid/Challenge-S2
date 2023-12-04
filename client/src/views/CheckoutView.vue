@@ -3,7 +3,8 @@ import LayoutComponent from '@/layout/LayoutComponent.vue'
 import { onMounted, reactive, watch } from 'vue'
 import { TrashIcon } from '@heroicons/vue/20/solid'
 import { useCartStore } from '@/stores/cart'
-import { getProductPrice, getTotalProductsPrice, ProductType } from '@/types/ProductType'
+import { getProductPrice, getTotalProductsPrice } from '@/types/ProductType'
+import type { ProductType } from '@/types/ProductType'
 import { getProductImage } from '@/types/ProductImageType'
 import axios from 'axios'
 import axiosInstance from '@/utils/axiosInstance'
@@ -76,7 +77,7 @@ const getSession = (sessionId: any) => {
   })
 }
 
-const checkAddress = (e) => {
+const checkAddress = (e: any) => {
   const address = encodeURIComponent(e.target.value)
   state.addresses = []
   if (address.length > 10) {
@@ -85,7 +86,7 @@ const checkAddress = (e) => {
         `https://api-adresse.data.gouv.fr/search/?q=${address}&type=housenumber&autocomplete=1&limit=5`
       )
       .then((response) => {
-        response.data.features.map((e) => {
+        response.data.features.map((e: any) => {
           state.addresses.push({
             label: e.properties.label,
             value: e.properties
@@ -310,7 +311,7 @@ watch(
                     <div class="flex flex-1 items-end justify-between pt-2">
                       <div class="flex flex-col">
                         <p class="mt-1 text-sm font-medium text-gray-900">
-                          {{ getProductPrice(cartIem.product) }}
+                          {{ getProductPrice(cartIem) }} €
                         </p>
                         <p class="text-sm font-medium text-gray-900 flex flex-col">
                           <span
@@ -341,7 +342,7 @@ watch(
                 <div class="flex items-center justify-between">
                   <dt class="text-sm">Total</dt>
                   <dd class="text-sm font-medium text-gray-900">
-                    {{ getTotalProductsPrice(state.cartItems.map((cartItem) => cartItem.product)) }} €
+                    {{ getTotalProductsPrice(state.cartItems) }} €
                   </dd>
                 </div>
                 <div class="flex items-center justify-between">
@@ -351,7 +352,7 @@ watch(
                 <div class="flex items-center justify-between border-t border-gray-200 pt-6">
                   <dt class="text-base font-medium">Total</dt>
                   <dd class="text-base font-medium text-gray-900">
-                    {{ getTotalProductsPrice(state.cartItems.map((cartItem) => cartItem.product)) }} €
+                    {{ getTotalProductsPrice(state.cartItems) }} €
                   </dd>
                 </div>
               </dl>
