@@ -31,7 +31,6 @@ const state = reactive({
       {
         id: '' as any,
         quantity: '' as any,
-        price: '' as any
       }
     ]
   }
@@ -50,8 +49,7 @@ const onSubmit = () => {
   state.order.products = state.cartItems.map((e) => {
     return {
       id: e.product.id,
-      quantity: e.quantity,
-      price: e.product.price
+      quantity: e.quantity > 0 ? e.quantity : 1
     }
   })
   let OrderId = ''
@@ -270,14 +268,14 @@ watch(
               <h3 class="sr-only">Items in your cart</h3>
               <ul role="list" class="divide-y divide-gray-200">
                 <li
-                  v-for="cartIem in state.cartItems"
-                  :key="cartIem.product.id"
+                  v-for="cartItem in state.cartItems"
+                  :key="cartItem.product.id"
                   class="flex px-4 py-6 sm:px-6"
                 >
                   <div class="flex-shrink-0">
                     <img
-                      :src="getProductImage(cartIem.product)"
-                      :alt="cartIem.product.name"
+                      :src="getProductImage(cartItem.product)"
+                      :alt="cartItem.product.name"
                       class="w-20 rounded-md"
                     />
                   </div>
@@ -287,18 +285,18 @@ watch(
                       <div class="min-w-0 flex-1">
                         <h4 class="text-sm">
                           <a
-                            :href="`/products/${cartIem.product.id}`"
+                            :href="`/products/${cartItem.product.id}`"
                             class="font-medium text-gray-700 hover:text-gray-800"
-                            >{{ cartIem.product.name }}</a
+                            >{{ cartItem.product.name }}</a
                           >
                         </h4>
-                        <p class="mt-1 text-sm text-gray-500">{{ cartIem.product.color }}</p>
-                        <p class="mt-1 text-sm text-gray-500">{{ cartIem.product.size }}</p>
+                        <p class="mt-1 text-sm text-gray-500">{{ cartItem.product.color }}</p>
+                        <p class="mt-1 text-sm text-gray-500">{{ cartItem.product.size }}</p>
                       </div>
 
                       <div class="ml-4 flow-root flex-shrink-0">
                         <button
-                          @click="cartStore.removeFromCart(cartIem.product)"
+                          @click="cartStore.removeFromCart(cartItem.product)"
                           type="button"
                           class="-m-2.5 flex items-center justify-center bg-white p-2.5 text-gray-400 hover:text-gray-500"
                         >
@@ -311,22 +309,22 @@ watch(
                     <div class="flex flex-1 items-end justify-between pt-2">
                       <div class="flex flex-col">
                         <p class="mt-1 text-sm font-medium text-gray-900">
-                          {{ getProductPrice(cartIem) }} €
+                          {{ cartItem.product.price }} €
                         </p>
                         <p class="text-sm font-medium text-gray-900 flex flex-col">
                           <span
-                            v-if="parseInt(cartIem.product.discount)"
+                            v-if="parseInt(cartItem.product.discount)"
                             class="text-sm font-medium text-red-600 line-through"
                           >
-                            {{ cartIem.product.price }}€
+                            {{ cartItem.product.price }}€
                           </span>
                         </p>
                       </div>
                       <div class="ml-4">
                         <label for="quantity" class="sr-only">Quantity</label>
                         <select
-                          v-model="cartIem.quantity"
-                          @change="cartStore.updateQuantity(cartIem.product, cartIem.quantity)"
+                          v-model="cartItem.quantity"
+                          @change="cartStore.updateQuantity(cartItem.product, cartItem.quantity)"
                           id="quantity"
                           name="quantity"
                           class="block w-24 border-gray-300 focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50 rounded-md shadow-sm"

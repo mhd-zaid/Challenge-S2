@@ -55,7 +55,7 @@ export default (
                 await order.addProduct(sqlProduct.id, {
                     through: {
                         quantity: product.quantity,
-                        price: parseFloat(product.price),
+                        price: parseFloat(sqlProduct.price),
                     },
                 });
 
