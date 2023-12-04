@@ -212,24 +212,23 @@ onMounted(async () => {
   }
   await getProducts(state.activeFilters, activePageFromURL)
   watch(
-      state.filters,
-      () => {
-        const activeFilters = state.activeFilters;
-        nextTick(() => {
-          router.push({ query: { page: state.currentPage, ...activeFilters } });
-          getProducts(activeFilters);
-        });
-      },
-      { deep: true }
-  );
+    state.filters,
+    () => {
+      const activeFilters = state.activeFilters
+      nextTick(() => {
+        router.push({ query: { page: state.currentPage, ...activeFilters } })
+        getProducts(activeFilters)
+      })
+    },
+    { deep: true }
+  )
   watch(
-      () => state.currentPage,
-      () => {
-        router.push({ query: { page: state.currentPage, ...state.activeFilters } })
-      }
+    () => state.currentPage,
+    () => {
+      router.push({ query: { page: state.currentPage, ...state.activeFilters } })
+    }
   )
 })
-
 
 const toggleWishlist = (productId: string) => {
   if (wishStore.isInWishlist(productId)) {
@@ -461,27 +460,35 @@ const toggleWishlist = (productId: string) => {
                       class="h-full w-full object-cover object-center sm:h-full sm:w-full"
                     />
                   </div>
-                  <div class="flex flex-1 flex-col space-y-2 p-4">
+                  <div class="flex flex-col space-y-2 p-4">
                     <h3 class="text-sm font-medium text-gray-900">
                       {{ product.name }}
                     </h3>
                     <p class="text-sm text-gray-500">{{ product?.model?.description }}</p>
-                    <div class="flex flex-1 flex-col justify-end">
-                      <p class="text-base font-medium text-gray-900">
-                        {{
-                          parseInt(product.discount)
-                            ? parseInt(product.price) -
-                              (parseInt(product.price) * parseInt(product.discount)) / 100 +
-                              ' €'
-                            : product.price + ' €'
-                        }}
-                      </p>
-                      <p
-                        v-if="parseInt(product.discount)"
-                        class="text-sm font-medium text-red-600 line-through"
-                      >
-                        {{ product.price }} €
-                      </p>
+                    <div class="flex flex-col flex-1 mt-auto">
+                      <div class="flex flex-row">
+                        <p class="text-base font-medium text-gray-900">
+                          {{
+                            parseInt(product.discount)
+                              ? (
+                                  parseInt(product.price) -
+                                  (parseInt(product.price) * parseInt(product.discount)) / 100
+                                ).toFixed(2) + ' €'
+                              : parseFloat(product.price).toFixed(2) + ' €'
+                          }}
+                        </p>
+                        <p
+                          v-if="parseInt(product.discount)"
+                          class="ml-2 font-medium text-red-600 line-through"
+                        >
+                          {{ product.price }} €
+                        </p>
+                      </div>
+                      <div v-if="parseInt(product.discount)" class="flex flex-1 flex-row">
+                        <p class="text-sm text-gray-500">
+                          {{ parseInt(product.discount) }}% de réduction
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </RouterLink>
@@ -513,7 +520,7 @@ const toggleWishlist = (productId: string) => {
                     à
                     <span class="font-medium">{{
                       state.productsPerPage > state.products.length
-                        ?  (state.currentPage - 1) * state.productsPerPage + state.products.length
+                        ? (state.currentPage - 1) * state.productsPerPage + state.products.length
                         : state.currentPage * state.productsPerPage
                     }}</span>
                     parmis
@@ -549,7 +556,7 @@ const toggleWishlist = (productId: string) => {
                       type="button"
                       class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 text-sm font-medium text-gray-500 bg-white hover:bg-gray-50"
                       :class="{
-                        'bg-gray-50': state.productsPerPage > state.products.length,
+                        'bg-gray-50': state.productsPerPage > state.products.length
                       }"
                       @click="state.currentPage += 1"
                       :disabled="state.productsPerPage > state.products.length"
