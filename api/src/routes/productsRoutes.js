@@ -67,7 +67,7 @@ export default (
 			const categoryQuery = {};
 			const filters = req.query;
 			const page = filters.page || 1;
-			const limit = filters.limit || 10;
+			const limit = filters.limit || 12;
 			addFiltersToQuery(
 				{ query, modelQuery, brandQuery, categoryQuery },
 				filters

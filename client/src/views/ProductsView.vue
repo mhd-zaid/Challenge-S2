@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import LayoutComponent from '@/layout/LayoutComponent.vue'
-import {computed, nextTick, onMounted, reactive, ref, watch} from 'vue'
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
 import {
   Dialog,
   DialogPanel,
@@ -10,18 +10,18 @@ import {
   TransitionChild,
   TransitionRoot
 } from '@headlessui/vue'
-import {HeartIcon, XMarkIcon} from '@heroicons/vue/24/outline'
-import {ChevronDownIcon, PlusIcon} from '@heroicons/vue/20/solid'
+import { HeartIcon, XMarkIcon } from '@heroicons/vue/24/outline'
+import { ChevronDownIcon, PlusIcon } from '@heroicons/vue/20/solid'
 import axiosInstance from '@/utils/axiosInstance'
-import type {ProductType} from '@/types/ProductType'
-import type {BrandType} from '@/types/BrandType'
-import type {CategoryType} from '@/types/CategoryTypes'
-import type {ModelType} from '@/types/ModelType'
-import {useRouter} from 'vue-router'
-import {getProductImage} from '@/types/ProductImageType'
-import {useWishlistStore} from '@/stores/wishlist'
-import ModalComponent from "@/components/RedirectModal.vue";
-import checkAuthentication from "@/utils/checkAuthentication";
+import type { ProductType } from '@/types/ProductType'
+import type { BrandType } from '@/types/BrandType'
+import type { CategoryType } from '@/types/CategoryTypes'
+import type { ModelType } from '@/types/ModelType'
+import { useRouter } from 'vue-router'
+import { getProductImage } from '@/types/ProductImageType'
+import { useWishlistStore } from '@/stores/wishlist'
+import ModalComponent from '@/components/RedirectModal.vue'
+import checkAuthentication from '@/utils/checkAuthentication'
 
 const isAuthenticated = checkAuthentication()
 const wishStore = useWishlistStore()
@@ -123,16 +123,16 @@ const router = useRouter()
 const mobileFiltersOpen = ref(false)
 
 watch(
-    state.filters,
-    () => {
-      const activeFilters = state.activeFilters;
-      nextTick(() => {
-        router.push({ query: { page: state.currentPage, ...activeFilters } });
-        getProducts(activeFilters);
-      });
-    },
-    { deep: true }
-);
+  state.filters,
+  () => {
+    const activeFilters = state.activeFilters
+    nextTick(() => {
+      router.push({ query: { page: state.currentPage, ...activeFilters } })
+      getProducts(activeFilters)
+    })
+  },
+  { deep: true }
+)
 watch(
   () => state.currentPage,
   () => {
@@ -432,18 +432,19 @@ const toggleWishlist = (productId: string) => {
                 :key="product.id"
                 class="group relative flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white"
               >
-                <!-- Bouton Cœur -->
+                <!-- Wishlist button -->
                 <button
-                    @click="isAuthenticated ? toggleWishlist(product.id) : state.openModal = true"
-                    class="absolute top-2 right-2 text-gray-700 z-10 hover:text-red-500"
+                  @click="isAuthenticated ? toggleWishlist(product.id) : (state.openModal = true)"
+                  class="absolute top-2 right-2 text-gray-700 z-10 hover:text-red-500"
                 >
                   <HeartIcon
-                      v-if="!wishStore.isInWishlist(product.id)"
-                      class="h-6 w-6 hover:fill-red-500"
-                  />
-                  <HeartIcon
-                      v-else
-                      class="h-6 w-6 fill-red-500 hover:fill-transparent"
+                    class="h-6 w-6"
+                    :class="{
+                      'hover:fill-red-500': !wishStore.isInWishlist(product.id),
+                      'text-red-500 fill-red-500 hover:fill-transparent': wishStore.isInWishlist(
+                        product.id
+                      )
+                    }"
                   />
                 </button>
                 <RouterLink :to="'/products/' + product.id">
