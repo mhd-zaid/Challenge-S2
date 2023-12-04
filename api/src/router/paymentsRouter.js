@@ -18,8 +18,8 @@ const {
 const router = express.Router();
 
 router.get("/", getPayments);
-router.get("/success", stripeSuccess);
-router.get("/failed", stripeFailed);
+router.post("/success", stripeSuccess);
+router.post("/failed", stripeFailed);
 router.get("/session/:session", getStripeSession);
 router.get("/:id", getPayment);
 router.post("/", createPayment);

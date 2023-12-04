@@ -36,7 +36,6 @@ const colorsFixture = [
 	"Grey",
 	"Beige",
 ];
-const vatsFixture = [10, 20, 30, 40];
 const discountFixture = [0, 0, 0, 0, 0, 0, 0, 10, 20, 30, 40, 50];
 
 const QUANTITY_MIN = 1;
@@ -48,7 +47,7 @@ modelsFixture.forEach((model) => {
 	Array.from({ length: 5 }).forEach(() => {
 		const size = getRandomElement(sizesFixture);
 		const color = getRandomElement(colorsFixture);
-		const vat = getRandomElement(vatsFixture);
+		const vat = 20;
         const discount = getRandomElement(discountFixture);
 		const price = generateRandomNumber(PRICE_MIN, PRICE_MAX) * 100;
 		const quantity = generateRandomNumber(QUANTITY_MIN, QUANTITY_MAX);

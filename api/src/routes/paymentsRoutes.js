@@ -58,9 +58,9 @@ export default (Payment, Order, User, stripe, OrderMongodb, ObjectId) => ({
 					};
 				}),
 				success_url:
-					"http://localhost:5175/checkout?payment=success?session_id={CHECKOUT_SESSION_ID}?orderId=" + order.id,
+					"http://localhost:5173/checkout?payment=success",
 				cancel_url:
-					"http://localhost:5175/checkout?payment=refused?session_id={CHECKOUT_SESSION_ID}?orderId=" + order.id,
+					"http://localhost:5173/checkout?payment=refused",
 				expires_at: Math.floor(Date.now() / 1000 + 30 * 60),
 				metadata: {
 					deliveryAdress: order.deliveryAddress,
@@ -143,18 +143,22 @@ export default (Payment, Order, User, stripe, OrderMongodb, ObjectId) => ({
 			});
 		}
 	},
-	// a revoir
+
 	stripeSuccess: async (req, res) => {
 		try {
-			const { session_id } = req.query;
+			const { data } = req.body;
+			const sessionId = data.object.id;
+			const status = data.object.payment_status;
+
 			const payment = await Payment.findOne({
-				where: { stripePaymentId: session_id },
+				where: { stripePaymentId: sessionId },
 			});
 
-			const session = await stripe.checkout.sessions.retrieve(
-				payment.stripePaymentId
-			);
-			if (session.payment_status === "paid") {
+			if (!payment) {
+				return res.status(404).json({ message: "Payment not found" });
+			}
+
+			if (status === "paid") {
 				payment.status = "paid";
 				await payment.save();
 				const order = await Order.findOne({ where: { id: payment.orderId } });
@@ -166,7 +170,7 @@ export default (Payment, Order, User, stripe, OrderMongodb, ObjectId) => ({
 				mongoOrder.status = "paid";
 				await mongoOrder.save();
 
-				return res.json({ message: "Payment succeed" });
+				return res.json({ message: "Payment succeed & order status updated" });
 			}
 		} catch (error) {
 			res.status(500).json({
@@ -174,25 +178,35 @@ export default (Payment, Order, User, stripe, OrderMongodb, ObjectId) => ({
 			});
 		}
 	},
-	// a revoir
+
 	stripeFailed: async (req, res) => {
 		try {
-			const { session_id } = req.query;
-			const payment = await Payment.findOne({
-				where: { stripePaymentId: session_id },
-			});
-			payment.status = "failed";
-			await payment.save();
-			const order = await Order.findOne({ where: { id: payment.orderId } });
-			order.status = "payment failed";
-			await order.save();
-			const mongoOrder = await OrderMongodb.findOne({
-				_id: new ObjectId(order.id),
-			});
-			mongoOrder.status = "payment failed";
-			await mongoOrder.save();
+			const { data } = req.body;
+			const sessionId = data.object.id;
+			const status = data.object.payment_status;
 
-			return res.json({ message: "Payment failed" });
+			const payment = await Payment.findOne({
+				where: { stripePaymentId: sessionId },
+			});
+
+			if (!payment) {
+				return res.status(404).json({ message: "Payment not found" });
+			}
+
+			if (status === "failed") {
+				payment.status = "failed";
+				await payment.save();
+				const order = await Order.findOne({ where: { id: payment.orderId } });
+				order.status = "payment failed";
+				await order.save();
+				const mongoOrder = await OrderMongodb.findOne({
+					_id: new ObjectId(order.id),
+				});
+				mongoOrder.status = "payment failed";
+				await mongoOrder.save();
+
+				return res.json({ message: "Payment failed & order status updated" });
+			}
 		} catch (error) {
 			res.status(500).json({
 				message: `An error occurred while getting the payment url : ${error.message}`,
