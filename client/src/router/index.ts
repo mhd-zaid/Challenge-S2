@@ -1,8 +1,10 @@
 import {createRouter, createWebHistory} from 'vue-router'
+import {policiesRoutes} from "@/router/Policies";
 // @ts-ignore
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
+        ...policiesRoutes,
         {
             path: '/',
             name: 'home',
@@ -101,33 +103,9 @@ const router = createRouter({
             }
         },
         {
-            path: '/cgv',
-            name: 'cgv',
-            component: () => import('@/views/CgvView.vue'),
-            meta: {
-                requiresAuth: false
-            }
-        },
-        {
-            path: '/cgu',
-            name: 'cgu',
-            component: () => import('@/views/CguView.vue'),
-            meta: {
-                requiresAuth: false
-            }
-        },
-        {
-            path: '/delete-policy',
-            name: 'delete-policy',
-            component: () => import('@/views/PolitiqueSuppression.vue'),
-            meta: {
-                requiresAuth: false
-            }
-        },
-        {
             path: '/exchange-policy',
             name: 'exchange-policy',
-            component: () => import('@/views/ExchangePolicyView.vue'),
+            component: () => import('@/views/policies/ExchangePolicyView.vue'),
             meta: {
                 requiresAuth: false
             }

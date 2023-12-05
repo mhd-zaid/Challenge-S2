@@ -65,15 +65,14 @@ import LayoutComponent from "@/layout/LayoutComponent.vue";
 
 
 <style scoped>
-  p {
-    @apply
-    text-gray-700
-      mt-3
-    leading-7
-    max-w-3xl
-    mx-auto
-    mb-6
-  }
+p {
+  @apply
+  text-gray-700
+  leading-7
+  max-w-3xl
+  mx-auto
+  mb-3
+}
   li {
     @apply
     text-gray-700
