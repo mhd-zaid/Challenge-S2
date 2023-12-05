@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import LayoutComponent from '@/layout/LayoutComponent.vue'
-import { onMounted, reactive, watch } from 'vue'
-import { TrashIcon } from '@heroicons/vue/20/solid'
-import { useCartStore } from '@/stores/cart'
-import { getProductPrice, getTotalProductsPrice } from '@/types/ProductType'
-import type { ProductType } from '@/types/ProductType'
-import { getProductImage } from '@/types/ProductImageType'
+import {onMounted, reactive, watch} from 'vue'
+import {TrashIcon} from '@heroicons/vue/20/solid'
+import {useCartStore} from '@/stores/cart'
+import type {ProductType} from '@/types/ProductType'
+import {getProductPrice, getTotalProductsPrice} from '@/types/ProductType'
+import {getProductImage} from '@/types/ProductImageType'
 import axios from 'axios'
 import axiosInstance from '@/utils/axiosInstance'
-import type { UserType } from '@/types/UserType'
-import { useRouter } from 'vue-router'
+import type {UserType} from '@/types/UserType'
+import {useRouter} from 'vue-router'
 
 const cartStore = useCartStore()
 const router = useRouter()
@@ -146,9 +146,7 @@ watch(
                 </div>
 
                 <div>
-                  <label for="last-name" class="block text-sm font-medium text-gray-700"
-                    >Prénom</label
-                  >
+                  <label for="last-name" class="block text-sm font-medium text-gray-700">Prénom</label>
                   <div class="mt-1">
                     <input
                       v-model="state.user.lastname"
@@ -162,9 +160,7 @@ watch(
                 </div>
 
                 <div class="sm:col-span-2">
-                  <label for="search" class="block text-sm font-medium text-gray-700"
-                    >Rechercher votre adresse</label
-                  >
+                  <label for="search" class="block text-sm font-medium text-gray-700">Rechercher votre adresse</label>
                   <div class="mt-1">
                     <input
                       @blur="checkAddress"
@@ -309,7 +305,7 @@ watch(
                     <div class="flex flex-1 items-end justify-between pt-2">
                       <div class="flex flex-col">
                         <p class="mt-1 text-sm font-medium text-gray-900">
-                          {{ cartItem.product.price }} €
+                          {{ getProductPrice({product: cartItem.product, quantity: 1}) }} €
                         </p>
                         <p class="text-sm font-medium text-gray-900 flex flex-col">
                           <span

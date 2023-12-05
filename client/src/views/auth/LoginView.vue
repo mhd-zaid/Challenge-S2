@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import GuestLayout from '@/layout/GuestLayout.vue'
-import { reactive } from 'vue'
-import { useUserStore } from '@/stores/user'
-import { useRoute, useRouter } from 'vue-router'
+import {reactive} from 'vue'
+import {useUserStore} from '@/stores/user'
+import {useRoute, useRouter} from 'vue-router'
 import axiosInstance from '@/utils/axiosInstance'
 
 const userStore = useUserStore()
@@ -66,7 +66,7 @@ const submit = async () => {
             {{ ' ' }}
             <RouterLink
               to="register"
-              class="font-semibold text-secondary hover:text-secondary-light"
+              class="font-semibold text-primary-600 hover:text-primary-500"
               >Inscrivez-vous ici</RouterLink
             >
           </p>
@@ -121,7 +121,7 @@ const submit = async () => {
                 <div class="text-sm leading-6">
                   <a
                     href="password-reset"
-                    class="font-semibold text-secondary hover:text-secondary-light"
+                    class="font-semibold text-primary-600 hover:text-primary-500"
                     >Mot de passe oublié ?</a
                   >
                 </div>

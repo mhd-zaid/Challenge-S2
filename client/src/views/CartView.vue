@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import LayoutComponent from '@/layout/LayoutComponent.vue'
-import { useCartStore } from '@/stores/cart'
-import { onMounted, reactive, watch } from 'vue'
-import type { ProductType } from '@/types/ProductType'
-import { getProductPrice, getTotalProductsPrice } from '@/types/ProductType'
-import { getProductImage } from '@/types/ProductImageType'
+import {useCartStore} from '@/stores/cart'
+import {onMounted, reactive, watch} from 'vue'
+import type {ProductType} from '@/types/ProductType'
+import {getProductPrice, getTotalProductsPrice} from '@/types/ProductType'
+import {getProductImage} from '@/types/ProductImageType'
 
 const cartStore = useCartStore()
 
@@ -86,7 +86,7 @@ watch(
                       >
                     </h4>
                     <p class="ml-4 text-sm font-medium text-gray-900 flex flex-col">
-                      {{ cartItem.product.price }} €
+                      {{ getProductPrice({product: cartItem.product, quantity: 1}) }} €
                       <span
                         v-if="parseInt(cartItem.product.discount)"
                         class="text-sm font-medium text-red-600 line-through"

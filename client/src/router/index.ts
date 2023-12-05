@@ -79,6 +79,14 @@ const router = createRouter({
             }
         },
         {
+            path: '/password-reset',
+            name: 'password-reset',
+            component: () => import('@/views/auth/PasswordResetView.vue'),
+            meta: {
+                requiresAuth: false
+            }
+        },
+        {
             path: '/register',
             name: 'register',
             component: () => import('@/views/auth/RegisterView.vue'),
@@ -98,14 +106,6 @@ const router = createRouter({
             path: '/faq',
             name: 'faq',
             component: () => import('@/views/FaqView.vue'),
-            meta: {
-                requiresAuth: false
-            }
-        },
-        {
-            path: '/exchange-policy',
-            name: 'exchange-policy',
-            component: () => import('@/views/policies/ExchangePolicyView.vue'),
             meta: {
                 requiresAuth: false
             }

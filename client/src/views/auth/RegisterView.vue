@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import GuestLayout from '@/layout/GuestLayout.vue'
-import { reactive } from 'vue'
-import { useRouter } from 'vue-router'
+import {reactive} from 'vue'
+import {useRouter} from 'vue-router'
 import axiosInstance from '@/utils/axiosInstance'
-import { userSchema } from '@/schemas/userSchema'
+import {userSchema} from '@/schemas/userSchema'
 
 const state: any = reactive({
   form: {
@@ -11,7 +11,8 @@ const state: any = reactive({
     lastname: '',
     birthdate: '',
     email: '',
-    password: ''
+    password: '',
+    accept: false
   },
   errors: ''
 })
@@ -21,6 +22,11 @@ const router = useRouter()
 const submit = async () => {
   try {
     const result = userSchema.safeParse(state.form)
+
+    if (!state.form.accept) {
+      state.errors = 'Vous devez accepter la politique de confidentialité'
+      return
+    }
 
     if (!result.success) {
       state.errors = JSON.parse(result.error.message)[0].message
@@ -57,7 +63,7 @@ const submit = async () => {
           <p class="mt-2 text-sm leading-6 text-gray-500">
             Vous avez déjà un compte ?
             {{ ' ' }}
-            <RouterLink to="login" class="font-semibold text-secondary hover:text-secondary-light"
+            <RouterLink to="login" class="font-semibold text-primary-600 hover:text-primary-500"
               >Connectez-vous ici</RouterLink
             >
           </p>
@@ -81,7 +87,7 @@ const submit = async () => {
                   v-model="state.form.firstname"
                   type="text"
                   placeholder="Prénom"
-                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
                   required
                 />
               </div>
@@ -95,7 +101,7 @@ const submit = async () => {
                   v-model="state.form.lastname"
                   type="text"
                   placeholder="Nom"
-                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
                   required
                 />
               </div>
@@ -108,7 +114,7 @@ const submit = async () => {
                   id="birthdate"
                   v-model="state.form.birthdate"
                   type="date"
-                  class="block w-full px-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  class="block w-full px-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
                   required
                 />
               </div>
@@ -122,7 +128,7 @@ const submit = async () => {
                   v-model="state.form.email"
                   type="email"
                   placeholder="exemple@gmail.com"
-                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
                   required
                 />
               </div>
@@ -136,15 +142,22 @@ const submit = async () => {
                   v-model="state.form.password"
                   type="password"
                   placeholder="Mot de passe"
-                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
                   required
                 />
+              </div>
+
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <input v-model="state.form.accept" id="accept-terms" name="accept-terms" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-600" />
+                  <label for="accept-terms" class="ml-3 block text-sm leading-6 text-gray-900">Voir la <RouterLink to="/privacy-policy" class="font-semibold text-secondary hover:text-secondary-light">politique de confidentialité</RouterLink></label>
+                </div>
               </div>
 
               <div>
                 <button
                   type="submit"
-                  class="flex w-full justify-center rounded-md bg-primary px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover-bg-indigo-500 focus-visible-outline focus-visible-outline-2 focus-visible-outline-offset-2 focus-visible-outline-indigo-600"
+                  class="flex w-full justify-center rounded-md bg-primary-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-primary-500 focus-visible-outline focus-visible-outline-2 focus-visible-outline-offset-2 focus-visible-outline-primary-600"
                 >
                   S'inscrire
                 </button>

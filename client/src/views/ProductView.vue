@@ -42,7 +42,7 @@ const getProduct = async (id: string) => {
 
 const getProducts = async () => {
   const products = await axiosInstance.get('/products')
-  state.products = products.data.splice(0, 4)
+  state.products = products.data.products.splice(0, 4)
 }
 
 
@@ -93,7 +93,7 @@ init()
         <!-- Options -->
         <div class="mt-4 lg:row-span-3 lg:mt-0">
           <h2 class="sr-only">Product information</h2>
-          <p class="text-3xl tracking-tight text-gray-900">{{ getProductPrice(state.product) }}
+          <p class="text-3xl tracking-tight text-gray-900">{{getProductPrice({product: state.product, quantity: 1})}}
           </p>
           <p
               v-if="parseInt(state.product.discount)"
@@ -206,7 +206,7 @@ init()
                   </h3>
                   <p class="mt-1 text-sm text-gray-500">{{ product.color }}</p>
                 </div>
-                <p class="text-sm font-medium text-gray-900 flex flex-col">{{getProductPrice(product)}}
+                <p class="text-sm font-medium text-gray-900 flex flex-col">{{getProductPrice({product: product, quantity: 1})}}
                   <span
                       v-if="parseInt(state.product.discount)"
                       class="text-sm font-medium text-red-600 line-through"

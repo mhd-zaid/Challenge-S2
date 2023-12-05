@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import GuestLayout from '@/layout/GuestLayout.vue'
-import { reactive } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import {reactive} from 'vue'
+import {useRoute, useRouter} from 'vue-router'
 import axiosInstance from '@/utils/axiosInstance'
 
 const state = reactive({
@@ -62,7 +62,7 @@ const submit = async () => {
     >
       <div class="mx-auto w-full max-w-sm lg:w-96">
         <div>
-          <img class="h-10 w-auto" src="assets/images/sneakpeak_logo_black.png" alt="Sneak Peak" />
+          <img class="h-10 w-auto" src="images/sneakpeak_logo_black.png" alt="Sneak Peak" />
           <h2 class="mt-8 text-2xl font-bold leading-9 tracking-tight text-gray-900">
             Mot de passe oublié
           </h2>
@@ -92,7 +92,7 @@ const submit = async () => {
                   id="email"
                   name="email"
                   placeholder="exemple@gmail.com"
-                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
                   required
                 />
               </div>
@@ -106,7 +106,7 @@ const submit = async () => {
                   id="password"
                   name="password"
                   placeholder="Nouveau mot de passe"
-                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
                   required
                 />
               </div>
@@ -122,7 +122,7 @@ const submit = async () => {
               <div>
                 <button
                   type="submit"
-                  class="flex w-full justify-center rounded-md bg-primary px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  class="flex w-full justify-center rounded-md bg-primary-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-primary-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
                 >
                   Réinitialiser le mot de passe
                 </button>
