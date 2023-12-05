@@ -1,4 +1,5 @@
 db_data
+mongo_data
 node_modules
 .vscode
 .idea
