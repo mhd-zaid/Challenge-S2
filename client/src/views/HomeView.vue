@@ -19,7 +19,7 @@ onMounted(async () => {
   const cookiesAccepted = localStorage.getItem('accept-cookies')
   axiosInstance.get('/products')
     .then(response => {
-      state.products = response.data.splice(0, 3)
+      state.products = response.data.products.splice(0, 3)
     })
     .catch(error => {
       console.log(error)

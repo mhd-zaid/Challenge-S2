@@ -17,7 +17,6 @@ const state = reactive({
 const clearCart = async () => {
   await cartStore.clearCart()
   showToast('Paiement effectué avec succès', 'success')
-  await router.push('/')
 }
 
 const downloadInvoice = async () => {
@@ -27,6 +26,7 @@ const downloadInvoice = async () => {
 watch(() => cartStore.cart, async () => {
   state.products = await cartStore.fetchCart()
 })
+clearCart()
 </script>
 
 <template>
@@ -42,8 +42,9 @@ watch(() => cartStore.cart, async () => {
             Votre paiement a été effectué avec succès, nous vous remercions pour votre achat, Vous pouvez maintenant accéder à votre espace personnel, vous pourrez y retrouver vos factures dans la section "Mon historique". dans votre espace profile.
           </p>
           <div class="mt-10 flex items-center justify-center gap-x-6">
-            <button @click="clearCart" class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Retour à l'accueil</button>
+            <a href="/" class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Retour à l'accueil</a>
             <button @click="downloadInvoice" class="text-sm font-semibold leading-6 text-white">Télécharger la facture <span aria-hidden="true">→</span></button>
+
           </div>
         </div>
       </div>
