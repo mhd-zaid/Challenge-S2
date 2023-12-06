@@ -169,9 +169,9 @@ export default (
 
 			const model = await Model.findOne(
 				{
-					where: { id: req.body.model },
+					where: { id: req.body.modelId },
 				},
-				{ include: ["Brand", "Category"] }
+				{ include: ["brand", "category"] }
 			);
 
 			if (!model) {
@@ -260,7 +260,7 @@ export default (
 				{
 					where: { id: req.body.model },
 				},
-				{ include: ["Brand", "Category"] }
+				{ include: ["brand", "category"] }
 			);
 
 			if (!model) {

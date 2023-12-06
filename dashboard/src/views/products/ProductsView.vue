@@ -58,15 +58,24 @@ const openUpdatingDrawer = (user: any) => {
 const closeUpdatingDrawer = () => {
   state.openUpdating = false
   state.selectedId = ''
-  getProducts()
 }
+
 const closeCreationDrawer = () => {
+  state.openCreation = false
+}
+
+const closeDrawerAfterCreation = () => {
   state.openCreation = false
   getProducts()
 }
 
-onMounted(() => {
+const closeDrawerAfterUpdating = () => {
+  state.openUpdating = false
   getProducts()
+}
+
+onMounted(() => {
+  if (!state.rows.length) getProducts()
 })
 
 onUnmounted(() => {
@@ -134,11 +143,13 @@ const exportProducts = async () => {
       v-if="state.openCreation"
       :open="state.openCreation"
       @closeCreationDrawer="closeCreationDrawer"
+      @productCreated="closeDrawerAfterCreation"
     />
     <ProductsSidebarForm
       :open="state.openUpdating"
       :id="state.selectedId"
       @closeUpdatingDrawer="closeUpdatingDrawer"
+      @productUpdated="closeDrawerAfterUpdating"
     />
     <OModal
       v-if="state.openConfirmation"

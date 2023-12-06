@@ -4,6 +4,7 @@ import { reactive, watch } from 'vue'
 import ODrawer from '@/components/ODrawer.vue'
 import { productSchema } from '@/utils/validations/productSchema'
 import type { ProductType } from '@/types/ProductType'
+import { onMounted } from 'vue'
 
 const props = defineProps({
   open: {
@@ -24,17 +25,16 @@ const state = reactive({
   errors: ''
 })
 
-const emit = defineEmits(['closeCreationDrawer', 'closeUpdatingDrawer'])
+const emit = defineEmits(['closeCreationDrawer', 'closeUpdatingDrawer', 'productCreated', 'productUpdated'])
 
 const validateAndSubmit = async (isCreation: boolean) => {
   const productToSubmit: any = { ...state.product }
-  productToSubmit.price = parseFloat(productToSubmit.price);
-  productToSubmit.vat = parseFloat(productToSubmit.vat);
-  productToSubmit.size = parseFloat(productToSubmit.size);
-  productToSubmit.quantity = parseInt(productToSubmit.quantity);
-  productToSubmit.discount = parseFloat(productToSubmit.discount);
-  productToSubmit.alertQuantity = parseInt(productToSubmit.alertQuantity);
-
+  productToSubmit.price = parseFloat(productToSubmit.price)
+  productToSubmit.vat = parseFloat(productToSubmit.vat)
+  productToSubmit.size = parseFloat(productToSubmit.size)
+  productToSubmit.quantity = parseInt(productToSubmit.quantity)
+  productToSubmit.discount = parseFloat(productToSubmit.discount)
+  productToSubmit.alertQuantity = parseInt(productToSubmit.alertQuantity)
 
   const schema = productSchema.pick({ ...productToSubmit })
 
@@ -49,14 +49,14 @@ const validateAndSubmit = async (isCreation: boolean) => {
     if (isCreation) {
       await axiosInstance.post('/products', productToSubmit).then(() => {
         state.errors = ''
-        emit('closeCreationDrawer')
+        emit('productCreated')
       })
     } else {
       await axiosInstance
         .patch(`/products/${props.id}`, productToSubmit)
         .then(() => {
           state.errors = ''
-          emit('closeUpdatingDrawer')
+          emit('productUpdated')
         })
         .catch((error: any) => {
           state.errors = error.response.data.message
@@ -83,6 +83,18 @@ watch(
     }
   }
 )
+
+onMounted(() => {
+  if (props.open) {
+    try {
+      axiosInstance.get('/models').then((response) => {
+        state.models = response.data
+      })
+    } catch (e: any) {
+      throw e
+    }
+  }
+})
 
 const handleFileChange = (event: Event) => {
   const input = event.target as HTMLInputElement
@@ -237,7 +249,7 @@ const handleFileChange = (event: Event) => {
             'Modèle' + (!props.id ? '*' : '')
           }}</label>
           <select
-            v-model="state.product.model"
+            v-model="state.product.modelId"
             id="model"
             name="model"
             placeholder="Modèle"
@@ -269,7 +281,7 @@ const handleFileChange = (event: Event) => {
         </div>
         <div>
           <label for="alertQuantity" class="block text-sm font-medium leading-6 text-gray-900">{{
-            'Quantité d\'alerte' + (!props.id ? '*' : '')
+            "Quantité d'alerte" + (!props.id ? '*' : '')
           }}</label>
           <input
             v-model="state.product.alertQuantity"
