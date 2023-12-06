@@ -69,7 +69,7 @@ const logout = async () => {
       class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8 z-10"
       aria-label="Global"
     >
-      <a href="/" class="-m-1.5 p-1.5">
+    <a href="/" class="-m-1.5 p-1.5 hidden lg:block">
         <span class="sr-only">Sneak Peak</span>
         <img
           class="h-8 w-auto mr-12"
@@ -98,6 +98,14 @@ const logout = async () => {
           </button>
         </div>
       </div>
+      <a href="/" class="-m-1.5 p-1.5 lg:hidden">
+        <span class="sr-only">Sneak Peak</span>
+        <img
+          class="h-8 w-auto mr-12"
+          src="/images/sneakpeak_logo_black.png"
+          alt="Sneak Peak Logo"
+        />
+      </a>
       <div class="flex flex-1 justify-end">
         <!-- Vérifier s'il l'utilisateur est connecter -->
         <Menu v-if="isAuthenticated" as="div" class="relative inline-block text-left">

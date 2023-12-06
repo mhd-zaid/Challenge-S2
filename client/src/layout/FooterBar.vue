@@ -11,7 +11,7 @@ const footerNavigation = {
     {name: 'Qui nous sommes', href: '/about'},
     {name: 'Conditions générale de ventes ', href: '/cgv'},
     {name: 'Conditions générale d\'utilisation', href: '/cgu'},
-    {name: 'Menstions légales', href: '/legal-mentions'},
+    {name: 'Mentions légales', href: '/legal-mentions'},
     {name: 'Politique de livraison', href: '/delivery-policy'},
     {name: 'Politique de garantie', href: '/warranty-policy'}
   ],

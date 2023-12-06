@@ -6,7 +6,7 @@ import LayoutComponent from "@/layout/LayoutComponent.vue";
   <LayoutComponent>
     <div class="bg-white px-6 py-10 lg:px-8">
       <div class="mx-auto max-w-3xl text-base leading-7 text-gray-700">
-        <h1 class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-10">Menstions légales</h1>
+        <h1 class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-10">Mentions légales</h1>
         
       </div>
     </div>

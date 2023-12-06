@@ -24,20 +24,15 @@ const policies = [
       "Notre politique de retour est très simple. Nous acceptons les retours non portés dans les 14 jours suivant l'achat."
   },
   {
-    name: 'Livraison dans la journée',
+    name: 'Livraison rapide',
     imageUrl: 'https://tailwindui.com/img/ecommerce/icons/icon-calendar-light.svg',
     description:
-      'On vous livre dans la journée si vous commandez avant 12h. Sinon, vous serez livré le lendemain.'
+      'Nous faisans de notre mieux pour vous livrer dans les 48h à la suite de votre commande. Nous vous tiendrons informé de l\'avancée de votre commande.'
   },
   {
-    name: "Code promo toute l'année",
+    name: "Promotions toute l'année",
     imageUrl: 'https://tailwindui.com/img/ecommerce/icons/icon-gift-card-light.svg',
-    description: "Nous offrons des codes promo toute l'année. Restez à l'affût !"
-  },
-  {
-    name: 'Pour la planète',
-    imageUrl: 'https://tailwindui.com/img/ecommerce/icons/icon-planet-light.svg',
-    description: 'Nous plantons un arbre pour chaque commande passée.'
+    description: "Nous avons des promotions toute l'année. Restez à l'affût!"
   }
 ]
 
@@ -167,7 +162,7 @@ watch(
 
       <div class="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8">
         <div
-          class="grid grid-cols-1 gap-y-12 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-0"
+          class="grid grid-cols-1 gap-y-12 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-3 lg:gap-x-12 lg:gap-y-0"
         >
           <div
             v-for="policy in policies"
