@@ -52,11 +52,18 @@ const modelsFixture = [
         description: "Description Model 1 male",
         CategoryId: 1,
         BrandId: 1,
-        Brand: brandsFixture[0],
-        Category: categoriesFixture[0],
+        brand: {
+            ...brandsFixture[0],
+            toJSON: jest.fn().mockReturnValue(brandsFixture[0])
+        },
+        category: {
+            ...categoriesFixture[0],
+            toJSON: jest.fn().mockReturnValue(categoriesFixture[0])
+        },
         createdAt: (new Date()).getMonth() - 2,
         updatedAt: new Date(),
-        deletedAt: null
+        deletedAt: null,
+        toJSON: jest.fn().mockReturnValue(true)
     },
     {
         id: 2,
@@ -65,11 +72,18 @@ const modelsFixture = [
         description: "Description Model 2 female",
         CategoryId: 2,
         BrandId: 2,
-        Brand: brandsFixture[1],
-        Category: categoriesFixture[1],
+        brand: {
+            ...brandsFixture[1],
+            toJSON: jest.fn().mockReturnValue(brandsFixture[1])
+        },
+        category: {
+            ...categoriesFixture[1],
+            toJSON: jest.fn().mockReturnValue(categoriesFixture[1])
+        },
         createdAt: (new Date()).getMonth() - 1,
         updatedAt: new Date(),
-        deletedAt: null
+        deletedAt: null,
+        toJSON: jest.fn().mockReturnValue(true)
     }
 ];
 
@@ -329,11 +343,11 @@ describe("Add Product with Model", () => {
             },
             brand: {
                 _id: new ObjectId(model[0].BrandId),
-                name: model[0].Brand.name,
+                name: model[0].brand.name,
             },
             category: {
                 _id: new ObjectId(model[0].CategoryId),
-                name: model[0].Category.name,
+                name: model[0].category.name,
             },
         });
         await productsRoutes(Product, Model,Brand,Category, Product_Images, ProductMongodb,ObjectId, Op).createProduct(req, res);

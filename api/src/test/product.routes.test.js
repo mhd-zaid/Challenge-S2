@@ -176,7 +176,28 @@ const ProductMongodb = (data) => {
 };
 
 const Model = {
-    findOne: jest.fn().mockReturnValue({ id: 1, name: "Model 1",Brand: { id: 1, name: "Brand 1" }, Category: { id: 1, name: "Category 1" } }),
+    findOne: jest.fn().mockReturnValue({ 
+        id: 1,
+        name: "Model 1",
+        gender: "male",
+        description: "Description Model 1 male",
+        CategoryId: 1,
+        BrandId: 1,
+        brand: {
+            id: 1,
+            name: "Brand 1",
+            toJSON: jest.fn().mockReturnValue(true)
+        },
+        category: {
+            id: 1,
+            name: "Category 1",
+            toJSON: jest.fn().mockReturnValue(true)
+        },
+        createdAt: (new Date()).getMonth() - 2,
+        updatedAt: new Date(),
+        deletedAt: null,
+        toJSON: jest.fn().mockReturnValue(true)
+    }),
 };
 
 const Brand = {
