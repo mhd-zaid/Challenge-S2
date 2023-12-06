@@ -17,7 +17,7 @@ const footerNavigation = {
   ],
   account: [
     {name: 'Gérer le compte', href: '/profile'},
-    {name: 'Retours et échanges', href: '/exchange-policy'},
+    {name: 'Politiques de retours et échanges', href: '/exchange-policy'},
     {name: 'Politique de suppression de compte', href: '/delete-policy'},
     {name: 'Politique de confidentialité', href: '/privacy-policy'},
   ],
