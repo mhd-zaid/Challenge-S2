@@ -217,9 +217,6 @@ export default (Payment, Order, User, stripe, OrderMongodb, ObjectId) => ({
 	getPayments: async (req, res) => {
 		try {
 			const payments = await Payment.findAll();
-			if (payments.length === 0) {
-				res.status(404).json({ message: "No payments found" });
-			}
 
 			return res.status(200).json(payments);
 		} catch (error) {

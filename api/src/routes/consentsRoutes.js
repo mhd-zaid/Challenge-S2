@@ -4,9 +4,7 @@ export default (Consent, ConsentType) => ({
             const consents = await Consent.findAll({
                 include : ["consentTypes", "user"]
             });
-            if (consents.length === 0) {
-                res.status(404).json({ message: "No consents found" });
-            }
+            
             res.status(200).json(consents);
         } catch (error) {
             res.status(500).json({

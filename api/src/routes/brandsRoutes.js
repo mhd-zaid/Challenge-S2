@@ -4,9 +4,6 @@ export default (Brand, ObjectId) => ({
 			const brands = await Brand.findAll({
 				include: "models",
 			});
-			if (brands.length === 0) {
-				res.status(404).json({ message: "No brands found" });
-			}
 			res.status(200).json(brands);
 		} catch (error) {
 			res.status(500).json({
