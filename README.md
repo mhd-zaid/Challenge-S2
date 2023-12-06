@@ -41,10 +41,10 @@ Les différents emails sont les suivants:
 ## Usage
 
 - Client
-Se rendre sur le lien suivant: http://localhost:5173
+    - Se rendre sur le lien suivant: http://localhost:5173
 
 - Dashboard
-Se rendre sur le lien suivant: http://localhost:5174
+    - Se rendre sur le lien suivant: http://localhost:5174
 
 - Accès aux bases de données
     - Adminer
