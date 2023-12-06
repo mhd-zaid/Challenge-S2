@@ -20,8 +20,8 @@ router.get("/", getConsents);
 router.get("/:id", getConsent);
 router.get("/user/:userId", getUserConsents);
 router.post("/", authMiddleware, adminMiddleware, createConsent);
-router.put("/:id", authMiddleware, adminMiddleware, updateConsent);
-router.put("/:id/addConsentType", authMiddleware, adminMiddleware, addConsentType);
-router.put("/:id/removeConsentType", authMiddleware, adminMiddleware, removeConsentType);
+router.patch("/:id", authMiddleware, adminMiddleware, updateConsent);
+router.patch("/:id/addConsentType", authMiddleware, adminMiddleware, addConsentType);
+router.patch("/:id/removeConsentType", authMiddleware, adminMiddleware, removeConsentType);
 
 export default router;

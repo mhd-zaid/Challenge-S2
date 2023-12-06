@@ -12,6 +12,9 @@ export default (
 	generateToken,
 	dataToCSV,
 	createExport,
+	path,
+	dirname,
+	fileURLToPath
 ) => ({
 	getUsers: async (req, res) => {
 		try {
@@ -338,7 +341,7 @@ export default (
 				encryptionKey
 			);
 
-			await sendDeletedAccountEmail(user.email, encryptionKey);
+			await sendDeletedAccountEmail(user, encryptionKey);
 
 			await user.update(
 				{ ...anonymizedData, encryptionKey, disabled: true },
@@ -360,15 +363,15 @@ export default (
 
 	recoverUser: async (req, res) => {
 		try {
-			const { email, encryptionKey } = req.params;
-			// const { encryptionKey } = req.body;
+			const { id } = req.params;
+			const { encryptionKey } = req.query;
 
-			if (!email)
+			if (!id)
 				return res
 					.status(400)
 					.json({ message: "Id parameter is missing" });
 
-			const user = await User.findOne({ where: { email } });
+			const user = await User.findOne({ where: { id } });
 
 			if (!user)
 				return res.status(404).json({ message: "User not found" });
@@ -387,18 +390,18 @@ export default (
 				return res
 					.status(400)
 					.json({ message: "Invalid encryption key" });
-
 			const decryptedData = decryptUserData(user.toJSON(), encryptionKey);
-
-			const csv = await dataToCSV(decryptedData);
+			
+			const csv = await dataToCSV([decryptedData]);
 
 			const { exportId, fileName } = await createExport(
 				"personalData",
 				csv
 			);
-
+			const __filename = fileURLToPath(import.meta.url);
+			const __dirname = dirname(__filename);
 			res.sendFile(fileName, {
-				root: path.join(__dirname, "../uploads/exports"),
+				root: path.join(__dirname, "../../uploads/exports"),
 			});
 		} catch (error) {
 			res.status(500).json({

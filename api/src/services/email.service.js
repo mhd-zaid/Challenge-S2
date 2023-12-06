@@ -21,7 +21,7 @@ export const sendEmail = async (email, subject, template) => {
 
 export const sendEmailConfirmation = async (email, token) => {
     try {
-        const confirmationLink = `http://localhost:3000/auth/confirm?email=${email}&authentificationToken=${token}`;
+        const confirmationLink = `${process.env.HOST_API}/auth/confirm?email=${email}&authentificationToken=${token}`;
 
         const subject = "Confirmation de votre compte";
 
@@ -69,7 +69,7 @@ export const sendPasswordChangeReminderEmail = async (email) => {
 
         const subject = "Changement de mot de passe nécessaire";
 
-        const passwordResetLink = `http://localhost:3000/users/reset-password?email=${email}`;
+        const passwordResetLink = `${process.env.HOST_API}/users/reset-password?email=${email}`;
 
         const template = htmlTemplate.replace(
             "{{passwordResetLink}}",
@@ -86,7 +86,7 @@ export const sendPasswordChangeReminderEmail = async (email) => {
     }
 };
 
-export const sendDeletedAccountEmail = async (email, encryptionKey) => {
+export const sendDeletedAccountEmail = async (user, encryptionKey) => {
     try {
         const htmlTemplate = fs.readFileSync(
             path.join(
@@ -96,7 +96,7 @@ export const sendDeletedAccountEmail = async (email, encryptionKey) => {
             "utf8"
         );
 
-        const recoveryLink = `http://localhost:3000/users/recover?email=${email}&key=${encryptionKey}`;
+        const recoveryLink = `${process.env.HOST_API}/users/recover/${user.id}?encryptionKey=${encryptionKey}`;
 
         const subject = "Votre compte a bien été supprimé";
 
@@ -104,7 +104,7 @@ export const sendDeletedAccountEmail = async (email, encryptionKey) => {
             .replace("{{key}}", encryptionKey)
             .replace("{{recoveryLink}}", recoveryLink);
 
-        await sendEmail(email, subject, template);
+        await sendEmail(user.email, subject, template);
 
         return true;
     } catch (error) {
@@ -120,7 +120,7 @@ export const sendResetPasswordEmail = async (email, passwordResetToken) => {
         );
 
         // TODO: replace with frontend url
-        const passwordResetLink = `http://localhost:5174/password-reset?email=${email}&token=${passwordResetToken}`;
+        const passwordResetLink = `${process.env.HOST_API}/password-reset?email=${email}&token=${passwordResetToken}`;
 
         const subject = "Réinitialisation de votre mot de passe";
 

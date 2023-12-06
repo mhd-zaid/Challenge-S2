@@ -16,7 +16,7 @@ const router = express.Router();
 router.get("/", getConsentTypes);
 router.get("/:id", getConsentType);
 router.post("/", authMiddleware, adminMiddleware, createConsentType);
-router.put("/:id", authMiddleware, adminMiddleware, updateConsentType);
+router.patch("/:id", authMiddleware, adminMiddleware, updateConsentType);
 router.delete("/:id", authMiddleware, adminMiddleware, deleteConsentType);
 
 export default router;
