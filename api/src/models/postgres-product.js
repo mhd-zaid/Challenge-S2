@@ -15,7 +15,10 @@ Product.init(
         sku: {
             type: DataTypes.STRING,
             allowNull: false,
-            unique: true,
+            unique: {
+                args: true,
+                msg: "Field 'sku' must be unique.",
+            },
             validate: {
                 notEmpty: {
                     msg: "Field 'sku' cannot be empty.",

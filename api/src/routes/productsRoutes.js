@@ -173,8 +173,8 @@ export default (
 			const model = await Model.findOne(
 				{
 					where: { id: req.body.modelId },
+					include: ["brand", "category"]
 				},
-				{ include: ["brand", "category"] }
 			);
 
 			if (!model) {
@@ -199,20 +199,17 @@ export default (
 				id: id.toString(),
 				...productDataToCreate,
 			});
-
-			productDataToCreate.model = model;
-			productDataToCreate.brand = model.Brand;
-			productDataToCreate.category = model.Category;
+			
+			productDataToCreate._id = id;
+			productDataToCreate.brand = model.brand.toJSON();
+			productDataToCreate.category = model.category.toJSON();
+			productDataToCreate.model = model.toJSON();
 			productDataToCreate.deletedAt = null;
-
-			await ProductMongodb({
-				_id: id,
-				...productDataToCreate,
-			}).save();
+			await ProductMongodb(productDataToCreate).save();
 
 			res.status(201).json(product);
 		} catch (error) {
-			if (error.name == "SequelizeValidationError") {
+			if (error.name == "SequelizeValidationError" || error.name == "SequelizeUniqueConstraintError") {
 				return res.status(422).json({ message: error.message });
 			} else {
 				return res.status(500).json({
@@ -262,8 +259,8 @@ export default (
 			const model = await Model.findOne(
 				{
 					where: { id: req.body.model },
+					include: ["brand", "category"]
 				},
-				{ include: ["brand", "category"] }
 			);
 
 			if (!model) {
@@ -293,9 +290,9 @@ export default (
 			});
 
 			await product.update(req.body);
-			productDataToUpdate.model = model;
-			productDataToUpdate.brand = model.Brand;
-			productDataToUpdate.category = model.Category;
+			productDataToUpdate.model = model.toJSON();
+			productDataToUpdate.brand = model.brand.toJSON();
+			productDataToUpdate.category = model.category.toJSON();
 
 			await productMongo.updateOne(productDataToUpdate);
 
