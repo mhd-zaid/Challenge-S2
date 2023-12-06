@@ -17,6 +17,8 @@ import authMiddleware from "../middlewares/authMiddleware.js";
 import adminMiddleware from "../middlewares/adminMiddleware.js";
 import { dataToCSV } from "../lib/dataToCSV.js";
 import { createExport } from "../services/exports.service.js";
+import path, { dirname } from "path";
+import { fileURLToPath } from "url";
 const {
 	getUsers,
 	createUser,
@@ -38,7 +40,10 @@ const {
 	isUserMajor,
 	generateToken,
 	dataToCSV,
-	createExport
+	createExport,
+	path,
+	dirname,
+	fileURLToPath
 );
 
 const router = express.Router();
@@ -49,6 +54,6 @@ router.get("/:id", authMiddleware, getUser);
 router.patch("/:id", authMiddleware, updateUser);
 router.patch("/:id/password", authMiddleware, updatePassword);
 router.delete("/:id", authMiddleware, deleteUser);
-router.post("/recover/:id", recoverUser);
+router.get("/recover/:id", recoverUser);
 
 export default router;

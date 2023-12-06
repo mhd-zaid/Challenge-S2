@@ -86,7 +86,7 @@ export const sendPasswordChangeReminderEmail = async (email) => {
     }
 };
 
-export const sendDeletedAccountEmail = async (email, encryptionKey) => {
+export const sendDeletedAccountEmail = async (user, encryptionKey) => {
     try {
         const htmlTemplate = fs.readFileSync(
             path.join(
@@ -96,7 +96,7 @@ export const sendDeletedAccountEmail = async (email, encryptionKey) => {
             "utf8"
         );
 
-        const recoveryLink = `${process.env.HOST_API}/users/recover?email=${email}&key=${encryptionKey}`;
+        const recoveryLink = `${process.env.HOST_API}/users/recover/${user.id}?encryptionKey=${encryptionKey}`;
 
         const subject = "Votre compte a bien été supprimé";
 
@@ -104,7 +104,7 @@ export const sendDeletedAccountEmail = async (email, encryptionKey) => {
             .replace("{{key}}", encryptionKey)
             .replace("{{recoveryLink}}", recoveryLink);
 
-        await sendEmail(email, subject, template);
+        await sendEmail(user.email, subject, template);
 
         return true;
     } catch (error) {
