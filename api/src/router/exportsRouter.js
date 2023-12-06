@@ -1,7 +1,7 @@
 import express from "express";
 import exportsRoutes from "../routes/exportsRoutes.js";
 import Export from "../models/mongodb-export.js";
-import { exportData, exportPersonalData } from "../services/exports.service.js";
+import { createExport, exportData, exportPersonalData } from "../services/exports.service.js";
 import { dataToCSV } from "../lib/dataToCSV.js";
 import path from "path";
 import fs from "fs";
@@ -14,7 +14,7 @@ const {
 	getExports,
 	getExport,
 	removeExport,
-} = exportsRoutes(exportData, exportPersonalData, Export, dataToCSV, path, fs, User);
+} = exportsRoutes(exportData, exportPersonalData, Export, dataToCSV, path, fs, User, createExport);
 
 const router = express.Router();
 

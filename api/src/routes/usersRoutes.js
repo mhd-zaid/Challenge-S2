@@ -9,7 +9,9 @@ export default (
 	Types,
 	decryptUserData,
 	isUserMajor,
-	generateToken
+	generateToken,
+	dataToCSV,
+	createExport,
 ) => ({
 	getUsers: async (req, res) => {
 		try {
@@ -30,7 +32,10 @@ export default (
 				where: { id: req.user.userId },
 			});
 
-			if (req.user.userId !== req.params.id && loggedUser.role !== "ROLE_ADMIN")
+			if (
+				req.user.userId !== req.params.id &&
+				loggedUser.role !== "ROLE_ADMIN"
+			)
 				return res.sendStatus(401);
 
 			const user = await User.findOne({
@@ -110,7 +115,10 @@ export default (
 				where: { id: req.user.userId },
 			});
 
-			if (req.user.userId !== req.params.id && loggedUser.role !== "ROLE_ADMIN")
+			if (
+				req.user.userId !== req.params.id &&
+				loggedUser.role !== "ROLE_ADMIN"
+			)
 				return res.sendStatus(401);
 
 			const { id } = req.params;
@@ -245,7 +253,10 @@ export default (
 				where: { id: req.user.userId },
 			});
 
-			if (req.user.userId !== req.params.id && loggedUser.role !== "ROLE_ADMIN")
+			if (
+				req.user.userId !== req.params.id &&
+				loggedUser.role !== "ROLE_ADMIN"
+			)
 				return res.sendStatus(401);
 
 			const { id } = req.params;
@@ -298,9 +309,12 @@ export default (
 				where: { id: req.user.userId },
 			});
 
-			if (req.user.userId !== req.params.id && loggedUser.role !== "ROLE_ADMIN")
+			if (
+				req.user.userId !== req.params.id &&
+				loggedUser.role !== "ROLE_ADMIN"
+			)
 				return res.sendStatus(401);
-			
+
 			const { id } = req.params;
 
 			if (!id)
@@ -346,15 +360,15 @@ export default (
 
 	recoverUser: async (req, res) => {
 		try {
-			const { id } = req.params;
-			const { encryptionKey } = req.body;
+			const { email, encryptionKey } = req.params;
+			// const { encryptionKey } = req.body;
 
-			if (!id)
+			if (!email)
 				return res
 					.status(400)
 					.json({ message: "Id parameter is missing" });
 
-			const user = await User.findOne({ where: { id } });
+			const user = await User.findOne({ where: { email } });
 
 			if (!user)
 				return res.status(404).json({ message: "User not found" });
@@ -376,7 +390,16 @@ export default (
 
 			const decryptedData = decryptUserData(user.toJSON(), encryptionKey);
 
-			res.json(decryptedData);
+			const csv = await dataToCSV(decryptedData);
+
+			const { exportId, fileName } = await createExport(
+				"personalData",
+				csv
+			);
+
+			res.sendFile(fileName, {
+				root: path.join(__dirname, "../uploads/exports"),
+			});
 		} catch (error) {
 			res.status(500).json({
 				message: `An error occurred while recovering the user : ${error.message}`,

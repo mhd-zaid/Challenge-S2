@@ -105,3 +105,27 @@ export const exportPersonalData = async (userId) => {
 
 	return formatData(data);
 };
+
+export const createExport = async (dataScope, csv) => {
+	const currentModuleFile = new URL(import.meta.url).pathname;
+	const currentModuleDirectory = path.dirname(currentModuleFile);
+
+	const fileName = `${dataScope}-${new Date()
+		.toLocaleDateString("fr-FR")
+		.replaceAll("/", "-")}-${Math.random().toString(36).slice(2)}.csv`;
+	const filePath = path.join(
+		currentModuleDirectory,
+		"../../uploads/exports",
+		fileName
+	);
+	fs.writeFileSync(filePath, csv);
+	// create export and get id
+	const exportToCreate = new Export({
+		dataScope,
+		fileName,
+	});
+	await exportToCreate.save();
+
+	console.log(`Exported ${dataScope} successfully`);
+	return { exportId: exportToCreate._id, fileName };
+};

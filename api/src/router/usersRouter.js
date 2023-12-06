@@ -15,6 +15,8 @@ import { generateToken } from "../services/auth.service.js";
 import { Types } from "mongoose";
 import authMiddleware from "../middlewares/authMiddleware.js";
 import adminMiddleware from "../middlewares/adminMiddleware.js";
+import { dataToCSV } from "../lib/dataToCSV.js";
+import { createExport } from "../services/exports.service.js";
 const {
 	getUsers,
 	createUser,
@@ -34,7 +36,9 @@ const {
 	Types,
 	decryptUserData,
 	isUserMajor,
-	generateToken
+	generateToken,
+	dataToCSV,
+	createExport
 );
 
 const router = express.Router();
@@ -45,6 +49,6 @@ router.get("/:id", authMiddleware, getUser);
 router.patch("/:id", authMiddleware, updateUser);
 router.patch("/:id/password", authMiddleware, updatePassword);
 router.delete("/:id", authMiddleware, deleteUser);
-router.post("/recover/:id", authMiddleware, recoverUser);
+router.post("/recover/:id", recoverUser);
 
 export default router;
