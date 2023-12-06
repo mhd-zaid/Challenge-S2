@@ -6,6 +6,9 @@ import Category from "../models/postgres-category.js";
 import Order from "../models/postgres-order.js";
 import Orders_Products from "../models/postgres-order-product.js";
 import { columnNames } from "../lib/columnsNames.js";
+import Export from "../models/mongodb-export.js";
+import path from "path";
+import fs from "fs";
 
 const formatData = (data) => {
 	data = data.map((item) => {
@@ -124,6 +127,7 @@ export const createExport = async (dataScope, csv) => {
 		dataScope,
 		fileName,
 	});
+
 	await exportToCreate.save();
 
 	console.log(`Exported ${dataScope} successfully`);
