@@ -4,12 +4,45 @@
 
 ## Installation
 
-`docker-compose up -d`
+1. Cloner le projet : https://github.com/mhd-zaid/Challenge-S2.git
+`git clone https://github.com/mhd-zaid/Challenge-S2.git`
+
+2. Ouvrir docker puis exécuter la commande `docker-compose up -d`
+
+3. Pour exécuter les fixtures et avoir des données de test:
+`docker compose exec api npm run fixtures:load`
+
+## Comptes pour les tests
+
+Le mot de passe pour tous les comptes qui suivent est **test**
+
+Les différents emails sont les suivants:
+
+- ROLE_USER
+user@user.fr
+userdemo1@user.fr
+userdemo2@user.fr
+
+- ROLE_ADMIN
+admin@user.fr
+admindemo1@user.fr
+admindemo2@user.fr
+
 
 ## Usage
 
-- se rendre sur http://localhost:5173
-- connexion avec l'identifiant `user` et le mot de passe `challenge-s2` pour la base mysqldb
-- conexion avec l'identifiant `root` et le mot de passe `challenge-s2` pour la base mongodb
-- pour visualiser la bdd mysql, utiliser phpmyadmin sur http://localhost:8080
-- pour visualiser la bdd mongodb, utiliser mongo-express sur http://localhost:8081
+- Client
+Se rendre sur le lien suivant: http://localhost:5173
+
+- Dashboard
+Se rendre sur le lien suivant: http://localhost:5174
+
+- Accès aux bases de données
+
+Adminer
+Lien de connexion : http://localhost:8081/postgres://user:challenge-s2@postgresdb:5432/SneakPeak?pgsql=postgresdb&username=user&db=SneakPeak&ns=public
+Connexion avec l'identifiant `user` et le mot de passe `challenge-s2` pour la base mysqldb
+
+MongoExpress
+Lien de connexion : ...
+Conexion avec l'identifiant `root` et le mot de passe `challenge-s2` pour la base mongodb
