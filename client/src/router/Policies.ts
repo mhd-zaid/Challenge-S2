@@ -8,6 +8,14 @@ export const policiesRoutes = [
         }
     },
     {
+        path: '/cgu',
+        name:'cgu',
+        component: () => import('@/views/policies/CguView.vue'),
+        meta: {
+            requiresAuth: false
+        }
+    },
+    {
         path: '/privacy-policy',
         name: 'privacy-policy',
         component: () => import('@/views/policies/PrivacyPolicyView.vue'),

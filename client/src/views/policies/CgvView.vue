@@ -28,6 +28,7 @@ import LayoutComponent from "@/layout/LayoutComponent.vue";
           </li>
         </ul>
         <p><span >Les prix de nos produits et services sont indiqu&eacute;s sur notre site. Tous les prix sont en euros et toutes taxes comprises. Le paiement s&apos;effectue au moment de la commande. Nous utilisons un syst&egrave;me de paiement s&eacute;curis&eacute; via Stripe pour garantir la s&eacute;curit&eacute; de toutes les transactions financi&egrave;res.</span></p>
+        <p>On vous insite a lire les <a style="color: #4f46e5; font-weight: bold" href="https://stripe.com/fr-us/legal/consumer">conditions générales d'utilisation de Stripe </a> avant de passer commande.</p>
         <ul>
           <li >
             Livraison
@@ -81,5 +82,6 @@ p {
     max-w-3xl
     mx-auto
     mb-1
+    font-bold
   }
 </style>
