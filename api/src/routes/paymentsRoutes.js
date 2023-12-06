@@ -51,16 +51,16 @@ export default (Payment, Order, User, stripe, OrderMongodb, ObjectId) => ({
 								},
 							},
 							unit_amount: parseInt(
-								storeItem.price * (1 + parseFloat(storeItem.vat) / 100)
+								storeItem.price
 							),
 						},
 						quantity: storeItem.quantity,
 					};
 				}),
 				success_url:
-					"http://localhost:5173/payment/success",
+					process.env.HOST_CLIENT+"/payment/success",
 				cancel_url:
-					"http://localhost:5173/payment/failed",
+					process.env.HOST_CLIENT+"/payment/failed",
 				expires_at: Math.floor(Date.now() / 1000 + 30 * 60),
 				metadata: {
 					deliveryAdress: order.deliveryAddress,

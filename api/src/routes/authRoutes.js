@@ -203,7 +203,11 @@ export default (
 			await mongoUserToFind.save();
 
 			// TODO: change the real url
-			res.redirect("http://localhost:5174/login?email_confirmed=true");
+			if (user.role === "ROLE_USER") {
+				res.redirect(process.env.HOST_CLIENT+"/login?email_confirmed=true");
+			}else{
+				res.redirect(process.env.HOST_DASHBOARD+"/login?email_confirmed=true");
+			}
 		} catch (error) {
 			res.status(500).json({
 				message: `An error occurred while validating the email : ${error.message}`,
