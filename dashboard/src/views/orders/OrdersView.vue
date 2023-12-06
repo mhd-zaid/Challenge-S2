@@ -73,7 +73,7 @@ onUnmounted(() => {
           </div>
       </div>
       <OTable
-        :actions="false"
+        :actions=[]
         :rows="state.rows"
         :columns="state.columns"
         @showRow="(row: any) => router.push({ name: 'order', params: { id: row.id } })"

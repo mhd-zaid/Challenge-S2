@@ -24,8 +24,8 @@ const getProducts = async () => {
       'productImages',
       // 'sku',
       'name',
-      'price',
       'quantity',
+      'price',
       'vat',
       'size',
       'color',
@@ -134,6 +134,7 @@ const exportProducts = async () => {
       <OTable
         :rows="state.rows"
         :columns="state.columns"
+        :actions="['quantity', 'update', 'delete']"
         @deleteRow="OpenConfirmationModal"
         @updateRow="openUpdatingDrawer"
         @showRow="(row: any) => router.push({ name: 'product', params: { id: row.id } })"

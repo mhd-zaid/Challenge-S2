@@ -16,8 +16,8 @@ import { columnNames, getValue } from '@/utils/valuesUpdater'
 const props = defineProps({
   actions: {
     required: false,
-    type: Boolean,
-    default: true
+    type: Array<String>,
+    default: ["show", "update", "delete"]
   },
   columns: {
     required: true,
@@ -93,6 +93,7 @@ const toggleSearch = (col: string) => {
                   />
                 </th>
                 <th
+                  v-if="props.actions && props.actions.length"
                   scope="col"
                   class="py-3.5 pl-4 pr-6 text-right text-sm font-semibold text-gray-900 sm:pl-6"
                 >
@@ -129,12 +130,20 @@ const toggleSearch = (col: string) => {
                     src="/images/no-image.jpeg"
                     alt="Aucune image disponible"
                   />
-                  <span v-else>
+                  <span
+                    v-else
+                    :class="[
+                      col === 'quantity' ? 'bg-gray-100 px-2 py-1 rounded-md' : '',
+                      col === 'quantity' && row['quantity'] <= row['alertQuantity']
+                        ? 'bg-red-200'
+                        : ''
+                    ]"
+                  >
                     {{ getValue(row, col) }}
                   </span>
                 </td>
                 <td
-                  v-if="props.actions"
+                  v-if="props.actions && props.actions.length"
                   class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 flex justify-end"
                 >
                   <div class="w-24 flex justify-end items-center space-x-2">

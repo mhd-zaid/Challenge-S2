@@ -67,7 +67,7 @@ export default (
 			const categoryQuery = {};
 			const filters = req.query;
 			const page = filters.page || 1;
-			const limit = filters.limit || 12;
+			const limit = filters.limit || filters.page ? 12 : null;
 			addFiltersToQuery(
 				{ query, modelQuery, brandQuery, categoryQuery },
 				filters
@@ -98,7 +98,7 @@ export default (
 				where: query,
 			});
 
-			const products = await Product.findAll({
+			const productsOptions = {
 				include: [
 					{
 						model: Model,
@@ -120,9 +120,14 @@ export default (
 					"productImages",
 				],
 				where: query,
-				limit: parseInt(limit),
 				offset: offset,
-			});
+			};
+
+			if (limit !== null) {
+				productsOptions.limit = parseInt(limit);
+			}
+
+			const products = await Product.findAll(productsOptions);
 
 			if (!products)
 				return res.status(404).json({ message: "Products not found" });

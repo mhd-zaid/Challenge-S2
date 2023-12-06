@@ -64,6 +64,7 @@ modelsFixture.forEach((model) => {
 			sku,
             discount,
 			modelId: model.id,
+			alertQuantity: 20,
 		});
 	});
 });
