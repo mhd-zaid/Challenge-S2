@@ -10,12 +10,14 @@
 git clone https://github.com/mhd-zaid/Challenge-S2.git
 ```
 
-2. Ouvrir docker puis exécuter la commande suivante:
+2. Créer un fichier .env.local avec le code qui vous a été envoyé 
+
+3. Ouvrir docker puis exécuter la commande suivante:
 ```bash
 docker-compose up -d
 ```
 
-3. Pour exécuter les fixtures et avoir des données de test utilisez la commande suivante:
+4. Pour exécuter les fixtures et avoir des données de test utilisez la commande suivante:
 ```bash
 docker compose exec api npm run fixtures:load
 ```
