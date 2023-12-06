@@ -150,7 +150,9 @@ const submit = async () => {
               <div class="flex items-center justify-between">
                 <div class="flex items-center">
                   <input v-model="state.form.accept" id="accept-terms" name="accept-terms" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-600" />
-                  <label for="accept-terms" class="ml-3 block text-sm leading-6 text-gray-900">Voir la <RouterLink to="/privacy-policy" class="font-semibold text-secondary hover:text-secondary-light">politique de confidentialité</RouterLink></label>
+                  <label for="accept-terms" class="ml-3 block text-sm leading-6 text-gray-900">
+                    En cochant cette case, vous confirmez avoir lu et accepté nos <RouterLink to="/cgu" class="font-semibold text-secondary hover:text-secondary-light">conditions générales d'utilisation</RouterLink>, nos <RouterLink to="/cgv" class="font-semibold text-secondary hover:text-secondary-light">conditions générales de vente</RouterLink> et notre <RouterLink to="/privacy-policy" class="font-semibold text-secondary hover:text-secondary-light">politique de confidentialité</RouterLink>.
+                  </label>
                 </div>
               </div>
 

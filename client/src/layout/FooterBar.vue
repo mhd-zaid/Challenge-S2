@@ -9,15 +9,16 @@ const footerNavigation = {
   ],
   company: [
     {name: 'Qui nous sommes', href: '/about'},
-    {name: 'Conditions de ventes ', href: '/cgv'},
-    {name: 'Conditions d\'utilisation', href: '/cgu'},
-    {name: 'Politique de remboursement', href: '/refund-policy'},
+    {name: 'Conditions générale de ventes ', href: '/cgv'},
+    {name: 'Conditions générale d\'utilisation', href: '/cgu'},
+    {name: 'Menstions légales', href: '/legal-mentions'},
     {name: 'Politique de livraison', href: '/delivery-policy'},
     {name: 'Politique de garantie', href: '/warranty-policy'}
   ],
   account: [
     {name: 'Gérer le compte', href: '/profile'},
     {name: 'Politiques de retours et échanges', href: '/exchange-policy'},
+    {name: 'Politique de remboursement', href: '/refund-policy'},
     {name: 'Politique de suppression de compte', href: '/delete-policy'},
     {name: 'Politique de confidentialité', href: '/privacy-policy'},
   ],

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {onMounted, reactive, ref, watch} from 'vue'
-import {Dialog, DialogPanel} from '@headlessui/vue'
+import {Dialog, DialogPanel, Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/vue'
 import {Bars3Icon, HeartIcon, ShoppingBagIcon, UserIcon, XMarkIcon} from '@heroicons/vue/24/outline'
 import {useRouter} from 'vue-router'
 import {useWishlistStore} from '@/stores/wishlist'
@@ -51,6 +51,13 @@ onMounted(async () => {
   )
 })
 
+const logout = async () => {
+  localStorage.removeItem('token')
+  localStorage.removeItem('user')
+  localStorage.removeItem('cart')
+  await router.push('/login')
+}
+
 </script>
 
 <template>
@@ -93,12 +100,28 @@ onMounted(async () => {
       </div>
       <div class="flex flex-1 justify-end">
         <!-- Vérifier s'il l'utilisateur est connecter -->
-        <a v-if="isAuthenticated" href="/profile" class="group flex items-center p-2">
-          <UserIcon
-            class="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
-            aria-hidden="true"
-          />
-        </a>
+        <Menu v-if="isAuthenticated" as="div" class="relative inline-block text-left">
+          <div>
+            <MenuButton class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900">
+              <UserIcon
+                  class="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+                  aria-hidden="true"
+              />
+            </MenuButton>
+          </div>
+          <transition enter-active-class="transition ease-out duration-100" enter-from-class="transform opacity-0 scale-95" enter-to-class="transform opacity-100 scale-100" leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-95">
+            <MenuItems class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+              <div class="py-1">
+                <MenuItem  v-slot="{ active }">
+                  <a  href="/profile"  :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">Profile</a>
+                </MenuItem>
+                <MenuItem v-slot="{ active }">
+                  <div @click="logout" :class="[active ? 'cursor-pointer bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">Deconnexion</div>
+                </MenuItem>
+              </div>
+            </MenuItems>
+          </transition>
+        </Menu>
         <button
           v-else
           @click="state.openModal = true"
@@ -109,7 +132,6 @@ onMounted(async () => {
               aria-hidden="true"
           />
         </button>
-
       </div>
       <!-- Vérifier s'il l'utilisateur est connecter -->
       <div class="ml-4 flow-root lg:ml-6" v-if="isAuthenticated">

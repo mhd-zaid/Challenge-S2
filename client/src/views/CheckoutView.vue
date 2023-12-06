@@ -384,8 +384,8 @@ watch(
                   <div class="flex items-center mb-3">
                     <input v-model="state.accept" id="accept-terms" name="accept-terms" type="checkbox"
                            class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-600"/>
-                    <label for="accept-terms" class="ml-3 block text-sm leading-6 text-gray-900">Accepter la
-                      <RouterLink to="/cgv" class="font-semibold text-secondary hover:text-secondary-light">politique
+                    <label for="accept-terms" class="ml-3 block text-sm leading-6 text-gray-900">En cochant cette case, vous confirmez avoir lu et accepté nos
+                      <RouterLink to="/cgv" class="font-semibold text-secondary hover:text-secondary-light">conditions
                         générale de ventes
                       </RouterLink>
                       pour continuer

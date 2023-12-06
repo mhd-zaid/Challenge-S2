@@ -8,6 +8,14 @@ export const policiesRoutes = [
         }
     },
     {
+        path:'/legal-mentions',
+        name: 'legal-mentions',
+        component: () => import('@/views/policies/LegalMentionsView.vue'),
+        meta: {
+            requiresAuth: false
+        }
+    },
+    {
         path: '/exchange-policy',
         name: 'exchange-policy',
         component: () => import('@/views/policies/ExchangePolicyView.vue'),
