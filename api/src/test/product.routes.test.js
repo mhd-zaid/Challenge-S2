@@ -166,6 +166,7 @@ const Product = {
     findAll: jest.fn().mockReturnValue(products),
     findOne: jest.fn().mockReturnValue(products[0].dataValues),
     create: jest.fn().mockReturnValue(addedProduct),
+    count: jest.fn().mockReturnValue(2),
 };
 const ProductMongodb = (data) => {
     return {
@@ -203,7 +204,7 @@ describe("getProducts", () => {
             price: (product.dataValues.price / 100).toFixed(2),
         }));
         expect(res.status).toHaveBeenCalledWith(200);
-        expect(res.json).toHaveBeenCalledWith(expectedProducts);
+        expect(res.json).toHaveBeenCalledWith({totalProducts:2,products:expectedProducts});
         expect(Product.findAll).toHaveBeenCalled();
     });
 });
