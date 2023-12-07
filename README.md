@@ -77,3 +77,21 @@ stripe listen --forward-to localhost:3000/payments/failed
 
 Les informations de connexion pour le compte stripe et le fichier .env.local seront transmis via la plateforme de rendu de projet.
 
+## Personnes ayant participé au projet
+    - Zaid MOUHAMAD : mhd-zaid, 
+    - Rafael TAVARES DE PINHO : Rafael93150,
+    - Riadh BENCHOUCHE : riadh-benchouche, riadh-fstck
+
+## Listing des tâche réaliser par chaque membre du groupe :
+    - Conception BDD : ALL
+    - Authentification : Rafael TAVARES DE PINHO, Riadh BENCHOUCHE
+    - Recherche produits : ALL
+    - Panier avec système de réservation : Riadh BENCHOUCHE
+    - Intégration d’une plateforme de paiement : Zaid MOUHAMAD
+    - Gestion des stocks : Riadh BENCHOUCHE, Zaid MOUHAMAD
+    - Historique de commande : Rafael TAVARES DE PINHO, Zaid MOUHAMAD,
+    - Panel d’administration : Rafael TAVARES DE PINHO, Riadh BENCHOUCHE
+    - Gestion de téléchargement des données personnelles d’un utilisateur : Rafael TAVARES DE PINHO
+    - Gestion des factures : Zaid MOUHAMAD
+    - Gestion adresse de livraison : Riadh BENCHOUCHE
+
