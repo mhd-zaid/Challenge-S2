@@ -36,7 +36,7 @@ export const useUserStore = defineStore({
 
         async fetchUser() {
             try {
-                const response = await axios.get('http://localhost:3000/auth/user');
+                const response = await axios.get(`${import.meta.env.VITE_HOST_API}/auth/user`);
 
                 if (response.status === 200) {
                     this.user = response.data;

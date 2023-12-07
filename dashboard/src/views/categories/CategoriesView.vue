@@ -6,7 +6,7 @@ import OTable from "@/components/OTable.vue";
 import {useRouter} from "vue-router";
 import OModal from "@/components/OModal.vue";
 import CategoriesSidebarForm from "@/views/categories/CategoriesSidebarForm.vue";
-import { CloudArrowDownIcon } from '@heroicons/vue/24/outline';
+import {CloudArrowDownIcon} from '@heroicons/vue/24/outline';
 
 const router = useRouter()
 const state = reactive({
@@ -79,7 +79,7 @@ const exportCategories = async () => {
         const fileName = res.data.fileName
 
         const downloadLink = document.createElement('a')
-        downloadLink.href = `http://localhost:3000/exports/${fileName}`
+        downloadLink.href = `${import.meta.env.VITE_HOST_API}/exports/${fileName}`
         downloadLink.download = fileName
         document.body.appendChild(downloadLink)
         downloadLink.click()

@@ -60,7 +60,7 @@ const getImages = (productImages: any) => {
   }
 
   return productImages.map((productImage: any) => {
-    return `http://localhost:3000/images/${productImage.url}`
+    return `${import.meta.env.VITE_HOST_API}/images/${productImage.url}`
   })
 }
 
@@ -69,7 +69,7 @@ const getFirstImage = (productImages: any) => {
     return ''
   }
 
-  return `http://localhost:3000/images/${productImages[0].url}`
+  return `${import.meta.env.VITE_HOST_API}/images/${productImages[0].url}`
 }
 
 const getModel = (model: any) => {

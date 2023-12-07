@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import LayoutComponent from '@/layout/LayoutComponent.vue'
-import { reactive } from 'vue'
-import { useRouter } from 'vue-router'
-import { useWishlistStore } from '@/stores/wishlist'
+import {reactive} from 'vue'
+import {useRouter} from 'vue-router'
+import {useWishlistStore} from '@/stores/wishlist'
 import axiosInstance from '@/utils/axiosInstance'
-import type { ProductType } from '@/types/ProductType'
-import { getProductColor, getProductPrice } from '@/types/ProductType'
-import { getProductImage } from '@/types/ProductImageType'
-import { useCartStore } from '@/stores/cart'
+import type {ProductType} from '@/types/ProductType'
+import {getProductColor, getProductPrice} from '@/types/ProductType'
+import {getProductImage} from '@/types/ProductImageType'
+import {useCartStore} from '@/stores/cart'
 import RedirectModal from '@/components/RedirectModal.vue'
 import checkAuthentication from '@/utils/checkAuthentication'
-import { ExclamationCircleIcon } from '@heroicons/vue/24/outline'
+import {ExclamationCircleIcon} from '@heroicons/vue/24/outline'
 
 const product = {
   highlights: [
@@ -74,7 +74,7 @@ init()
           class="aspect-h-5 aspect-w-4 lg:aspect-h-4 lg:aspect-w-3 sm:overflow-hidden sm:rounded-lg"
         >
           <img
-            :src="`http://localhost:3000/images/${image.url}`"
+            :src="`${import.meta.env.VITE_HOST_API}/images/${image.url}`"
             :alt="state.product.name"
             class="h-full w-full object-cover object-center"
           />
