@@ -58,9 +58,9 @@ export default (Payment, Order, User, stripe, OrderMongodb, ObjectId) => ({
 					};
 				}),
 				success_url:
-					`${process.env.HOST_CLIENT}+/payment/success?orderId=${orderId}`,
+					`${process.env.HOST_CLIENT}/payment/success?orderId=${orderId}`,
 				cancel_url:
-					process.env.HOST_CLIENT+"/payment/failed",
+					`${process.env.HOST_CLIENT}/payment/failed`,
 				expires_at: Math.floor(Date.now() / 1000 + 30 * 60),
 				metadata: {
 					deliveryAdress: order.deliveryAddress,

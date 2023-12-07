@@ -6,7 +6,9 @@ import {useRouter} from "vue-router";
 import type {ProductType} from "@/types/ProductType";
 import {CheckIcon} from "@heroicons/vue/24/outline";
 import {showToast} from "@/utils/toast";
+import { downloadInvoice } from "@/types/OrderType";
 import axiosInstance from "@/utils/axiosInstance";
+import OrderPdf from '@/components/profile/OrderPdf.vue'
 
 const html2pdf = require('html2pdf.js')
 
@@ -41,22 +43,6 @@ watch(router.currentRoute, async () => {
     {immediate: true},
 )
 
-const downloadInvoice = async () => {
-  const orderId = state.order.id
-  const template = document.getElementById('invoice-template')
-  if (template) {
-    template.style.display = 'block'
-    await html2pdf(template, {
-      margin: [1, 1],
-      filename: `facture-${orderId}.pdf`,
-      image: {type: 'jpeg', quality: 0.98},
-      html2canvas: {scale: 2, letterRendering: true},
-      jsPDF: {unit: 'in', format: 'letter', orientation: 'portrait'},
-      pagebreak: {mode: ['avoid-all', 'css', 'legacy']}
-    })
-    template.style.display = 'none'
-  }
-}
 </script>
 
 <template>
@@ -77,9 +63,12 @@ const downloadInvoice = async () => {
             <a href="/"
                class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Retour
               à l'accueil</a>
-            <button @click="downloadInvoice" class="text-sm font-semibold leading-6 text-white">Télécharger la facture
+            <button @click="downloadInvoice(state.order)" class="text-sm font-semibold leading-6 text-white">Télécharger la facture
               <span aria-hidden="true">→</span></button>
             <!-- template PDF -->
+            <div v-if="state.order" :id="`invoice-template-${state.order.id}`" style="display: none;">
+                <OrderPdf :data="state.order" />
+            </div>
           </div>
         </div>
       </div>
