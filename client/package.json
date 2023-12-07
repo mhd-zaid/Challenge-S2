@@ -17,15 +17,17 @@
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/forms": "^0.5.7",
     "axios": "^1.5.0",
+    "html2pdf.js": "^0.9.0",
     "pinia": "^2.1.6",
     "vue": "^3.3.4",
     "vue-router": "^4.2.4",
+    "vue3-toastify": "^0.1.14",
     "zod": "^3.22.4"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.3.3",
     "@tsconfig/node18": "^18.2.2",
-    "@types/node": "^18.17.17",
+    "@types/node": "^18.18.4",
     "@vitejs/plugin-vue": "^4.3.4",
     "@vue/eslint-config-prettier": "^8.0.0",
     "@vue/eslint-config-typescript": "^12.0.0",

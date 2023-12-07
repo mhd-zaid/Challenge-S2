@@ -2,7 +2,8 @@
 import axiosInstance from '@/utils/axiosInstance'
 import { reactive, watch } from 'vue'
 import ODrawer from '@/components/ODrawer.vue'
-import { userSchema } from '@/schemas/userSchema'
+import { userSchema } from '@/utils/validations/userSchema'
+import type { UserType } from '@/types/UserType';
 
 const props = defineProps({
   open: {
@@ -21,12 +22,12 @@ const emit = defineEmits(['closeCreationDrawer', 'closeUpdatingDrawer'])
 const state = reactive({
   user: {
     role: 'ROLE_USER'
-  } as any,
+  } as UserType,
   errors: ''
 })
 
 const validateAndSubmit = async (isCreation: boolean) => {
-  const userToSubmit = { ...state.user }
+  const userToSubmit: any = { ...state.user }
   if (!userToSubmit.password) {
     delete userToSubmit.password
   }
@@ -48,19 +49,20 @@ const validateAndSubmit = async (isCreation: boolean) => {
         state.errors = 'Un compte est déjà associé à cet email'
         return
       }
-      axiosInstance.post('/users', userToSubmit).then(() => {
+      await axiosInstance.post('/users', userToSubmit).then(() => {
         state.errors = ''
         emit('closeCreationDrawer')
       })
     } else {
-      axiosInstance
+      await axiosInstance
         .patch(`/users/${props.id}`, userToSubmit)
         .then(() => {
           state.errors = ''
           emit('closeUpdatingDrawer')
         })
         .catch((error: any) => {
-          if (error.response.data.error.includes('Email already taken')) {
+          console.log(error)
+          if (error.response.data.message === 'Email already taken') {
             state.errors = 'Un compte est déjà associé à cet email'
           }
         })

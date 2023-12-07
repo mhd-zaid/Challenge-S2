@@ -1,27 +1,32 @@
 <script setup lang="ts">
 const footerNavigation = {
   shop: [
-    { name: 'Lifestyle', href: '/products?category=lifestyle' },
-    { name: 'Football', href: '/products?category=football' },
-    { name: 'Running', href: '/products?category=running' },
-    { name: 'Chaussures de ville', href: '/products?category=ville' },
-    { name: 'Bottes', href: '/products?category=bottes' }
+    {name: 'Lifestyle', href: '/products?category=lifestyle'},
+    {name: 'Football', href: '/products?category=football'},
+    {name: 'Running', href: '/products?category=running'},
+    {name: 'Chaussures de ville', href: '/products?category=ville'},
+    {name: 'Bottes', href: '/products?category=bottes'}
   ],
   company: [
-    { name: 'Qui nous sommes', href: '/about' },
-    { name: 'Conditions de ventes ', href: '/cgv' },
-    { name: `Conditions d'utilisation` , href: '/cgu' },
-    { name: 'FAQ', href: '/faq'}
+    {name: 'Qui nous sommes', href: '/about'},
+    {name: 'Conditions générale de ventes ', href: '/cgv'},
+    {name: 'Conditions générale d\'utilisation', href: '/cgu'},
+    {name: 'Mentions légales', href: '/legal-mentions'},
+    {name: 'Politique de livraison', href: '/delivery-policy'},
+    {name: 'Politique de garantie', href: '/warranty-policy'}
   ],
   account: [
-    { name: 'Gérer le compte', href: '/profile' },
-    { name: 'Retours et échanges', href: '/exchange-policy' },
+    {name: 'Gérer le compte', href: '/profile'},
+    {name: 'Politiques de retours et échanges', href: '/exchange-policy'},
+    {name: 'Politique de remboursement', href: '/refund-policy'},
+    {name: 'Politique de suppression de compte', href: '/delete-policy'},
+    {name: 'Politique de confidentialité', href: '/privacy-policy'},
   ],
   connect: [
-    { name: 'Nous contacter', href: '/contact' },
-    { name: 'Twitter', href: 'https://twitter.com/?lang=fr' },
-    { name: 'Instagram', href: 'https://www.instagram.com/' },
-    { name: 'Pinterest', href: 'https://www.pinterest.com/' }
+    {name: 'Nous contacter', href: '/contact'},
+    {name: 'Twitter', href: 'https://twitter.com/?lang=fr'},
+    {name: 'Instagram', href: 'https://www.instagram.com/'},
+    {name: 'Pinterest', href: 'https://www.pinterest.com/'}
   ]
 }
 </script>
@@ -67,9 +72,6 @@ const footerNavigation = {
               </ul>
             </div>
           </div>
-        </div>
-        <div class="mt-16 xl:mt-0">
-          <img src="/images/sneakpeak_logo_black.png" alt="newsletter" class=" w-full"/>
         </div>
       </div>
 

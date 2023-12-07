@@ -6,6 +6,7 @@ import OTable from '@/components/OTable.vue'
 import { useRouter } from 'vue-router'
 import OModal from '@/components/OModal.vue'
 import UsersSidebarForm from '@/views/users/UsersSidebarForm.vue'
+import { CloudArrowDownIcon } from '@heroicons/vue/24/outline'
 
 const router = useRouter()
 const state = reactive({
@@ -37,6 +38,27 @@ const deleteUser = async (id: string) => {
       state.selectedId = ''
       getUsers()
     })
+  } catch (e: any) {
+    throw e
+  }
+}
+
+const exportUsers = async () => {
+  try {
+    await axiosInstance
+      .post('/exports/', {
+        dataScope: 'users'
+      })
+      .then((res) => {
+        const fileName = res.data.fileName
+
+        const downloadLink = document.createElement('a')
+        downloadLink.href = `http://localhost:3000/exports/${fileName}`
+        downloadLink.download = fileName
+        document.body.appendChild(downloadLink)
+        downloadLink.click()
+        document.body.removeChild(downloadLink)
+      })
   } catch (e: any) {
     throw e
   }
@@ -79,6 +101,15 @@ onUnmounted(() => {
           <p class="mt-2 text-sm text-gray-700">Liste des utilsateurs</p>
         </div>
         <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+          <button
+            @click="exportUsers"
+            class="bg-white rounded-md text-gray-400 px-3 py-2 text-center text-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            <span class="sr-only">Télécharger l'export</span>
+            <CloudArrowDownIcon class="h-6 w-6" aria-hidden="true" />
+          </button>
+        </div>
+        <div class="mt-4 sm:ml-3 sm:mt-0 sm:flex-none">
           <button
             @click="state.openCreation = true"
             type="button"

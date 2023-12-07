@@ -3,25 +3,32 @@ import ordersRoutes from "../routes/ordersRoutes.js";
 import Order from "../models/postgres-order.js";
 import OrderMongodb from "../models/mongodb-order.js";
 import User from "../models/postgres-user.js";
+import UserMongodb from "../models/mongodb-user.js";
 import ProductMongoDB from "../models/mongodb-product.js";
-import ModelMongodb from "../models/mongodb-model.js";
-import BrandMongodb from "../models/mongodb-brand.js";
-import CategoryMongodb from "../models/mongodb-category.js";
+import Product from "../models/postgres-product.js";
 import { ObjectId } from "mongodb";
-const { 
-    getOrders,
-    getUserOrders,
-    getOrder,
-    createOrder,
-    updateOrder,
-} =  ordersRoutes(Order, OrderMongodb, User, ProductMongoDB, ModelMongodb, BrandMongodb, CategoryMongodb, ObjectId);
+import authMiddleware from "../middlewares/authMiddleware.js";
+import storeKeeperOrAdminMiddleware from "../middlewares/storeKeeperOrAdminMiddleware.js";
+import { Op } from "sequelize";
+
+const { getOrders, getUserOrders, getOrder, createOrder, updateOrder } =
+	ordersRoutes(
+		Order,
+		OrderMongodb,
+		User,
+		UserMongodb,
+		ProductMongoDB,
+		Product,
+		ObjectId,
+		Op,
+	);
 
 const router = express.Router();
 
-router.get("/", getOrders);
-router.get("/user/:id", getUserOrders);
-router.get("/:id", getOrder);
-router.post("/", createOrder);
-router.put("/:id", updateOrder);
+router.get("/", authMiddleware, storeKeeperOrAdminMiddleware, getOrders);
+router.get("/user/:id", authMiddleware, getUserOrders);
+router.get("/:id", authMiddleware, getOrder);
+router.post("/", authMiddleware, createOrder);
+router.patch("/:id", authMiddleware, updateOrder);
 
 export default router;

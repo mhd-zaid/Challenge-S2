@@ -3,6 +3,7 @@ export default (
 	UserMongo,
 	jwt,
 	bcrypt,
+	Consent,
 	generateToken,
 	sendEmailConfirmation,
 	isUserBlocked,
@@ -14,11 +15,14 @@ export default (
 ) => ({
 	register: async (req, res) => {
 		try {
-			const { firstname, lastname, email, password, birthdate } =
+			const { firstname, lastname, email, password, birthdate, accept } =
 				req.body;
 
 			if (!(firstname && lastname && email && password && birthdate))
 				return res.sendStatus(400);
+
+			if (!accept)
+				return res.status(400).json({ message: "You must accept the terms and conditions" });
 
 			if (!isUserMajor(birthdate))
 				return res.status(400).json({ error: "Invalid birthdate" });
@@ -46,16 +50,26 @@ export default (
 				isValidate: false,
 				disabled: false,
 			});
+			let newPostgresUser = null;
+			try {
+				newPostgresUser = await User.create({
+					id: newMongoUser._id.toString(),
+					firstname,
+					lastname,
+					email,
+					birthdate: new Date(birthdate),
+					password: hashedPassword,
+					authentificationToken,
+				})
+				await Consent.create({
+					userId: newPostgresUser.id,
+					consent: true,
+				})
+			} catch (error) {
+				await UserMongo.deleteOne({ _id: newMongoUser._id });
+				res.sendStatus(500)
+			}
 
-			const newPostgresUser = await User.create({
-				id: newMongoUser._id.toString(),
-				firstname,
-				lastname,
-				email,
-				birthdate: new Date(birthdate),
-				password: hashedPassword,
-				authentificationToken,
-			});
 
 			const payload = {
 				userId: newPostgresUser.id,
@@ -135,6 +149,7 @@ export default (
 				firstname: user.firstname,
 				lastname: user.lastname,
 				email: user.email,
+				role: user.role,
 				token,
 			};
 
@@ -203,7 +218,11 @@ export default (
 			await mongoUserToFind.save();
 
 			// TODO: change the real url
-			res.redirect("http://localhost:5174/login?email_confirmed=true");
+			if (user.role === "ROLE_USER") {
+				res.redirect(process.env.HOST_CLIENT+"/login?email_confirmed=true");
+			}else{
+				res.redirect(process.env.HOST_DASHBOARD+"/login?email_confirmed=true");
+			}
 		} catch (error) {
 			res.status(500).json({
 				message: `An error occurred while validating the email : ${error.message}`,
@@ -280,7 +299,10 @@ export default (
 
 	getMe: async (req, res) => {
 		try {
-			const user = await User.findOne({ where: { id: req.user.userId } });
+			const user = await User.findOne({
+				where: { id: req.user.userId },
+				attributes: { exclude: ["password", "encryptionKey"] },
+			});
 			if (!user)
 				return res.status(404).json({ message: "User not found" });
 
@@ -299,7 +321,13 @@ export default (
 				return res.status(404).json({ message: "User not found" });
 			if (user.role === "ROLE_USER")
 				return res.sendStatus(403)
-			res.json(!!user);
+			res.json({
+				id : user.id,
+				firstname : user.firstname,
+				lastname : user.lastname,
+				email : user.email,
+				role : user.role,
+			});
 		} catch (error) {
 			res.status(500).json({
 				message: `An error occurred while getting the user : ${error.message}`,

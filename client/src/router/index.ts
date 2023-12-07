@@ -1,8 +1,10 @@
 import {createRouter, createWebHistory} from 'vue-router'
-
+import {policiesRoutes} from "@/router/Policies";
+// @ts-ignore
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
+        ...policiesRoutes,
         {
             path: '/',
             name: 'home',
@@ -53,9 +55,33 @@ const router = createRouter({
             }
         },
         {
+            path: '/payment/success',
+            name: 'payment-success',
+            component: () => import('@/views/PaymentSuccessView.vue'),
+            meta: {
+                requiresAuth: true
+            }
+        },
+        {
+            path: '/payment/failed',
+            name: 'payment-failed',
+            component: () => import('@/views/PaymentFailedView.vue'),
+            meta: {
+                requiresAuth: true
+            }
+        },
+        {
             path: '/login',
             name: 'login',
             component: () => import('@/views/auth/LoginView.vue'),
+            meta: {
+                requiresAuth: false
+            }
+        },
+        {
+            path: '/password-reset',
+            name: 'password-reset',
+            component: () => import('@/views/auth/PasswordResetView.vue'),
             meta: {
                 requiresAuth: false
             }
@@ -85,30 +111,6 @@ const router = createRouter({
             }
         },
         {
-            path: '/cgv',
-            name: 'cgv',
-            component: () => import('@/views/CgvView.vue'),
-            meta: {
-                requiresAuth: false
-            }
-        },
-        {
-            path: '/cgu',
-            name: 'cgu',
-            component: () => import('@/views/CguView.vue'),
-            meta: {
-                requiresAuth: false
-            }
-        },
-        {
-            path: '/exchange-policy',
-            name: 'exchange-policy',
-            component: () => import('@/views/ExchangePolicyView.vue'),
-            meta: {
-                requiresAuth: false
-            }
-        },
-        {
             path: '/:pathMatch(.*)*',
             name: 'not-found',
             component: () => import('@/views/NotFoundView.vue'),
@@ -131,7 +133,7 @@ router.beforeEach(async (to, from, next) => {
     const loggedIn = !!token
 
     if (to.meta.requiresAuth && !loggedIn) {
-        next({ name: 'login' })
+        next({name: 'login'})
     } else {
         if (loggedIn) {
             try {
@@ -143,11 +145,11 @@ router.beforeEach(async (to, from, next) => {
                 if (!response.ok) {
                     window.localStorage.removeItem('token')
                     window.localStorage.removeItem('user')
-                    next({ name: 'login' })
+                    next({name: 'login'})
                 }
             } catch (error) {
                 console.error('Error while fetching user', error)
-                next({ name: 'login' })
+                next({name: 'login'})
             }
         }
         next()

@@ -13,24 +13,47 @@ import {
 import bcrypt from "bcryptjs";
 import { generateToken } from "../services/auth.service.js";
 import { Types } from "mongoose";
+import authMiddleware from "../middlewares/authMiddleware.js";
+import adminMiddleware from "../middlewares/adminMiddleware.js";
+import { dataToCSV } from "../lib/dataToCSV.js";
+import { createExport } from "../services/exports.service.js";
+import path, { dirname } from "path";
+import { fileURLToPath } from "url";
 const {
-    getUsers,
-    createUser,
-    updateUser,
-    deleteUser,
-    getUser,
-    recoverUser,
-    updatePassword,
-} = userRoutes(User, UserMongo, bcrypt, isValidPassword, anonymizeUserData, generateEncryptionKey, sendDeletedAccountEmail, Types, decryptUserData, isUserMajor, generateToken);
+	getUsers,
+	createUser,
+	updateUser,
+	deleteUser,
+	getUser,
+	recoverUser,
+	updatePassword,
+} = userRoutes(
+	User,
+	UserMongo,
+	bcrypt,
+	isValidPassword,
+	anonymizeUserData,
+	generateEncryptionKey,
+	sendDeletedAccountEmail,
+	Types,
+	decryptUserData,
+	isUserMajor,
+	generateToken,
+	dataToCSV,
+	createExport,
+	path,
+	dirname,
+	fileURLToPath
+);
 
 const router = express.Router();
 
-router.get("/", getUsers);
-router.post("/", createUser);
-router.get("/:id", getUser);
-router.patch("/:id", updateUser);
-router.patch("/:id/password", updatePassword);
-router.delete("/:id", deleteUser);
-router.post("/recover/:id", recoverUser);
+router.get("/", authMiddleware, adminMiddleware, getUsers);
+router.post("/", authMiddleware, adminMiddleware, createUser);
+router.get("/:id", authMiddleware, getUser);
+router.patch("/:id", authMiddleware, updateUser);
+router.patch("/:id/password", authMiddleware, updatePassword);
+router.delete("/:id", authMiddleware, deleteUser);
+router.get("/recover/:id", recoverUser);
 
 export default router;

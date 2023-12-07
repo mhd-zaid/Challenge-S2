@@ -13,6 +13,15 @@ Brand.init(
 		name: {
 			type: DataTypes.STRING,
 			allowNull: false,
+			validate: {
+				notEmpty: {
+					msg: "Field 'name' cannot be empty.",
+				},
+				len: {
+					args: [2, 50],
+					msg: "Field 'name' must be between 2 and 50 characters long.",
+				},
+			},
 		},
 	},
 	{

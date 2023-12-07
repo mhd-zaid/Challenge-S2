@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import axiosInstance from '@/utils/axiosInstance'
-import {reactive, watch} from 'vue'
-import ODrawer from "@/components/ODrawer.vue";
-import type {BrandType} from "@/types/BrandType";
-import type {ModelType} from "@/types/ModelType";
-import type {CategoryType} from "@/types/CategoryTypes";
+import { reactive, watch } from 'vue'
+import ODrawer from '@/components/ODrawer.vue'
+import type { BrandType } from '@/types/BrandType'
+import type { ModelType } from '@/types/ModelType'
+import type { CategoryType } from '@/types/CategoryTypes'
+import { modelSchema } from '@/utils/validations/modelSchema'
+import { onMounted } from 'vue'
 
 const props = defineProps({
   open: {
@@ -14,12 +16,12 @@ const props = defineProps({
   },
   id: {
     required: false,
-    type: String,
-  },
+    type: String
+  }
 })
 
 const state = reactive({
-  form: {} as ModelType,
+  model: {} as ModelType,
   gender: [
     {
       value: 'male',
@@ -32,157 +34,170 @@ const state = reactive({
   ],
   brands: [] as BrandType[],
   categories: [] as CategoryType[],
-  errors: {}
+  errors: ''
 })
-
-watch(() => props.id, async () => {
-  if (props.id) {
-    try {
-      const response = await axiosInstance.get(`/models/${props.id}`)
-      state.form = response.data
-    } catch (e: any) {
-      throw e
-    }
-  }
-})
-
-const init = async () => {
-  try {
-    const categories = await axiosInstance.get('/categories')
-    const brands = await axiosInstance.get('/brands')
-    state.categories = categories.data
-    state.brands = brands.data
-  } catch (e: any) {
-    throw e
-  }
-}
-
-const submitCreation = async () => {
-  try {
-    await axiosInstance.post('/models', state.form).then(
-        () => {
-          emit('closeCreationDrawer')
-        })
-  } catch (e: any) {
-    state.errors = e.response.data.errors
-  }
-}
-const submitUpdating = async () => {
-  try {
-    await axiosInstance.patch(`/models/${props.id}`, state.form).then(
-        () => {
-          emit('closeUpdatingDrawer')
-        })
-  } catch (e: any) {
-    state.errors = e.response.data.errors
-  }
-}
 
 const emit = defineEmits(['closeCreationDrawer', 'closeUpdatingDrawer'])
 
-init()
+const validateAndSubmit = async (isCreation: boolean) => {
+  const modelToSubmit: any = { ...state.model }
+
+  const schema = modelSchema.pick({ ...modelToSubmit })
+
+  const result = schema.safeParse(modelToSubmit)
+
+  if (!result.success) {
+    state.errors = JSON.parse(result.error.message)[0].message
+    return
+  }
+
+  try {
+    if (isCreation) {
+      await axiosInstance.post('/models', modelToSubmit).then(() => {
+        state.errors = ''
+        emit('closeCreationDrawer')
+      })
+    } else {
+      await axiosInstance
+        .patch(`/models/${props.id}`, modelToSubmit)
+        .then(() => {
+          state.errors = ''
+          emit('closeUpdatingDrawer')
+        })
+        .catch((error: any) => {
+          state.errors = error.response.data.message
+          console.log(error)
+        })
+    }
+  } catch (error: any) {
+    state.errors = error.response.data.message
+  }
+}
+
+watch(
+  () => props.id,
+  async () => {
+    if (props.id) {
+      try {
+        const response = await axiosInstance.get(`/models/${props.id}`)
+        state.model = response.data
+      } catch (e: any) {
+        throw e
+      }
+    }
+  }
+)
+
+onMounted(() => {
+  axiosInstance.get('/brands').then((response) => {
+    state.brands = response.data
+  })
+  axiosInstance.get('/categories').then((response) => {
+    state.categories = response.data
+  })
+})
 </script>
 
 <template>
-  <ODrawer :open="props.open" @closeDrawer="!props.id ? emit('closeCreationDrawer') : emit('closeUpdatingDrawer')"
-           :title="!props.id ? 'Ajout d\'un nouveau model' : `Modifier le model ${ props.id }`">
+  <ODrawer
+    :open="props.open"
+    @closeDrawer="!props.id ? emit('closeCreationDrawer') : emit('closeUpdatingDrawer')"
+    :title="!props.id ? 'Ajout d\'un nouveau modèle' : `Modifier le modèle`"
+  >
     <div>
-      <form method="POST" class="space-y-6" @submit.prevent="!props.id ? submitCreation() : submitUpdating()">
+      <div class="my-5">
+        <small v-if="state.errors && state.errors.length" class="text-red-600">{{
+          state.errors
+        }}</small>
+      </div>
+      <form
+        method="POST"
+        class="space-y-6"
+        @submit.prevent="!props.id ? validateAndSubmit(true) : validateAndSubmit(false)"
+      >
         <div>
-          <FormKit
-              v-model="state.form.name"
-              type="text"
-              label="name"
-              validation="required"
-              placeholder="name"
-              :classes="{
-              label: 'block text-sm font-medium leading-6 text-gray-900',
-              input:
-                'block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
-            }"
+          <label for="name" class="block text-sm font-medium leading-6 text-gray-900">{{
+            'Nom' + (!props.id ? '*' : '')
+          }}</label>
+          <input
+            v-model="state.model.name"
+            type="text"
+            id="name"
+            name="name"
+            placeholder="Nom"
+            class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            :required="!props.id"
+          />
+        </div>
+        <div>
+          <label for="gender" class="block text-sm font-medium leading-6 text-gray-900">{{
+            'Genre' + (!props.id ? '*' : '')
+          }}</label>
+          <input
+            v-model="state.model.gender"
+            type="text"
+            id="gender"
+            name="gender"
+            placeholder="Genre"
+            class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            :required="!props.id"
           />
         </div>
 
         <div>
-          <FormKit
-              v-model="state.form.gender"
-              type="select"
-              label="gender"
-              validation="required|gender"
-              placeholder="Select a gender"
-              :classes="{
-              label: 'block text-sm font-medium leading-6 text-gray-900',
-              input:
-                'block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
-            }"
+          <label for="brand" class="block text-sm font-medium leading-6 text-gray-900">{{
+            'Marque' + (!props.id ? '*' : '')
+          }}</label>
+          <select
+            v-model="state.model.BrandId"
+            id="brand"
+            name="brand"
+            placeholder="Select a brand"
+            class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
           >
-            <optgroup label="Gender">
-              <option v-for="gender in state.gender" :value="gender.value">
-                {{ gender.name }}
-              </option>
-            </optgroup>
-          </FormKit>
+            <option v-for="brand in state.brands" :key="brand.id" :value="brand.id">
+              {{ brand.name }}
+            </option>
+          </select>
         </div>
-
         <div>
-          <FormKit
-              v-model="state.form.BrandId"
-              type="select"
-              label="brand"
-              validation="required|brands"
-              placeholder="Select a brand"
-              :classes="{
-              label: 'block text-sm font-medium leading-6 text-gray-900',
-              input:
-                'block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
-            }"
+          <label for="category" class="block text-sm font-medium leading-6 text-gray-900">{{
+            'Catégorie' + (!props.id ? '*' : '')
+          }}</label>
+          <select
+            v-model="state.model.CategoryId"
+            id="category"
+            name="category"
+            placeholder="Select a category"
+            class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
           >
-            <optgroup label="Brand">
-              <option v-for="brand in state.brands" :value="brand.id">{{ brand.name }}</option>
-            </optgroup>
-          </FormKit>
+            <option v-for="category in state.categories" :key="category.id" :value="category.id">
+              {{ category.name }}
+            </option>
+          </select>
         </div>
-
         <div>
-          <FormKit
-              v-model="state.form.CategoryId"
-              type="select"
-              label="category"
-              validation="required|categories"
-              placeholder="Select a category"
-              :classes="{
-              label: 'block text-sm font-medium leading-6 text-gray-900',
-              input:
-                'block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
-            }"
-          >
-            <optgroup label="Category">
-              <option v-for="category in state.categories" :value="category.id">{{ category.name }}</option>
-            </optgroup>
-          </FormKit>
-        </div>
-
-        <div>
-          <FormKit
-              v-model="state.form.description"
-              type="textarea"
-              label="description"
-              validation="required"
-              placeholder="Write a description"
-              :classes="{
-              label: 'block text-sm font-medium leading-6 text-gray-900',
-              input:
-                'block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
-            }"
+          <label for="description" class="block text-sm font-medium leading-6 text-gray-900">{{
+            'Description' + (!props.id ? '*' : '')
+          }}</label>
+          <textarea
+            v-model="state.model.description"
+            id="description"
+            name="description"
+            placeholder="Description"
+            class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            :required="!props.id"
           />
         </div>
-
+        <div v-if="!props.id">
+          <small>* Champs obligatoires</small>
+        </div>
         <div>
           <button
-              type="submit"
-              class="flex w-full justify-center rounded-md bg-primary px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-primary-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            type="submit"
+            class="flex w-full justify-center rounded-md bg-primary px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-primary-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           >
-            {{ !props.id ? 'Crée' : 'Modifier ' }}
+            {{ !props.id ? 'Créer' : 'Modifier ' }}
           </button>
         </div>
       </form>

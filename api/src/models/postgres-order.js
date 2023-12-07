@@ -15,10 +15,24 @@ Order.init(
 		status: {
 			type: DataTypes.ENUM("payment pending","payment failed", "paid","in shipment", "shipped", "delivered"),
 			allowNull: false,
+			validate: {
+				notEmpty: {
+					msg: "Field 'status' cannot be empty.",
+				},
+				isIn: {
+					args: [["payment pending","payment failed", "paid","in shipment", "shipped", "delivered"]],
+					msg: "The 'status' field must be 'payment pending','payment failed', 'paid','in shipment', 'shipped', 'delivered'.",
+				},
+			},
 		},
 		deliveryAddress: {
 			type: DataTypes.STRING,
 			allowNull: false,
+			validate: {
+				notEmpty: {
+					msg: "Field 'deliveryAddress' cannot be empty.",
+				},
+			},
 		}
 	},
 	{

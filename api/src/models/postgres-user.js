@@ -99,4 +99,8 @@ User.init(
 	}
 );
 
+User.afterCreate(async (user) => {
+	const Wish = (await import("./postgres-wish.js")).default;
+	await Wish.create({ UserId: user.id });
+});
 export default User;

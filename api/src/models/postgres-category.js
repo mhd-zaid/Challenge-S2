@@ -1,6 +1,5 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/sequelize-config.js";
-import { Sequelize } from "sequelize";
 
 class Category extends Model {}
 
@@ -13,10 +12,25 @@ Category.init(
 		name: {
 			type: DataTypes.STRING,
 			allowNull: false,
+			validate: {
+				notEmpty: {
+					msg: "Field 'name' cannot be empty.",
+				},
+				len: {
+					args: [2, 100],
+					msg: "Field 'name' must be between 2 and 100 characters long.",
+				},
+			},
 		},
 		description: {
 			type: DataTypes.STRING,
 			allowNull: true,
+			validate: {
+				len: {
+					args: [0, 300],
+					msg: "Field 'description' must be between 0 and 300 characters long.",
+				},
+			},
 		},
 	},
 	{

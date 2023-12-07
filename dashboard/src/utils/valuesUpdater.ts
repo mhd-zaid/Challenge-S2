@@ -33,12 +33,13 @@ export const columnNames: any = {
   user: 'ID utilisateur',
   sku: 'SKU',
   discount: 'Réduction',
-  alerteQuantity: 'Qté. avant alerte',
+  alertQuantity: 'Qté. avant alerte',
   deletedAt: 'Date de suppression',
   modelId: 'ID modèle',
   productImage: 'Image',
   productImages: 'Images',
-  model: 'Modèle'
+  model: 'Modèle',
+  models: 'Modèles',
 }
 
 export const formatDate = (date: string) => {
@@ -79,6 +80,33 @@ const getModel = (model: any) => {
   return `${model.name} ${model.gender}`
 }
 
+const getModels = (models: any) => {
+  const modelsName = []
+  for (const model of models) {
+    modelsName.push(model.name)
+  }
+  return modelsName.join(', ')
+}
+
+export const getEntityName = (entity: string) => {
+  const entityNames: any = {
+    user: 'Utilisateur',
+    product: 'Produit',
+    order: 'Commande',
+    brand: 'Marque',
+    category: 'Catégorie',
+    model: 'Modèle',
+    users: 'Utilisateurs',
+    products: 'Produits',
+    orders: 'Commandes',
+    brands: 'Marques',
+    categories: 'Catégories',
+    models: 'Modèles',
+  }
+
+  return entityNames[entity]
+}
+
 export const getValue = (row: any, col: any) => {
   const valueMappings: any = {
     role: {
@@ -116,6 +144,22 @@ export const getValue = (row: any, col: any) => {
       blue: 'Bleu',
       green: 'Vert',
       yellow: 'Jaune',
+      pink: 'Rose',
+      purple: 'Violet',
+      brown: 'Marron',
+      grey: 'Gris',
+      orange: 'Orange',
+      beige: 'Beige',
+      Pink: 'Rose',
+      Purple: 'Violet',
+      Blue: 'Bleu',
+      Black: 'Noir',
+      Green: 'Vert',
+      Red: 'Rouge',
+      White: 'Blanc',
+      Brown: 'Marron',
+      Grey: 'Gris',
+      Yellow: 'Jaune',
     }
   }
 
@@ -132,7 +176,8 @@ export const getValue = (row: any, col: any) => {
     'birthdate',
     'passwordUpdatedAt'
   ]
-  if (col in dateColumns) {
+
+  if (dateColumns.includes(col)) {
     return formatDate(row[col])
   }
 
@@ -150,6 +195,10 @@ export const getValue = (row: any, col: any) => {
 
   if (col === 'model') {
     return getModel(row[col])
+  }
+
+  if (col === 'models') {
+    return getModels(row[col])
   }
 
   return row[col]

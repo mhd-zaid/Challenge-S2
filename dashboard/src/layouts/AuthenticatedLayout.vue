@@ -1,25 +1,24 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
+import {computed, ref} from 'vue'
+import {Dialog, DialogPanel, TransitionChild, TransitionRoot} from '@headlessui/vue'
 import {
-  Bars3Icon,
-  CalendarIcon,
-  DocumentDuplicateIcon,
-  FolderIcon,
-  HomeIcon,
-  UsersIcon,
-  XMarkIcon,
-  UserIcon,
   ArrowLeftOnRectangleIcon,
-  TruckIcon,
-  RectangleStackIcon,
+  Bars3Icon,
+  DocumentDuplicateIcon,
+  HomeIcon,
   RectangleGroupIcon,
+  RectangleStackIcon,
+  Square3Stack3DIcon,
   Squares2X2Icon,
-  Square3Stack3DIcon
+  TruckIcon,
+  UserIcon,
+  UsersIcon,
+  XMarkIcon
 } from '@heroicons/vue/24/outline'
-import { useRouter } from 'vue-router'
+import {useRouter} from 'vue-router'
 
 const router = useRouter()
+const user = JSON.parse(localStorage.getItem('user') || '{}')
 const navigation = [
   {
     name: 'Tableau de bord',
@@ -31,7 +30,7 @@ const navigation = [
     name: 'Utilisateurs',
     href: '/users',
     icon: UsersIcon,
-    current: router.currentRoute.value.path === '/users'
+    current: router.currentRoute.value.path === '/users',
   },
   {
     name: 'Commandes',
@@ -62,14 +61,22 @@ const navigation = [
     href: '/brands',
     icon: Squares2X2Icon,
     current: router.currentRoute.value.path === '/brands'
+  },
+  {
+    name: 'Exports',
+    href: '/exports',
+    icon: DocumentDuplicateIcon,
+    current: router.currentRoute.value.path === '/exports'
   }
 ]
+if (user.role !== 'ROLE_ADMIN') {
+  navigation.splice(1, 1)
+}
 const logout = () => {
   localStorage.removeItem('token')
   localStorage.removeItem('user')
   window.location.href = '/login'
 }
-const user = JSON.parse(localStorage.getItem('user') || '{}')
 
 const fullName = computed(() => {
   return `${user.firstname} ${user.lastname}`
@@ -124,7 +131,7 @@ const sidebarOpen = ref(false)
               <div
                 class="flex grow flex-col gap-y-5 overflow-y-auto bg-primary px-6 pb-2 ring-1 ring-white/10"
               >
-                <RouterLink to="dashboard" class="flex h-16 shrink-0 items-center mt-4">
+                <RouterLink to="/" class="flex h-16 shrink-0 items-center mt-4">
                   <img class="h-8 w-auto" src="/images/sneakpeak_logo_white.png" alt="Sneak Peak" />
                 </RouterLink>
                 <nav class="flex flex-1 flex-col">
@@ -164,7 +171,7 @@ const sidebarOpen = ref(false)
     <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
       <!-- Sidebar component, swap this element with another sidebar if you like -->
       <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-primary px-6">
-        <RouterLink to="dashboard" class="flex h-16 shrink-0 items-center mt-5">
+        <RouterLink to="/" class="flex h-16 shrink-0 items-center mt-5">
           <img class="h-8 w-auto" src="/images/sneakpeak_logo_white.png" alt="Your Company" />
         </RouterLink>
         <nav class="flex flex-1 flex-col">

@@ -1,10 +1,8 @@
-const modelsRoutes  =  jest.fn().mockReturnValue({
-    getModels: jest.fn(),
-    getModel: jest.fn(),
-    createModel: jest.fn(),
-    updateModel: jest.fn(),
-    deleteModel: jest.fn()
-});
+import { Sequelize } from "sequelize";
+import modelsRoutes from "../routes/modelsRoutes.js";
+import { ObjectId } from "mongodb";
+
+jest.mock("../models/postgres-model.js");
 
 const models = [
     {
@@ -25,134 +23,200 @@ const models = [
     }
 ];
 
-describe("getModels", () => {
-    it("should get not deleted models", async () => {
-        jest.spyOn(modelsRoutes(),"getModels").mockReturnValue(models);
+const newModel = {
+    name: "Model 3",
+    gender: "male",
+    descritption: "Description Model 3",
+    BrandId: 2,
+    CategoryId: 1
 
-        const mockModels = modelsRoutes().getModels();
-        expect(mockModels).toEqual(models);
+};
+
+const addedModel = {
+    id: 3,
+    name: "Model 3",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    deletedAt: null
+};
+
+const Model = {
+    findAll: jest.fn().mockReturnValue(models),
+    findOne: jest.fn().mockReturnValue(models[0]),
+    create: jest.fn().mockReturnValue(addedModel),
+};
+
+const req = jest.fn();
+const res = {
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn()
+};
+
+describe("getModels", () => {
+    it("should get models", async () => {
+        await modelsRoutes(Model, ObjectId).getModels(req, res);
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith(models);
+        expect(Model.findAll).toHaveBeenCalled();
     });
 });
 
 describe("getModel", () => {
     it("should get model by id", async () => {
-        jest.spyOn(modelsRoutes(),"getModel").mockReturnValue(models[0]);
-
-        const mockModel = modelsRoutes().getModel(1);
-        expect(mockModel).toEqual(models[0]);
+        req.params = { id: models[0].id };
+        await modelsRoutes(Model, ObjectId).getModel(req, res);
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith(models[0]);
+        expect(Model.findOne).toHaveBeenCalled();
     });
 
     it("should throw error model not found", async () => {
-        jest.spyOn(modelsRoutes(),"getModel").mockReturnValue(new Error("Model not found"));
-
-        const mockModel = modelsRoutes().getModel(3);
-        expect(mockModel).toEqual(new Error("Model not found"));
+        req.params = { id: 3 };
+        Model.findOne = jest.fn().mockReturnValue(null);
+        await modelsRoutes(Model, ObjectId).getModel(req, res);
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.json).toHaveBeenCalledWith({ message: "Model not found" });
+        expect(Model.findOne).toHaveBeenCalled();
     });
 
-    it("should throw error brand not found", async () => {
-        models[0].brandId = 10;
-        jest.spyOn(modelsRoutes(),"getModel").mockReturnValue(new Error("Brand not found"));
-        const mockModel = modelsRoutes().getModel(1);
-        expect(mockModel).toEqual(new Error("Brand not found"));
-    });
-
-    it("should throw error model id missing", async () => {
-        jest.spyOn(modelsRoutes(),"getModel").mockReturnValue(new Error("Model id missing"));
-
-        const mockModel = modelsRoutes().getModel();
-        expect(mockModel).toEqual(new Error("Model id missing"));
+    it("should throw error Id parameter is missing", async () => {
+        req.params = {};
+        await modelsRoutes(Model, ObjectId).getModel(req, res);
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.json).toHaveBeenCalledWith({ message: "Id parameter is missing" });
+        expect(Model.findOne).toHaveBeenCalled();
     });
 });
 
 describe("createModel", () => {
     it("should create model", async () => {
-        const model = {
-            id: 3,
-            name: "Model 3",
-            brandId: 3,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            deletedAt: null
+        req.body = newModel;
+        await modelsRoutes(Model, ObjectId).createModel(req, res);
+        expect(res.status).toHaveBeenCalledWith(201);
+        expect(res.json).toHaveBeenCalledWith(addedModel);
+        expect(Model.create).toHaveBeenCalled();
+    });
+
+    it("should send 400 status", async () => {
+        req.body = {};
+        Model.create = jest.fn().mockReturnValue({ message: "Name parameter is missing" });
+
+        await modelsRoutes(Model, ObjectId).createModel(req, res);
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({ message: "Name parameter is missing" });
+    });
+
+    it("should send 422 status", async () => {
+        req.body = {
+            name: "3",
+            gender: "male",
+            descritption: "Description Model 3",
+            BrandId: 2,
+            CategoryId: 1
         };
-        jest.spyOn(modelsRoutes(),"createModel").mockReturnValue(model);
+        Model.create = jest.fn().mockImplementation(() => {
+            throw new Sequelize.ValidationError("Name must be at least 2 characters long");
+        });
 
-        const mockModel = modelsRoutes().createModel(model);
-        models.push(model);
-
-        expect(mockModel).toEqual(model);
-        expect(models).toContain(model);
+        await modelsRoutes(Model, ObjectId).createModel(req, res);
+        expect(res.status).toHaveBeenCalledWith(422);
+        expect(res.json).toHaveBeenCalledWith({ message: "An error occurred while creating the model : Name must be at least 2 characters long" });
     });
 });
 
 describe("updateModel", () => {
     it("should update model", async () => {
-        const model = {
-            id: 3,
+        const updateModel = {
             name: "Model 3",
-            brandId: 3,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            deletedAt: null
         };
-        jest.spyOn(modelsRoutes(),"updateModel").mockReturnValue(models[0] = model);
+        req.params = { id: 2 };
+        req.body = updateModel;
 
-        const mockModel = modelsRoutes().updateModel(model);
+        const Model = {
+            findOne: jest.fn().mockReturnValue({ update: jest.fn() }),
+        };
 
-        expect(mockModel).toEqual(model);
-        expect(models).toContain(model);
+        await modelsRoutes(Model, ObjectId).updateModel(req, res);
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith({ message: "Model updated successfully" });
+        expect(Model.findOne).toHaveBeenCalledWith({ where: { id: 2 } });
+        expect(Model.findOne().update).toHaveBeenCalledWith(updateModel);
     });
 
     it("should throw error model not found", async () => {
-        jest.spyOn(modelsRoutes(),"updateModel").mockReturnValue(new Error("Model not found"));
+        req.params = { id: 3 };
+        req.body = {
+            name: "Model 3",
+        };
+        const Model = {
+            findOne: jest.fn().mockReturnValue({ update: jest.fn() }),
+        };
 
-        const mockModel = modelsRoutes().updateModel(3);
-        expect(mockModel).toEqual(new Error("Model not found"));
+        await modelsRoutes(Model, ObjectId).updateModel(req, res);
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.json).toHaveBeenCalledWith({ message: "Model not found" });
     });
 
-    it("should throw error brand not found", async () => {
-        models[0].brandId = 10;
-        jest.spyOn(modelsRoutes(),"updateModel").mockReturnValue(new Error("Brand not found"));
-        const mockModel = modelsRoutes().updateModel(1);
-        expect(mockModel).toEqual(new Error("Brand not found"));
+    it("should throw error Id parameter is missing", async () => {
+        req.params = {};
+        req.body = {
+            name: "Model 3",
+        };
+        const Model = {
+            findOne: jest.fn().mockReturnValue({ update: jest.fn() }),
+        };
+        await modelsRoutes(Model, ObjectId).updateModel(req, res);
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({ message: "Id parameter is missing" });
     });
 
-    it("should throw error model id missing", async () => {
-        jest.spyOn(modelsRoutes(),"updateModel").mockReturnValue(new Error("Model id missing"));
+    it("should send 400 status", async () => {
+        req.params = { id: 2 };
+        req.body = {};
+        const Model = {
+            findOne: jest.fn().mockReturnValue({ update: jest.fn() }),
+        };
 
-        const mockModel = modelsRoutes().updateModel();
-        expect(mockModel).toEqual(new Error("Model id missing"));
+        await modelsRoutes(Model, ObjectId).updateModel(req, res);
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({ message: "Name parameter is missing" });
+    });
+
+    it("should send 422 status", async () => {
+        req.params = { id: 2 };
+        req.body = {
+            name: "3",
+        };
+        
+        Model.findOne = jest.fn().mockReturnValue({ ...models[1],update: () => { throw new Sequelize.ValidationError("Name must be at least 2 characters long"); } });
+
+        await modelsRoutes(Model, ObjectId).updateModel(req, res);
+        expect(res.status).toHaveBeenCalledWith(422);
+        expect(Model.findOne).toHaveBeenCalledWith({ where: { id: 2 } });
     });
 });
 
 describe("deleteModel", () => {
     it("should delete model", async () => {
-        const date = new Date();
-        jest.spyOn(modelsRoutes(),"deleteModel").mockReturnValue(models[1].deletedAt = date);
-
-        const mockModel = modelsRoutes().deleteModel(2);
-        const filter = models.filter(model => model.id === 2);
-        expect(mockModel).toEqual(date);
-        expect(filter).not.toContain(mockModel);
+        req.params = { id: 2 };
+        Model.findOne = jest.fn().mockReturnValue({ destroy: jest.fn() });
+        await modelsRoutes(Model, ObjectId).deleteModel(req, res);
+        expect(res.status).toHaveBeenCalledWith(204);
+        expect(res.json).toHaveBeenCalledWith({ message: "Model deleted successfully" });
+        expect(Model.findOne().destroy).toHaveBeenCalled();
     });
-
     it("should throw error model not found", async () => {
-        jest.spyOn(modelsRoutes(),"deleteModel").mockReturnValue(new Error("Model not found"));
-
-        const mockModel = modelsRoutes().deleteModel(3);
-        expect(mockModel).toEqual(new Error("Model not found"));
+        req.params = { id: 3 };
+        Model.findOne = jest.fn().mockReturnValue(null);
+        await modelsRoutes(Model, ObjectId).deleteModel(req, res);
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.json).toHaveBeenCalledWith({ message: "Model not found" });
     });
 
-    it("should throw error brand not found", async () => {
-        models[0].brandId = 10;
-        jest.spyOn(modelsRoutes(),"deleteModel").mockReturnValue(new Error("Brand not found"));
-        const mockModel = modelsRoutes().deleteModel(1);
-        expect(mockModel).toEqual(new Error("Brand not found"));
-    });
-
-    it("should throw error model id missing", async () => {
-        jest.spyOn(modelsRoutes(),"deleteModel").mockReturnValue(new Error("Model id missing"));
-
-        const mockModel = modelsRoutes().deleteModel();
-        expect(mockModel).toEqual(new Error("Model id missing"));
+    it("should throw error Id parameter is missing", async () => {
+        req.params = {};
+        await modelsRoutes(Model, ObjectId).deleteModel(req, res);
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({ message: "Id parameter is missing" });
     });
 });
