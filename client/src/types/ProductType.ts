@@ -64,3 +64,11 @@ export const getTotalProductsPrice = (cartItems: CartItem[]) => {
     }
     return totalPrice.toFixed(2)
 }
+
+export const getTotalProductsBeforeDiscount = (cartItems: CartItem[]) => {
+    let totalPrice = 0
+    for (const cartItem of cartItems) {
+        totalPrice += parseFloat(cartItem.product.price) * cartItem.quantity
+    }
+    return totalPrice.toFixed(2)
+}

@@ -16,7 +16,7 @@ const paymentTotal = () => {
   let total = 0
   if (props.data.products) {
       props.data.products.forEach((product: any) => {
-        total += product.Orders_Products.price * product.Orders_Products.quantity
+        total += product.Orders_Products?.price * product.Orders_Products?.quantity
       })
       return (total / 100).toFixed(2) + ' €'
   }
@@ -87,8 +87,8 @@ const paymentTotal = () => {
       <tr class="item" v-if="props.data.products" v-for="product in props.data.products">
         <td>{{ product.sku }}</td>
         <td>{{ product.name }} - {{ product.size }}</td>
-        <td>{{ product.Orders_Products.quantity }}</td>
-        <td> {{ (product.Orders_Products.price / 100).toFixed(2) }} €</td>
+        <td>{{ product.Orders_Products?.quantity }}</td>
+        <td> {{ (product.Orders_Products?.price / 100).toFixed(2) }} €</td>
       </tr>
       <tr><br></tr>
       <tr class="total">

@@ -80,7 +80,11 @@ export default (User, ProductHistory, months, Order) => ({
 					month = month + 12;
 				}
 				const startDate = new Date(currentDate.getFullYear(), month, 1);
-				const endDate = new Date(currentDate.getFullYear(), month + 1, 0);
+				const endDate = new Date(
+					currentDate.getFullYear(),
+					month + 1,
+					0
+				);
 				endDate.setHours(23, 59, 59, 999);
 				const query = {
 					createdAt: {
@@ -191,7 +195,11 @@ export default (User, ProductHistory, months, Order) => ({
 					month = month + 12;
 				}
 				const startDate = new Date(currentDate.getFullYear(), month, 1);
-				const endDate = new Date(currentDate.getFullYear(), month + 1, 0);
+				const endDate = new Date(
+					currentDate.getFullYear(),
+					month + 1,
+					0
+				);
 				endDate.setHours(23, 59, 59, 999);
 
 				const result = await ProductHistory.aggregate([
@@ -209,7 +217,9 @@ export default (User, ProductHistory, months, Order) => ({
 					},
 				]);
 
-				newProducts.push(result.length > 0 ? result[0].totalQuantityAdded : 0);
+				newProducts.push(
+					result.length > 0 ? result[0].totalQuantityAdded : 0
+				);
 			}
 
 			res.status(200).json(newProducts.reverse());
@@ -257,7 +267,9 @@ export default (User, ProductHistory, months, Order) => ({
 			date30DaysAgoEnd.setHours(23, 59, 59, 999);
 
 			const query = {
-				status: "paid",
+				status: {
+					$in: ["paid", "in shipment", "shipped", "delivered"],
+				},
 				date: {
 					$gte: date30DaysAgo,
 					$lte: date30DaysAgoEnd,
@@ -283,10 +295,16 @@ export default (User, ProductHistory, months, Order) => ({
 					month = month + 12;
 				}
 				const startDate = new Date(currentDate.getFullYear(), month, 1);
-				const endDate = new Date(currentDate.getFullYear(), month + 1, 0);
+				const endDate = new Date(
+					currentDate.getFullYear(),
+					month + 1,
+					0
+				);
 				endDate.setHours(23, 59, 59, 999);
 				const query = {
-					status: "paid",
+					status: {
+						$in: ["paid", "in shipment", "shipped", "delivered"],
+					},
 					date: {
 						$gte: startDate,
 						$lte: endDate,

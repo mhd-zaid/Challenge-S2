@@ -50,11 +50,12 @@ export const useWishlistStore = defineStore('wishlist', {
                 console.error('Erreur lors de l\'ajout du produit à la liste de souhaits :', error);
             }
         },
-        async removeFromWishlist(productId: string) {
+        async removeFromWishlist(productId: string, notify = true) {
             try {
                 await axiosInstance.delete(`/wishes/${userId}/${productId}`);
                 this.wishlist = this.wishlist.filter((id) => id !== productId);
-                showToast('Produit retiré de la liste de souhaits', 'success');
+                if (notify)
+                    showToast('Produit retiré de la liste de souhaits', 'success');
                 return true;
             } catch (error) {
                 console.error('Erreur lors de la suppression du produit de la liste de souhaits :', error);

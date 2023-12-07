@@ -31,7 +31,7 @@ const navigation = [
     name: 'Utilisateurs',
     href: '/users',
     icon: UsersIcon,
-    current: router.currentRoute.value.path === '/users'
+    current: router.currentRoute.value.path === '/users',
   },
   {
     name: 'Commandes',

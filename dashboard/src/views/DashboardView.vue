@@ -16,6 +16,7 @@ import { onBeforeMount, reactive } from 'vue'
 import { ArchiveBoxIcon, ShoppingBagIcon, UserPlusIcon } from '@heroicons/vue/24/outline'
 
 const state = reactive({
+  user: {} as any,
   newUsersLast30Days: 0,
   newUsersAugmentation: 0,
   newProductsLast30Days: 0,
@@ -80,8 +81,11 @@ let productsPerMonthKey = 0
 
 onBeforeMount(async () => {
   try {
-    const [
-      newUsersLast30Days,
+    axiosInstance.get('/auth/me').then((res) => {
+      state.user = res.data
+    })
+
+    let newUsersLast30Days,
       newUsersBeforeLast30Days,
       newProductsLast30Days,
       newProductsBeforeLast30Days,
@@ -91,21 +95,24 @@ onBeforeMount(async () => {
       newUsersLastYear,
       newProductsLastYear,
       newOrdersLastYear
+    ;[
+      newProductsLast30Days,
+      newProductsBeforeLast30Days,
+      newOrdersLast30Days,
+      newOrdersBeforeLast30Days,
+      months,
+      newProductsLastYear,
+      newOrdersLastYear
     ] = await Promise.all([
-      axiosInstance.get('/stats/registrations/last-30-days'),
-      axiosInstance.get('/stats/registrations/before-last-30-days'),
       axiosInstance.get('/stats/products/last-30-days'),
       axiosInstance.get('/stats/products/before-last-30-days'),
       axiosInstance.get('/stats/orders/last-30-days'),
       axiosInstance.get('/stats/orders/before-last-30-days'),
       axiosInstance.get('/stats/months'),
-      axiosInstance.get('/stats/registrations/last-year'),
       axiosInstance.get('/stats/products/last-year'),
       axiosInstance.get('/stats/orders/last-year')
     ])
 
-    state.newUsersLast30Days = newUsersLast30Days.data
-    state.newUsersAugmentation = newUsersLast30Days.data - newUsersBeforeLast30Days.data
     state.newProductsLast30Days = newProductsLast30Days.data
     state.newProductsAugmentation = newProductsLast30Days.data - newProductsBeforeLast30Days.data
     state.newOrdersLast30Days = newOrdersLast30Days.data
@@ -113,12 +120,23 @@ onBeforeMount(async () => {
     state.userChartData.labels = months.data
     state.orderChartData.labels = months.data
     state.productChartData.labels = months.data
-    state.userChartData.datasets[0].data = newUsersLastYear.data
     state.productChartData.datasets[0].data = newProductsLastYear.data
     state.orderChartData.datasets[0].data = newOrdersLastYear.data
-    usersPerMonthKey++
     productsPerMonthKey++
     ordersPerMonthKey++
+
+    if (state.user.role === 'ROLE_ADMIN') {
+      ;[newUsersLast30Days, newUsersBeforeLast30Days, newUsersLastYear] = await Promise.all([
+        axiosInstance.get('/stats/registrations/last-30-days'),
+        axiosInstance.get('/stats/registrations/before-last-30-days'),
+        axiosInstance.get('/stats/registrations/last-year')
+      ])
+
+      state.newUsersLast30Days = newUsersLast30Days.data
+      state.newUsersAugmentation = newUsersLast30Days.data - newUsersBeforeLast30Days.data
+      state.userChartData.datasets[0].data = newUsersLastYear.data
+      usersPerMonthKey++
+    }
   } catch (error) {
     console.log(error)
   }
@@ -134,6 +152,7 @@ ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
       <h4 class="mt-8 text-base font-medium leading-6 text-gray-900">30 derniers jours</h4>
       <dl class="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         <MiniStatisticsCard
+          v-if="state.user.role === 'ROLE_ADMIN'"
           :icon="UserPlusIcon"
           label="Nouvelles inscriptions"
           :data="state.newUsersLast30Days"
@@ -155,7 +174,7 @@ ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
     </div>
     <h4 class="mt-10 text-base font-medium leading-6 text-gray-900">Dernière année</h4>
     <div class="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2">
-      <dl>
+      <dl v-if="state.user.role === 'ROLE_ADMIN'">
         <div class="relative overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:px-6 sm:pt-6">
           <Bar
             id="my-chart-id"

@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import LayoutComponent from '@/layout/LayoutComponent.vue'
-import {useCartStore} from '@/stores/cart'
-import {onMounted, reactive, watch} from 'vue'
-import type {ProductType} from '@/types/ProductType'
-import {getProductPrice, getTotalProductsPrice} from '@/types/ProductType'
-import {getProductImage} from '@/types/ProductImageType'
+import { useCartStore } from '@/stores/cart'
+import { onMounted, reactive, watch } from 'vue'
+import type { ProductType } from '@/types/ProductType'
+import {
+  getProductPrice,
+  getTotalProductsPrice,
+  getTotalProductsBeforeDiscount
+} from '@/types/ProductType'
+import { getProductImage } from '@/types/ProductImageType'
 
 const cartStore = useCartStore()
 
@@ -27,7 +31,7 @@ const policies = [
     name: 'Livraison rapide',
     imageUrl: 'https://tailwindui.com/img/ecommerce/icons/icon-calendar-light.svg',
     description:
-      'Nous faisans de notre mieux pour vous livrer dans les 48h à la suite de votre commande. Nous vous tiendrons informé de l\'avancée de votre commande.'
+      "Nous faisans de notre mieux pour vous livrer dans les 48h à la suite de votre commande. Nous vous tiendrons informé de l'avancée de votre commande."
   },
   {
     name: "Promotions toute l'année",
@@ -81,7 +85,7 @@ watch(
                       >
                     </h4>
                     <p class="ml-4 text-sm font-medium text-gray-900 flex flex-col">
-                      {{ getProductPrice({product: cartItem.product, quantity: 1}) }} €
+                      {{ getProductPrice({ product: cartItem.product, quantity: 1 }) }} €
                       <span
                         v-if="parseInt(cartItem.product.discount)"
                         class="text-sm font-medium text-red-600 line-through"
@@ -125,6 +129,12 @@ watch(
 
           <div>
             <dl class="space-y-4">
+              <div class="flex justify-end">
+                <dt class="text-sm font-medium text-gray-900">Avant réduction</dt>
+                <dd class="ml-4 text-sm text-gray-700">
+                  {{ getTotalProductsBeforeDiscount(state.cartItems) }} €
+                </dd>
+              </div>
               <div class="flex items-center justify-between">
                 <dt class="text-base font-medium text-gray-900">Sous-total</dt>
                 <dd class="ml-4 text-base font-medium text-gray-900">

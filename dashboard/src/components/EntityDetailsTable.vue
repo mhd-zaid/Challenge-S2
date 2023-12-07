@@ -1,27 +1,31 @@
 <script lang="ts" setup>
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue'
-import { defineProps} from 'vue'
+import { defineProps } from 'vue'
 import { columnNames, getValue, getEntityName } from '@/utils/valuesUpdater'
 import OrderPdf from '@/components/OrderPdf.vue'
 import html2pdf from 'html2pdf.js'
 
 const props = defineProps(['data', 'entityType'])
 
-const downloadInvoice = async (orderId:string) => {
+const downloadInvoice = async (orderId: string) => {
   const template = document.getElementById('invoice-template')
-  if(template && (props.data.user.disabled === false) && (props.data.status !== 'payment pending') && (props.data.status !== 'payment failed')){
+  if (
+    template &&
+    props.data.user.disabled === false &&
+    props.data.status !== 'payment pending' &&
+    props.data.status !== 'payment failed'
+  ) {
     template.style.display = 'block'
     await html2pdf(template, {
-      margin: [1,1],
+      margin: [1, 1],
       filename: `facture-${orderId}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2,letterRendering: true },
+      html2canvas: { scale: 2, letterRendering: true },
       jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
-      pagebreak: { mode: ['avoid-all','css','legacy'] }
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
     })
     template.style.display = 'none'
   }
-  
 }
 </script>
 
@@ -35,13 +39,20 @@ const downloadInvoice = async (orderId:string) => {
           </h1>
         </div>
         <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-          <button v-if="(props.entityType === 'order') && (props.data.status !== 'payment pending') && (props.data.status !== 'payment failed') && (props.data.user && props.data.user.disabled === false)"
-              v-on:click="downloadInvoice(props.data.id)"
-              type="button"
-              class="block rounded-md bg-red-700 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            >
-              Télécharger la facture
-            </button>
+          <button
+            v-if="
+              props.entityType === 'order' &&
+              props.data.status !== 'payment pending' &&
+              props.data.status !== 'payment failed' &&
+              props.data.user &&
+              props.data.user.disabled === false
+            "
+            v-on:click="downloadInvoice(props.data.id)"
+            type="button"
+            class="block rounded-md bg-red-700 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          >
+            Télécharger la facture
+          </button>
         </div>
         <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
           <RouterLink
@@ -84,8 +95,8 @@ const downloadInvoice = async (orderId:string) => {
         </table>
       </div>
     </div>
-  </AuthenticatedLayout>
-  <div id="invoice-template" style="display: none;">
+    <div id="invoice-template" v-if="entityType === 'order'" style="display: none">
       <OrderPdf v-if="props.data" :data="props.data" />
-  </div>
+    </div>
+  </AuthenticatedLayout>
 </template>

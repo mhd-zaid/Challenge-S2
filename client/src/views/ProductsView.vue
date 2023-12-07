@@ -540,7 +540,7 @@ const toggleWishlist = (productId: string) => {
                         'bg-gray-50': state.currentPage === 1,
                         'bg-white': state.currentPage !== 1
                       }"
-                      @click="state.currentPage -= 1"
+                      @click="loadPage(state.currentPage -= 1)"
                       :disabled="state.currentPage === 1"
                     >
                       <span class="sr-only">Précédent</span>
@@ -558,7 +558,7 @@ const toggleWishlist = (productId: string) => {
                       :class="{
                         'bg-gray-50': state.productsPerPage > state.products.length
                       }"
-                      @click="state.currentPage += 1"
+                      @click="loadPage(state.currentPage += 1)"
                       :disabled="state.productsPerPage > state.products.length"
                     >
                       <span class="sr-only">Suivant</span>

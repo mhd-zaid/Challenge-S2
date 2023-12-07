@@ -170,11 +170,11 @@ export default (
                 return res.status(400).json({message: "modelId is missing"});
             }
 
-            const model = await Model.findOne(
-                {
+            const model = await Model.findOne({
+
                     where: {id: req.body.modelId},
-                    include: ["brand", "category"]
-                },
+                    include: ["brand", "category"],
+                }
             );
 
             if (!model) {
@@ -209,7 +209,10 @@ export default (
 
             res.status(201).json(product);
         } catch (error) {
-            if (error.name == "SequelizeValidationError" || error.name == "SequelizeUniqueConstraintError") {
+            if (
+				error.name == "SequelizeValidationError" ||
+				error.name == "SequelizeUniqueConstraintError"
+			) {
                 return res.status(422).json({message: error.message});
             } else {
                 return res.status(500).json({
@@ -256,11 +259,11 @@ export default (
                         .json({message: "modelId is missing"});
             }
 
-            const model = await Model.findOne(
-                {
+            const model = await Model.findOne({
+
                     where: {id: req.body.model},
-                    include: ["brand", "category"]
-                },
+                    include: ["brand", "category"],
+                }
             );
 
             if (!model) {
