@@ -23,6 +23,7 @@ const router = createRouter({
         {
             path: '/',
             name: 'dashboard',
+            // @ts-ignore
             component: () => import('@/views/DashboardView.vue'),
             meta: {
                 title: 'Dashboard',
@@ -32,6 +33,7 @@ const router = createRouter({
         {
             path: '/forbidden',
             name: 'forbidden',
+            // @ts-ignore
             component: () => import('@/views/ForbiddenView.vue'),
             meta: {
                 title: 'Forbidden',
@@ -41,6 +43,7 @@ const router = createRouter({
         {
             path: '/:pathMatch(.*)*',
             name: 'not-found',
+            // @ts-ignore
             component: () => import('@/views/NotFoundView.vue'),
             meta: {
                 title: 'Not Found',

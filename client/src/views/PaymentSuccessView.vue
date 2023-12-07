@@ -6,8 +6,9 @@ import {useRouter} from "vue-router";
 import type {ProductType} from "@/types/ProductType";
 import {CheckIcon} from "@heroicons/vue/24/outline";
 import {showToast} from "@/utils/toast";
-import html2pdf from 'html2pdf.js'
 import axiosInstance from "@/utils/axiosInstance";
+
+const html2pdf = require('html2pdf.js')
 
 const cartStore = useCartStore()
 const router = useRouter();

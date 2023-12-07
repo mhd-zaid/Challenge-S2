@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
-import { EllipsisVerticalIcon, MagnifyingGlassIcon } from '@heroicons/vue/24/outline'
+import {Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/vue'
+import {EllipsisVerticalIcon, MagnifyingGlassIcon} from '@heroicons/vue/24/outline'
 import axiosInstance from '@/utils/axiosInstance'
-import { getProductImage } from '@/types/ProductImageType'
-import { computed, onMounted, reactive, ref } from 'vue'
+import {getProductImage} from '@/types/ProductImageType'
+import {computed, onMounted, reactive, ref} from 'vue'
 import OrderPdf from '@/components/profile/OrderPdf.vue'
-import html2pdf from 'html2pdf.js'
-import { useCartStore } from '@/stores/cart'
+import {useCartStore} from '@/stores/cart'
+
+const html2pdf = require('html2pdf.js')
 
 const cartStore = useCartStore()
 

@@ -128,7 +128,7 @@ importers:
         specifier: ^18.2.2
         version: 18.2.2
       '@types/node':
-        specifier: ^18.17.17
+        specifier: ^18.18.4
         version: 18.18.4
       '@vitejs/plugin-vue':
         specifier: ^4.3.4
@@ -222,7 +222,7 @@ importers:
         specifier: ^18.2.2
         version: 18.2.2
       '@types/node':
-        specifier: ^18.17.17
+        specifier: ^18.18.4
         version: 18.18.4
       '@vitejs/plugin-vue':
         specifier: ^4.3.4

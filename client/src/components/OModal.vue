@@ -47,7 +47,7 @@ const props = defineProps({
                 </div>
               </div>
               <div class="mt-5 sm:mt-6 flex">
-                <RouterLink type="button" class="inline-flex w-full justify-center rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 sm:col-start-2" @click="open = false"
+                <RouterLink type="button" class="inline-flex w-full justify-center rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 sm:col-start-2" @click="props.onClose"
                             :to="success ? '/' : '/checkout'">Retour à l'accueil</RouterLink>
               </div>
             </DialogPanel>
