@@ -1,5 +1,6 @@
-import type { ProductType } from "./ProductType";
-import html2pdf from 'html2pdf.js'
+import type {ProductType} from "./ProductType";
+
+const html2pdf = require('html2pdf.js')
 
 export type OrderType = {
     id: string;
