@@ -137,7 +137,7 @@ router.beforeEach(async (to, from, next) => {
     } else {
         if (loggedIn) {
             try {
-                const response = await fetch(`http://localhost:3000/auth/check-if-authenticated`, {
+                const response = await fetch(`${import.meta.env.VITE_HOST_API}/auth/check-if-authenticated`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }

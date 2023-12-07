@@ -34,7 +34,7 @@ const OpenConfirmationModal = (exportItem: any) => {
 const downloadExport = async (fileName: string) => {
   try {
     const downloadLink = document.createElement('a')
-    downloadLink.href = `http://localhost:3000/exports/${fileName}`
+    downloadLink.href = `${import.meta.env.VITE_HOST_API}/exports/${fileName}`
     downloadLink.download = fileName
     document.body.appendChild(downloadLink)
     downloadLink.click()
@@ -54,7 +54,7 @@ const exportUsers = async () => {
         const fileName = res.data.fileName
 
         const downloadLink = document.createElement('a')
-        downloadLink.href = `http://localhost:3000/exports/${fileName}`
+        downloadLink.href = `${import.meta.env.VITE_HOST_API}/exports/${fileName}`
         downloadLink.download = fileName
         document.body.appendChild(downloadLink)
         downloadLink.click()
@@ -76,7 +76,7 @@ const exportProducts = async () => {
         const fileName = res.data.fileName
 
         const downloadLink = document.createElement('a')
-        downloadLink.href = `http://localhost:3000/exports/${fileName}`
+        downloadLink.href = `${import.meta.env.VITE_HOST_API}/exports/${fileName}`
         downloadLink.download = fileName
         document.body.appendChild(downloadLink)
         downloadLink.click()

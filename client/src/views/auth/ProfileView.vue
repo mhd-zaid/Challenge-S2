@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { reactive } from 'vue'
+import {reactive} from 'vue'
 import axiosInstance from '@/utils/axiosInstance'
 import UserProfileField from '@/components/profile/UserProfileField.vue'
 import UserProfilePasswordFields from '@/components/profile/UserProfilePasswordFields.vue'
 import UserProfileSwitchField from '@/components/profile/UserProfileSwitchField.vue'
 import LayoutComponent from '@/layout/LayoutComponent.vue'
 import HistorySection from '@/sections/profile/HistorySection.vue'
-import { CloudArrowDownIcon } from '@heroicons/vue/24/outline'
+import {CloudArrowDownIcon} from '@heroicons/vue/24/outline'
 
 const state: { user: any; tabs: any[]; currentModifications: any; notifications: { label: string, value: boolean }[] } = reactive({
 
@@ -87,7 +87,7 @@ const exportPersonalData = async () => {
         const exportId = res.data.exportId
 
         const downloadLink = document.createElement('a')
-        downloadLink.href = `http://localhost:3000/exports/${fileName}`
+        downloadLink.href = `${import.meta.env.VITE_HOST_API}/exports/${fileName}`
         downloadLink.download = fileName
         document.body.appendChild(downloadLink)
         downloadLink.click()

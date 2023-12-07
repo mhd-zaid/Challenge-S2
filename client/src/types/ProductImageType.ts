@@ -11,7 +11,7 @@ export type ProductImageType = {
 
 export const getProductImage = (product: ProductType, index = 0) => {
     if (product?.productImages?.length > 0) {
-        return `http://localhost:3000/images/${product.productImages[index].url}`
+        return `${import.meta.env.VITE_HOST_API}/images/${product.productImages[index].url}`
     } else {
         return '/images/no-image.jpeg'
     }

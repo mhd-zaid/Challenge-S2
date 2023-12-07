@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue'
 import axiosInstance from '@/utils/axiosInstance'
-import { onMounted, onUnmounted, reactive } from 'vue'
+import {onMounted, onUnmounted, reactive} from 'vue'
 import OTable from '@/components/OTable.vue'
-import { useRouter } from 'vue-router'
-import { CloudArrowDownIcon } from '@heroicons/vue/24/outline'
+import {useRouter} from 'vue-router'
+import {CloudArrowDownIcon} from '@heroicons/vue/24/outline'
 
 const router = useRouter()
 const state = reactive({
@@ -34,7 +34,7 @@ const exportOrders = async () => {
         const fileName = res.data.fileName
 
         const downloadLink = document.createElement('a')
-        downloadLink.href = `http://localhost:3000/exports/${fileName}`
+        downloadLink.href = `${import.meta.env.VITE_HOST_API}/exports/${fileName}`
         downloadLink.download = fileName
         document.body.appendChild(downloadLink)
         downloadLink.click()
