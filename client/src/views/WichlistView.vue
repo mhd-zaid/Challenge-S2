@@ -39,6 +39,8 @@ const removeFromWishlist = async (productId: string) => {
 }
 
 const addToCart = async (productId: string) => {
+  await wishlistStore.removeFromWishlist(productId, false)
+  products.value = products.value.filter((product: any) => product.id !== productId)
   await cartStore.addToCart(productId)
 }
 
