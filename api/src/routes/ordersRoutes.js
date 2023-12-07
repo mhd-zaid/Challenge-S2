@@ -93,7 +93,6 @@ export default (
 	getUserOrders: async (req, res) => {
 		try {
 			const { id } = req.params;
-			let { search } = req.query;
 
 			if (!id) {
 				return res
@@ -107,8 +106,7 @@ export default (
 				return res.status(404).json({ message: "User not found" });
 			}
 
-			const ordersOptions = {
-				where: { userId: user.id },
+			const orders = await Order.findAll({
 				include: [
 					{
 						model: Product,
@@ -118,26 +116,11 @@ export default (
 					"user",
 					"payment",
 				],
+				where: { userId: user.id },
 				order: [["createdAt", "DESC"]],
-			};
+			});
 
-			if (search) {
-				search = search.replace(/-/g, " ");
-
-				const searchCondition = {
-					[Op.or]: [
-						{ id: { [Op.iLike]: `%${search}%` } },
-						{ "$products.name$": { [Op.iLike]: `%${search}%` } },
-					],
-				};
-
-				ordersOptions.where = {
-					...ordersOptions.where,
-					[Op.and]: [ordersOptions.where, searchCondition],
-				};
-			}
-
-			const orders = await Order.findAll(ordersOptions);
+			console.log(orders.length);
 
 			res.status(200).json(orders);
 		} catch (error) {

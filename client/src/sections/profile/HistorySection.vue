@@ -3,7 +3,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import { EllipsisVerticalIcon, MagnifyingGlassIcon } from '@heroicons/vue/24/outline'
 import axiosInstance from '@/utils/axiosInstance'
 import { getProductImage } from '@/types/ProductImageType'
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import OrderPdf from '@/components/profile/OrderPdf.vue'
 import html2pdf from 'html2pdf.js'
 import { useCartStore } from '@/stores/cart'
@@ -21,11 +21,7 @@ const search = ref('')
 const orders = reactive(<any>[])
 
 const getUserOrders = async () => {
-  const { data } = await axiosInstance.get(
-    `/orders/user/${userId}${
-      search.value.trim().length ? `?search=${search.value.replace(/ /g, '-')}` : ''
-    }`
-  )
+  const { data } = await axiosInstance.get(`/orders/user/${userId}`)
   data.forEach((order: any) => {
     order.products.forEach((product: any) => {
       product.imageSrc = getProductImage(product)
@@ -53,6 +49,17 @@ const getUserOrders = async () => {
   orders.splice(0, orders.length)
   orders.push(...data)
 }
+
+const filteredOrders = computed(() => {
+  return orders.filter((order: any) => {
+    return (
+      order.id.toLowerCase().includes(search.value.toLowerCase()) ||
+      order.products.some((product: any) =>
+        product.name.toLowerCase().includes(search.value.toLowerCase())
+      )
+    )
+  })
+})
 
 onMounted(async () => {
   await getUserOrders()
@@ -104,7 +111,7 @@ const downloadInvoice = async (orderId: string) => {
     <div class="mx-auto max-w-7xl sm:px-2 lg:px-8">
       <div class="mx-auto max-w-2xl space-y-8 sm:px-4 lg:max-w-4xl lg:px-0">
         <div
-          v-for="order in orders"
+          v-for="order in filteredOrders"
           :key="order.id"
           class="border-b border-t border-gray-200 bg-white shadow-sm sm:rounded-lg sm:border"
         >
