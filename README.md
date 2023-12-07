@@ -21,6 +21,15 @@ docker-compose up -d
 ```bash
 docker compose exec api npm run fixtures:load
 ```
+5. Pour exécuter les migrations utilisez la commande suivante:
+```bash
+docker compose exec api npm run migrate:schema
+```
+
+6. Pour exécuter les tests utilisez la commande suivante:
+```bash
+docker compose exec api npm run test
+```
 
 
 ## Comptes pour les tests
@@ -48,11 +57,23 @@ Les différents emails sont les suivants:
 - Dashboard
     - Se rendre sur le lien suivant: http://localhost:5174
 
+- API
+    - Exécuter les requête back sur : http://localhost:3000
+
 - Accès aux bases de données
     - Adminer
         - Lien de connexion : http://localhost:8081/postgres://user:challenge-s2@postgresdb:5432/SneakPeak?pgsql=postgresdb&username=user&db=SneakPeak&ns=public
         - Connexion avec l'identifiant `user` et le mot de passe `challenge-s2` pour la base mysqldb
 
-    - MongoExpress
-        - Lien de connexion : ...
+    - Mongo
+        - Lien de connexion : `mongodb://root:challenge-s2@mongodb/challenge-s2?authMechanism=DEFAULT`
         - Conexion avec l'identifiant `root` et le mot de passe `challenge-s2` pour la base mongodb
+
+Pour effectuer la mise à jours des statuts des commandes, il faut exécuter la commande suivante afin de déclencher les webhooks:
+```bash
+stripe listen --forward-to localhost:3000/payments/success
+stripe listen --forward-to localhost:3000/payments/failed
+```
+
+Les informations de connexion pour le compte stripe et le fichier .env.local seront transmis via la plateforme de rendu de projet.
+
