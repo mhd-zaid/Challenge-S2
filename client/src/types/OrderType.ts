@@ -1,6 +1,6 @@
 import type {ProductType} from "./ProductType";
 
-const html2pdf = require('html2pdf.js')
+import html2pdf from 'html2pdf.js'
 
 export type OrderType = {
     id: string;
@@ -24,7 +24,6 @@ enum OrderStatus {
 export const downloadInvoice = async (order: OrderType) => {
     const orderId = order.id
     const template = document.getElementById('invoice-template-'+orderId)
-    console.log(template)
     if (template) {
         template.style.display = 'block'
         await html2pdf(template, {

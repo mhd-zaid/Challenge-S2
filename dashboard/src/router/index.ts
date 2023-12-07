@@ -64,7 +64,6 @@ router.beforeEach(async (to, from, next) => {
     if (loggedIn) {
       try {
         const response = await axiosInstance.get('auth/check-if-admin')
-          console.log(response)
         if (response.status !== 200) {
           window.localStorage.removeItem('token')
           window.localStorage.removeItem('user')
