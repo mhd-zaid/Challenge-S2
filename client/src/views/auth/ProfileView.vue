@@ -9,7 +9,6 @@ import HistorySection from '@/sections/profile/HistorySection.vue'
 import {CloudArrowDownIcon} from '@heroicons/vue/24/outline'
 
 const state: { user: any; tabs: any[]; currentModifications: any; notifications: { label: string, value: boolean }[] } = reactive({
-
   user: null,
   tabs: [
     { name: 'Compte', href: '#', current: true },
@@ -50,7 +49,7 @@ const state: { user: any; tabs: any[]; currentModifications: any; notifications:
     }
   ]
 })
-
+const Host = import.meta.env.VITE_HOST_API
 const fields = {
   firstname: { name: 'firstname', label: 'Prénom' },
   lastname: { name: 'lastname', label: 'Nom' },
@@ -87,7 +86,7 @@ const exportPersonalData = async () => {
         const exportId = res.data.exportId
 
         const downloadLink = document.createElement('a')
-        downloadLink.href = `${import.meta.env.VITE_HOST_API}/exports/${fileName}`
+        downloadLink.href = `${Host}/exports/${fileName}`
         downloadLink.download = fileName
         document.body.appendChild(downloadLink)
         downloadLink.click()
