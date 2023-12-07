@@ -1,17 +1,16 @@
 import express from "express";
 import authRoutes from "../routes/authRoutes.js";
 import User from "../models/postgres-user.js";
+import Consent from "../models/postgres-consent.js";
 import UserMongo from "../models/mongodb-user.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import { generateToken, isUserBlocked } from "../services/auth.service.js";
-import {
-	sendEmailConfirmation,
-	sendBlockedAccountEmail,
-	sendResetPasswordEmail,
-} from "../services/email.service.js";
-import { isValidPassword, isUserMajor } from "../services/user.service.js";
-import { Types } from "mongoose";
+import {generateToken, isUserBlocked} from "../services/auth.service.js";
+import {sendBlockedAccountEmail, sendEmailConfirmation, sendResetPasswordEmail,} from "../services/email.service.js";
+import {isUserMajor, isValidPassword} from "../services/user.service.js";
+import {Types} from "mongoose";
+import authMiddleware from "../middlewares/authMiddleware.js";
+
 const {
     register,
     login,
@@ -22,8 +21,7 @@ const {
     checkEmail,
     requestPasswordReset,
     resetPassword,
-} = authRoutes(User, UserMongo, jwt, bcrypt, generateToken, sendEmailConfirmation, isUserBlocked, isValidPassword, isUserMajor, sendBlockedAccountEmail, sendResetPasswordEmail, Types);
-import authMiddleware from "../middlewares/authMiddleware.js";
+} = authRoutes(User, UserMongo, jwt, bcrypt,Consent, generateToken, sendEmailConfirmation, isUserBlocked, isValidPassword, isUserMajor, sendBlockedAccountEmail, sendResetPasswordEmail, Types);
 
 const router = express.Router();
 

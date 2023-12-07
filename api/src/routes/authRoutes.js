@@ -3,6 +3,7 @@ export default (
 	UserMongo,
 	jwt,
 	bcrypt,
+	Consent,
 	generateToken,
 	sendEmailConfirmation,
 	isUserBlocked,
@@ -14,11 +15,14 @@ export default (
 ) => ({
 	register: async (req, res) => {
 		try {
-			const { firstname, lastname, email, password, birthdate } =
+			const { firstname, lastname, email, password, birthdate, accept } =
 				req.body;
 
 			if (!(firstname && lastname && email && password && birthdate))
 				return res.sendStatus(400);
+
+			if (!accept)
+				return res.status(400).json({ message: "You must accept the terms and conditions" });
 
 			if (!isUserMajor(birthdate))
 				return res.status(400).json({ error: "Invalid birthdate" });
@@ -46,16 +50,26 @@ export default (
 				isValidate: false,
 				disabled: false,
 			});
+			let newPostgresUser = null;
+			try {
+				newPostgresUser = await User.create({
+					id: newMongoUser._id.toString(),
+					firstname,
+					lastname,
+					email,
+					birthdate: new Date(birthdate),
+					password: hashedPassword,
+					authentificationToken,
+				})
+				await Consent.create({
+					userId: newPostgresUser.id,
+					consent: true,
+				})
+			} catch (error) {
+				await UserMongo.deleteOne({ _id: newMongoUser._id });
+				res.sendStatus(500)
+			}
 
-			const newPostgresUser = await User.create({
-				id: newMongoUser._id.toString(),
-				firstname,
-				lastname,
-				email,
-				birthdate: new Date(birthdate),
-				password: hashedPassword,
-				authentificationToken,
-			});
 
 			const payload = {
 				userId: newPostgresUser.id,
