@@ -5,9 +5,8 @@ import axiosInstance from '@/utils/axiosInstance'
 import {getProductImage} from '@/types/ProductImageType'
 import {computed, onMounted, reactive, ref} from 'vue'
 import OrderPdf from '@/components/profile/OrderPdf.vue'
-import html2pdf from 'html2pdf.js'
-import { useCartStore } from '@/stores/cart'
-import { downloadInvoice } from "@/types/OrderType";
+import {useCartStore} from '@/stores/cart'
+import {downloadInvoice} from "@/types/OrderType";
 
 const cartStore = useCartStore()
 

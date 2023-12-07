@@ -17,4 +17,13 @@ export const ProductsRoutes = [
       requiresAuthentication: true,
     }
   },
+  {
+    path: '/products/:id/stocks',
+    name: 'product-stocks',
+    component: () => import('@/views/products/StockView.vue'),
+    meta: {
+      title: 'Stocks',
+      requiresAuthentication: true,
+    }
+  }
 ]

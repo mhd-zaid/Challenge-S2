@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue'
-import {defineProps} from 'vue'
-import {columnNames, getEntityName, getValue} from '@/utils/valuesUpdater'
+import { defineProps } from 'vue'
+import { columnNames, getEntityName, getValue } from '@/utils/valuesUpdater'
 import OrderPdf from '@/components/OrderPdf.vue'
 
-const html2pdf = require('html2pdf.js')
+import html2pdf from 'html2pdf.js'
 
 const props = defineProps(['data', 'entityType'])
 

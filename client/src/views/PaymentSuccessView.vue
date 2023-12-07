@@ -9,8 +9,7 @@ import {showToast} from "@/utils/toast";
 import { downloadInvoice } from "@/types/OrderType";
 import axiosInstance from "@/utils/axiosInstance";
 import OrderPdf from '@/components/profile/OrderPdf.vue'
-
-const html2pdf = require('html2pdf.js')
+import html2pdf from 'html2pdf.js'
 
 const cartStore = useCartStore()
 const router = useRouter();

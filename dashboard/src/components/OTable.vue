@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import {
-  EyeIcon,
   PencilSquareIcon,
   TrashIcon,
   EllipsisHorizontalIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  ArrowDownIcon,
-  ChevronDownIcon,
-  MagnifyingGlassIcon
+  MagnifyingGlassIcon,
+  ArchiveBoxIcon
 } from '@heroicons/vue/24/outline'
 import { ref, watchEffect, reactive } from 'vue'
 import { columnNames, getValue } from '@/utils/valuesUpdater'
@@ -150,6 +148,13 @@ const toggleSearch = (col: string) => {
                     <!-- <button @click="emit('showRow', row)" v-show="hoveredRow === index">
                       <EyeIcon class="w-5 h-5 text-gray-900 hover:text-gray-950" />
                     </button> -->
+                    <!-- bouton pour gérer le stock -->
+                    <RouterLink
+                      v-show="hoveredRow === index"
+                      :to="{ name: 'product-stocks', params: { id: row.id } }"
+                    >
+                      <ArchiveBoxIcon class="w-5 h-5 text-gray-900 hover:text-gray-950" />
+                    </RouterLink>
                     <button @click="emit('updateRow', row)" v-show="hoveredRow === index">
                       <PencilSquareIcon class="w-5 h-5 text-gray-900 hover:text-gray-700" />
                     </button>
