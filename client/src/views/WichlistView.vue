@@ -87,6 +87,11 @@ onMounted(async () => {
               <p class="mt-1 font-medium text-gray-900">
                 {{ getProductPrice({ product, quantity: 1 }) }} €
               </p>
+              <p class="mt-1 text-sm text-gray-500">
+                <span v-if="parseInt(product.discount)" class="text-red-600 line-through">
+                  {{ product.price }}
+                </span>
+              </p>
             </div>
           </div>
           <div class="mt-6 space-y-4 sm:ml-6 sm:mt-0 sm:w-40 sm:flex-none">
