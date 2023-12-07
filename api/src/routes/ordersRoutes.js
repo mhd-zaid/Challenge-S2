@@ -51,11 +51,14 @@ export default (
                         .status(404)
                         .json({message: "Product not found"});
                 }
-
+                let finalPrice = parseFloat(sqlProduct.price);
+                if (parseFloat(sqlProduct.discount) > 0) {
+                    finalPrice = sqlProduct.price - (sqlProduct.price * sqlProduct.discount / 100);
+                }
                 await order.addProduct(sqlProduct.id, {
                     through: {
                         quantity: product.quantity,
-                        price: parseFloat(sqlProduct.price),
+                        price: parseFloat(finalPrice),
                     },
                 });
 

@@ -20,8 +20,8 @@ const {
 const router = express.Router();
 
 router.get("/", authMiddleware, adminMiddleware, getPayments);
-router.post("/success", authMiddleware, stripeSuccess);
-router.post("/failed", authMiddleware, stripeFailed);
+router.post("/success", stripeSuccess);
+router.post("/failed", stripeFailed);
 router.get("/session/:session", authMiddleware, getStripeSession);
 router.get("/:id", authMiddleware, getPayment);
 router.post("/", authMiddleware, createPayment);
