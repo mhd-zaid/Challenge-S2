@@ -13,6 +13,7 @@ import wishes from "./src/router/wishsRouter.js";
 import orders from "./src/router/ordersRouter.js";
 import payments from "./src/router/paymentsRouter.js";
 import exports from "./src/router/exportsRouter.js";
+import stocks from "./src/router/stocksRouter.js";
 import consents from "./src/router/consentsRouter.js";
 import consentTypes from "./src/router/consentTypesRouter.js";
 import sequelize from "./src/config/sequelize-config.js";
@@ -59,6 +60,7 @@ app.use("/payments", payments);
 app.use("/exports", exports);
 app.use("/consents", consents);
 app.use("/consentTypes", consentTypes);
+app.use("/stocks", stocks);
 // CRON job
 cron.schedule("0 0 * * *", async () => {
 	passwordRenewal();
