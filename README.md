@@ -30,7 +30,7 @@ docker compose exec api npm run migrate:schema
 ```bash
 docker compose exec api npm run test
 ```
-
+7. Pour une utilisation local veuillez ajouter un fichier .env.local dans le dossier client, dashboard et api avec les informations qui ce trouve dans le fichier .env de chaque dossier
 
 ## Comptes pour les tests
 
@@ -50,7 +50,6 @@ Les différents emails sont les suivants:
 
 
 ## Usage
-
 - Client
     - Se rendre sur le lien suivant: http://localhost:5173
 
@@ -94,4 +93,5 @@ Les informations de connexion pour le compte stripe et le fichier .env.local ser
     - Gestion de téléchargement des données personnelles d’un utilisateur : Rafael TAVARES DE PINHO
     - Gestion des factures : Zaid MOUHAMAD
     - Gestion adresse de livraison : Riadh BENCHOUCHE
+    - Rédaction des text RGPD : ALL
 

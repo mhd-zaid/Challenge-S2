@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue'
-import { defineProps } from 'vue'
-import { columnNames, getEntityName, getValue } from '@/utils/valuesUpdater'
+import {defineProps} from 'vue'
+import {columnNames, getEntityName, getValue} from '@/utils/valuesUpdater'
 import OrderPdf from '@/components/OrderPdf.vue'
 
 import html2pdf from 'html2pdf.js'
@@ -87,6 +87,19 @@ const downloadInvoice = async (orderId: string) => {
                   :src="url"
                   alt="Image du produit"
                 />
+                <span v-else-if="String(key) === 'brand'">
+                  {{ props.data.brand.name }}
+                </span>
+                <span v-else-if="String(key) === 'category'">
+                  {{ props.data.category.name }}
+                </span>
+                <div v-else-if="String(key) === 'products'">
+                  <ul>
+                    <li style="list-style: disc; margin-left: 1rem" v-for="product in props.data.products" :key="product.id">
+                      {{ product.name }}
+                    </li>
+                  </ul>
+                </div>
                 <span v-else>
                   {{ getValue(props.data, key) }}
                 </span>

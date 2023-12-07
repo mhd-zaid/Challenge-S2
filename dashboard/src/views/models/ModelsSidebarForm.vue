@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import axiosInstance from '@/utils/axiosInstance'
-import { reactive, watch } from 'vue'
+import {onMounted, reactive, watch} from 'vue'
 import ODrawer from '@/components/ODrawer.vue'
-import type { BrandType } from '@/types/BrandType'
-import type { ModelType } from '@/types/ModelType'
-import type { CategoryType } from '@/types/CategoryTypes'
-import { modelSchema } from '@/utils/validations/modelSchema'
-import { onMounted } from 'vue'
+import type {BrandType} from '@/types/BrandType'
+import type {ModelType} from '@/types/ModelType'
+import type {CategoryType} from '@/types/CategoryTypes'
+import {modelSchema} from '@/utils/validations/modelSchema'
 
 const props = defineProps({
   open: {
@@ -133,15 +132,16 @@ onMounted(() => {
           <label for="gender" class="block text-sm font-medium leading-6 text-gray-900">{{
             'Genre' + (!props.id ? '*' : '')
           }}</label>
-          <input
-            v-model="state.model.gender"
-            type="text"
-            id="gender"
-            name="gender"
-            placeholder="Genre"
-            class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-            :required="!props.id"
-          />
+          <select
+              v-model="state.model.gender"
+              id="gender"
+              name="gender"
+              class="block w-full pl-2 rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+          >
+            <option value="male">Homme</option>
+            <option value="female">Femme</option>
+          </select>
+
         </div>
 
         <div>

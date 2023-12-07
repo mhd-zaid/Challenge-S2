@@ -40,6 +40,7 @@ export const columnNames: any = {
   productImages: 'Images',
   model: 'Modèle',
   models: 'Modèles',
+  payment: "ID paiement",
 }
 const Host = import.meta.env.VITE_HOST_API
 export const formatDate = (date: string) => {

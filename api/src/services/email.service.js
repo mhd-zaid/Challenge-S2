@@ -1,6 +1,6 @@
 import mailTransporter from "../config/mail-config.js";
 import fs from "fs";
-import { fileURLToPath } from "url";
+import {fileURLToPath} from "url";
 import path from "path";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -120,7 +120,7 @@ export const sendResetPasswordEmail = async (email, passwordResetToken) => {
         );
 
         // TODO: replace with frontend url
-        const passwordResetLink = `${process.env.HOST_API}/password-reset?email=${email}&token=${passwordResetToken}`;
+        const passwordResetLink = `${process.env.HOST_CLIENT}/password-reset?email=${email}&token=${passwordResetToken}`;
 
         const subject = "Réinitialisation de votre mot de passe";
 
