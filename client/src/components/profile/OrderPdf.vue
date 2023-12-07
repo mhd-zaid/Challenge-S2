@@ -2,13 +2,31 @@
 import { defineProps } from 'vue'
 const props = defineProps(['data'])
 
-const getTotal = (products: any) => {
+const getTotalTTC = (products: any) => {
   let total = 0
   products.forEach((product: any) => {
     total += (product.Orders_Products.price / 100) * product.Orders_Products.quantity
   })
 
   return total.toFixed(2)
+}
+
+const getTotalHT = (products: any) => {
+  let total = 0
+  products.forEach((product: any) => {
+    total += (product.Orders_Products.price / 100) * product.Orders_Products.quantity
+  })
+
+  return (total - (total * products[0].vat / 100)).toFixed(2)
+}
+
+const getVAT = (products: any) => {
+  let total = 0
+  products.forEach((product: any) => {
+    total += (product.Orders_Products.price / 100) * product.Orders_Products.quantity
+  })
+
+  return (total * products[0].vat / 100).toFixed(2)
 }
 
 const formatDate = () => {
@@ -93,7 +111,19 @@ const formatDate = () => {
         <td></td>
         <td></td>
         <td></td>
-        <td v-if="props.data.products">Total: {{ getTotal(props.data.products) }} </td>
+        <td v-if="props.data.products">TOTAL HT : {{ getTotalHT(props.data.products) }} €</td>
+      </tr>
+      <tr class="total">
+        <td></td>
+        <td></td>
+        <td></td>
+        <td v-if="props.data.products">TVA : {{ getVAT(props.data.products) }} €</td>
+      </tr>
+      <tr class="total">
+        <td></td>
+        <td></td>
+        <td></td>
+        <td v-if="props.data.products">TOTAL TTC: {{ getTotalTTC(props.data.products) }} €</td>
       </tr>
     </table>
   </div>

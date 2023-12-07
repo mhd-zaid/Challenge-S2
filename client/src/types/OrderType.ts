@@ -22,7 +22,8 @@ enum OrderStatus {
 
 export const downloadInvoice = async (order: OrderType) => {
     const orderId = order.id
-    const template = document.getElementById('invoice-template')
+    const template = document.getElementById('invoice-template-'+orderId)
+    console.log(template)
     if (template) {
         template.style.display = 'block'
         await html2pdf(template, {

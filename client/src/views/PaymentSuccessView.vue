@@ -66,7 +66,7 @@ watch(router.currentRoute, async () => {
             <button @click="downloadInvoice(state.order)" class="text-sm font-semibold leading-6 text-white">Télécharger la facture
               <span aria-hidden="true">→</span></button>
             <!-- template PDF -->
-            <div id="invoice-template" style="display: none;">
+            <div v-if="state.order" :id="`invoice-template-${state.order.id}`" style="display: none;">
                 <OrderPdf :data="state.order" />
             </div>
           </div>

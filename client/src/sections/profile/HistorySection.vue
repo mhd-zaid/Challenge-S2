@@ -179,7 +179,7 @@ onMounted(async () => {
                 <span class="sr-only">for order {{ order.id }}</span>
               </button>
               <!-- template PDF -->
-              <div id="invoice-template" style="display: none">
+              <div v-if="order" :id="`invoice-template-${order.id}`" style="display: none">
                 <OrderPdf :data="order" />
               </div>
             </div>
