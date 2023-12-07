@@ -5,9 +5,9 @@ import axiosInstance from '@/utils/axiosInstance'
 import {getProductImage} from '@/types/ProductImageType'
 import {computed, onMounted, reactive, ref} from 'vue'
 import OrderPdf from '@/components/profile/OrderPdf.vue'
-import {useCartStore} from '@/stores/cart'
-
-const html2pdf = require('html2pdf.js')
+import html2pdf from 'html2pdf.js'
+import { useCartStore } from '@/stores/cart'
+import { downloadInvoice } from "@/types/OrderType";
 
 const cartStore = useCartStore()
 
@@ -65,22 +65,6 @@ const filteredOrders = computed(() => {
 onMounted(async () => {
   await getUserOrders()
 })
-
-const downloadInvoice = async (orderId: string) => {
-  const template = document.getElementById('invoice-template')
-  if (template) {
-    template.style.display = 'block'
-    await html2pdf(template, {
-      margin: [1, 1],
-      filename: `facture-${orderId}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, letterRendering: true },
-      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
-      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-    })
-    template.style.display = 'none'
-  }
-}
 </script>
 
 <template>
@@ -188,7 +172,7 @@ const downloadInvoice = async (orderId: string) => {
 
             <div class="hidden lg:col-span-2 lg:flex lg:items-center lg:justify-end lg:space-x-4">
               <button
-                v-on:click="downloadInvoice(order.id)"
+                v-on:click="downloadInvoice(order)"
                 class="flex items-center justify-center rounded-md border border-gray-300 bg-white px-2.5 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
               >
                 <span>Facture</span>

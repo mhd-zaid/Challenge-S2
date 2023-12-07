@@ -1,7 +1,15 @@
 <script lang="ts" setup>
 import { defineProps } from 'vue'
-import axiosInstance from '@/utils/axiosInstance';
 const props = defineProps(['data'])
+
+const getTotal = (products: any) => {
+  let total = 0
+  products.forEach((product: any) => {
+    total += (product.Orders_Products.price / 100) * product.Orders_Products.quantity
+  })
+
+  return total.toFixed(2)
+}
 
 const formatDate = () => {
   const today = new Date()
@@ -10,7 +18,7 @@ const formatDate = () => {
   const year = today.getFullYear()
 
   return `${day}-${month}-${year}`
-}  
+}
 </script>
 <template>
   <div class="invoice-box">
@@ -85,7 +93,7 @@ const formatDate = () => {
         <td></td>
         <td></td>
         <td></td>
-        <td>Total: {{ props.data.total() }} </td>
+        <td v-if="props.data.products">Total: {{ getTotal(props.data.products) }} </td>
       </tr>
     </table>
   </div>
