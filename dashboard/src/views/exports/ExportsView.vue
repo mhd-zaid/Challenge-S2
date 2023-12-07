@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue'
 import axiosInstance from '@/utils/axiosInstance'
-import { CloudArrowDownIcon, TrashIcon } from '@heroicons/vue/24/outline'
-import { reactive } from 'vue'
-import { getEntityName } from '@/utils/valuesUpdater'
+import {CloudArrowDownIcon, TrashIcon} from '@heroicons/vue/24/outline'
+import {reactive} from 'vue'
+import {getEntityName} from '@/utils/valuesUpdater'
 import OModal from '@/components/OModal.vue'
 
 const state = reactive({
@@ -11,6 +11,8 @@ const state = reactive({
   openConfirmation: false as boolean,
   selectedId: '' as string
 })
+
+const user = JSON.parse(localStorage.getItem('user') || '{}')
 
 const getExports = async () => {
   try {
@@ -47,6 +49,28 @@ const exportUsers = async () => {
     await axiosInstance
       .post('/exports/', {
         dataScope: 'users'
+      })
+      .then((res) => {
+        const fileName = res.data.fileName
+
+        const downloadLink = document.createElement('a')
+        downloadLink.href = `http://localhost:3000/exports/${fileName}`
+        downloadLink.download = fileName
+        document.body.appendChild(downloadLink)
+        downloadLink.click()
+        document.body.removeChild(downloadLink)
+        getExports()
+      })
+  } catch (e: any) {
+    throw e
+  }
+}
+
+const exportProducts = async () => {
+  try {
+    await axiosInstance
+      .post('/exports/', {
+        dataScope: 'products'
       })
       .then((res) => {
         const fileName = res.data.fileName
@@ -116,11 +140,20 @@ const removeExport = async (id: string) => {
                   </p>
                   <div class="mt-6">
                     <button
+                     v-if="user.role === 'ROLE_ADMIN' "
                       @click="exportUsers"
                       type="button"
                       class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none"
                     >
                       Exporter les utilisateurs
+                    </button>
+                    <button
+                        v-else
+                        @click="exportProducts"
+                        type="button"
+                        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none"
+                    >
+                      Exporter les produits
                     </button>
                   </div>
                 </div>

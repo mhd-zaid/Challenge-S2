@@ -149,6 +149,7 @@ export default (
 				firstname: user.firstname,
 				lastname: user.lastname,
 				email: user.email,
+				role: user.role,
 				token,
 			};
 
@@ -320,7 +321,13 @@ export default (
 				return res.status(404).json({ message: "User not found" });
 			if (user.role === "ROLE_USER")
 				return res.sendStatus(403)
-			res.json(!!user);
+			res.json({
+				id : user.id,
+				firstname : user.firstname,
+				lastname : user.lastname,
+				email : user.email,
+				role : user.role,
+			});
 		} catch (error) {
 			res.status(500).json({
 				message: `An error occurred while getting the user : ${error.message}`,

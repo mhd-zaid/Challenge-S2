@@ -1,25 +1,24 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
+import {computed, ref} from 'vue'
+import {Dialog, DialogPanel, TransitionChild, TransitionRoot} from '@headlessui/vue'
 import {
-  Bars3Icon,
-  CalendarIcon,
-  DocumentDuplicateIcon,
-  FolderIcon,
-  HomeIcon,
-  UsersIcon,
-  XMarkIcon,
-  UserIcon,
   ArrowLeftOnRectangleIcon,
-  TruckIcon,
-  RectangleStackIcon,
+  Bars3Icon,
+  DocumentDuplicateIcon,
+  HomeIcon,
   RectangleGroupIcon,
+  RectangleStackIcon,
+  Square3Stack3DIcon,
   Squares2X2Icon,
-  Square3Stack3DIcon
+  TruckIcon,
+  UserIcon,
+  UsersIcon,
+  XMarkIcon
 } from '@heroicons/vue/24/outline'
-import { useRouter } from 'vue-router'
+import {useRouter} from 'vue-router'
 
 const router = useRouter()
+const user = JSON.parse(localStorage.getItem('user') || '{}')
 const navigation = [
   {
     name: 'Tableau de bord',
@@ -70,12 +69,14 @@ const navigation = [
     current: router.currentRoute.value.path === '/exports'
   }
 ]
+if (user.role !== 'ROLE_ADMIN') {
+  navigation.splice(1, 1)
+}
 const logout = () => {
   localStorage.removeItem('token')
   localStorage.removeItem('user')
   window.location.href = '/login'
 }
-const user = JSON.parse(localStorage.getItem('user') || '{}')
 
 const fullName = computed(() => {
   return `${user.firstname} ${user.lastname}`

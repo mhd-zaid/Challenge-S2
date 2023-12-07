@@ -6,6 +6,7 @@ export const UserRoutes = [
         meta : {
             title: 'Users',
             requiresAuthentication: true,
+            role: 'ROLE_ADMIN'
         }
     },
     {
@@ -15,6 +16,7 @@ export const UserRoutes = [
         meta : {
             title: 'User :id',
             requiresAuthentication: true,
+            role: 'ROLE_ADMIN'
         }
     },
 ]
