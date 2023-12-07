@@ -27,7 +27,7 @@ export default (Payment, Order, User, stripe, OrderMongodb, ObjectId) => ({
 			products.map((item) => {
 				storeItems.set(item.id, {
 					name: item.name,
-					price: item.price,
+					price: item.Orders_Products.price,
 					quantity: item.Orders_Products.quantity,
 					size: item.size,
 					color: item.color,
