@@ -22,6 +22,15 @@ import Product_Images from "./src/models/postgres-product-images.js";
 
 dotenv.config();
 
+const randomDate = () => {
+	const start = new Date();
+	const end = new Date();
+	start.setFullYear(start.getFullYear() - 1);
+	return new Date(
+		start.getTime() + Math.random() * (end.getTime() - start.getTime())
+	);
+};
+
 const connectDatabase = async () => {
 	try {
 		await mongoose.connect(process.env.MONGODB_URI);
@@ -99,9 +108,11 @@ const loadProducts = async () => {
 	try {
 		const productsFixtureModule = await import("./src/fixtures/product.js");
 		const productsFixture = productsFixtureModule.default;
-		
+
 		await Promise.all(
 			productsFixture.map(async (product) => {
+				const creationDate = randomDate();
+
 				const sqlProduct = await Product.create(product);
 				const model = await Model.findOne({
 					where: { id: sqlProduct.modelId },
@@ -124,9 +135,16 @@ const loadProducts = async () => {
 					category: category.dataValues,
 					brand: brand.dataValues,
 					deletedAt: sqlProduct.deletedAt,
+					createdAt: creationDate,
 				};
 
 				await ProductMongoDB(productMongo).save();
+				await ProductHistoryMongodb({
+					productId: new ObjectId(product.id),
+					quantityChange: sqlProduct.quantity,
+					isAddition: true,
+					createdAt: creationDate,
+				}).save();
 			})
 		);
 		console.log("Products loaded");
@@ -156,13 +174,15 @@ const loadUsers = async () => {
 	try {
 		const usersFixtureModule = await import("./src/fixtures/user.js");
 		const usersFixture = usersFixtureModule.default;
-		await Promise.all(usersFixture.map(async (user) => {
-			const sqlUser = await User.create(user);
-			await UserMongodb({
-				_id: new ObjectId(sqlUser.id),
-				...sqlUser.dataValues,
-			}).save();
-		}));
+		await Promise.all(
+			usersFixture.map(async (user) => {
+				const sqlUser = await User.create(user);
+				await UserMongodb({
+					_id: new ObjectId(sqlUser.id),
+					...sqlUser.dataValues,
+				}).save();
+			})
+		);
 		console.log("Users loaded");
 	} catch (err) {
 		console.error(err);
@@ -174,38 +194,51 @@ const loadOrders = async () => {
 		const ordersFixtureModule = await import("./src/fixtures/order.js");
 		const ordersFixture = ordersFixtureModule.default;
 		const productsFixture = await Product.findAll();
-		await Promise.all(ordersFixture.map(async (order) => {
-			let sqlOrder = await Order.create(order);
-			for (let i = 0; i < Math.floor(Math.random() * 5) +1 ; i++) {
-				const product = productsFixture[Math.floor(Math.random() * productsFixture.length)];
-				await sqlOrder.addProduct(product, {
-					through: {
-						quantity: Math.floor(Math.random() * 5) + 1,
-						price: parseInt(product.price),
-					}
+		await Promise.all(
+			ordersFixture.map(async (order) => {
+				const creationDate = randomDate();
+				let sqlOrder = await Order.create({
+					...order,
+					createdAt: creationDate,
 				});
-			}
-			sqlOrder = await Order.findOne({where: {id: sqlOrder.id}, include: ["user","products"]});
-			const orderMongo = {
-				_id: new ObjectId(sqlOrder.id),
-				user: sqlOrder.user.dataValues,
-				status: sqlOrder.status,
-				deliveryAddress: sqlOrder.deliveryAddress,
-				products: sqlOrder.products.map((product) => {
-					return {
-						id: "655fa0ca6ec65e5a6c725ef1",
-						sku: "f5edce59-3a64-4a27-b539-e774599d6c9b",
-						name: "Energy Walk 41 Yellow",
-						quantity: product.Orders_Products.quantity,
-						price: product.Orders_Products.price,
-						size: product.size,
-						color: product.color,
-						modelId: product.modelId,
-					};
-				}),
-			};
-			await OrderMongodb(orderMongo).save();
-		}));
+				for (let i = 0; i < Math.floor(Math.random() * 5) + 1; i++) {
+					const product =
+						productsFixture[
+							Math.floor(Math.random() * productsFixture.length)
+						];
+					await sqlOrder.addProduct(product, {
+						through: {
+							quantity: Math.floor(Math.random() * 5) + 1,
+							price: parseInt(product.price),
+						},
+					});
+				}
+				sqlOrder = await Order.findOne({
+					where: { id: sqlOrder.id },
+					include: ["user", "products"],
+				});
+				const orderMongo = {
+					_id: new ObjectId(sqlOrder.id),
+					user: sqlOrder.user.dataValues,
+					status: sqlOrder.status,
+					deliveryAddress: sqlOrder.deliveryAddress,
+					date: creationDate,
+					products: sqlOrder.products.map((product) => {
+						return {
+							id: "655fa0ca6ec65e5a6c725ef1",
+							sku: "f5edce59-3a64-4a27-b539-e774599d6c9b",
+							name: "Energy Walk 41 Yellow",
+							quantity: product.Orders_Products.quantity,
+							price: product.Orders_Products.price,
+							size: product.size,
+							color: product.color,
+							modelId: product.modelId,
+						};
+					}),
+				};
+				await OrderMongodb(orderMongo).save();
+			})
+		);
 		console.log("Orders loaded");
 	} catch (err) {
 		console.error(err);
