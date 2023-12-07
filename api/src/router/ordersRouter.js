@@ -9,6 +9,8 @@ import Product from "../models/postgres-product.js";
 import { ObjectId } from "mongodb";
 import authMiddleware from "../middlewares/authMiddleware.js";
 import storeKeeperOrAdminMiddleware from "../middlewares/storeKeeperOrAdminMiddleware.js";
+import { Op } from "sequelize";
+
 const { getOrders, getUserOrders, getOrder, createOrder, updateOrder } =
 	ordersRoutes(
 		Order,
@@ -17,7 +19,8 @@ const { getOrders, getUserOrders, getOrder, createOrder, updateOrder } =
 		UserMongodb,
 		ProductMongoDB,
 		Product,
-		ObjectId
+		ObjectId,
+		Op,
 	);
 
 const router = express.Router();

@@ -144,7 +144,8 @@ Modele.hasMany(Product, {
 
 Product.hasMany(Product_Images, {
     as: "productImages",
-    onDelete: 'CASCADE'
+    onDelete: 'CASCADE',
+    order: [["id", "ASC"]],
 });
 
 export default Product;

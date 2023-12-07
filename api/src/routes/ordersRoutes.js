@@ -1,210 +1,225 @@
 export default (
-    Order,
-    OrderMongodb,
-    User,
-    UserMongodb,
-    ProductMongoDB,
-    Product,
-    ObjectId
+	Order,
+	OrderMongodb,
+	User,
+	UserMongodb,
+	ProductMongoDB,
+	Product,
+	ObjectId,
+	Op
 ) => ({
-    createOrder: async (req, res) => {
-        try {
-            switch (req.body) {
-                case !req.body.userId:
-                    return res
-                        .status(400)
-                        .json({message: "userId parameter is missing"});
-                case !req.body.deliveryAddress:
-                    return res
-                        .status(400)
-                        .json({
-                            message: "deliveryAddress parameter is missing",
-                        });
-                case !req.body.products:
-                    return res
-                        .status(400)
-                        .json({message: "products parameter is missing"});
-            }
-            const {userId, deliveryAddress, products} = req.body;
-            const user = await User.findOne({where: {id: userId}});
-            const userMongo = await UserMongodb.findOne({_id: userId});
-            const mongoProducts = [];
+	createOrder: async (req, res) => {
+		try {
+			switch (req.body) {
+				case !req.body.userId:
+					return res
+						.status(400)
+						.json({ message: "userId parameter is missing" });
+				case !req.body.deliveryAddress:
+					return res.status(400).json({
+						message: "deliveryAddress parameter is missing",
+					});
+				case !req.body.products:
+					return res
+						.status(400)
+						.json({ message: "products parameter is missing" });
+			}
+			const { userId, deliveryAddress, products } = req.body;
+			const user = await User.findOne({ where: { id: userId } });
+			const userMongo = await UserMongodb.findOne({ _id: userId });
+			const mongoProducts = [];
 
-            if (!user) {
-                return res.status(404).json({message: "User not found"});
-            }
+			if (!user) {
+				return res.status(404).json({ message: "User not found" });
+			}
 
-            const order = await Order.create({
-                id: new ObjectId().toString(),
-                status: "payment pending",
-                userId: user.id,
-                deliveryAddress,
-            });
+			const order = await Order.create({
+				id: new ObjectId().toString(),
+				status: "payment pending",
+				userId: user.id,
+				deliveryAddress,
+			});
 
-            for (const product of products) {
-                const sqlProduct = await Product.findOne({
-                    where: {id: product.id},
-                });
+			for (const product of products) {
+				const sqlProduct = await Product.findOne({
+					where: { id: product.id },
+				});
 
-                if (!sqlProduct) {
-                    return res
-                        .status(404)
-                        .json({message: "Product not found"});
-                }
-                let finalPrice = parseFloat(sqlProduct.price);
-                if (parseFloat(sqlProduct.discount) > 0) {
-                    finalPrice = sqlProduct.price - (sqlProduct.price * sqlProduct.discount / 100);
-                }
-                await order.addProduct(sqlProduct.id, {
-                    through: {
-                        quantity: product.quantity,
-                        price: parseFloat(finalPrice),
-                    },
-                });
+				if (!sqlProduct) {
+					return res
+						.status(404)
+						.json({ message: "Product not found" });
+				}
+				let finalPrice = parseFloat(sqlProduct.price);
+				if (parseFloat(sqlProduct.discount) > 0) {
+					finalPrice =
+						sqlProduct.price -
+						(sqlProduct.price * sqlProduct.discount) / 100;
+				}
+				await order.addProduct(sqlProduct.id, {
+					through: {
+						quantity: product.quantity,
+						price: parseFloat(finalPrice),
+					},
+				});
 
-                const mongoProduct = await ProductMongoDB.findOne({
-                    _id: product.id,
-                });
+				const mongoProduct = await ProductMongoDB.findOne({
+					_id: product.id,
+				});
 
-                mongoProducts.push(mongoProduct);
-            }
-            const orderMongo = await OrderMongodb({
-                status: "payment pending",
-                deliveryAddress,
-                user: userMongo,
-                products: mongoProducts,
-            }).save();
+				mongoProducts.push(mongoProduct);
+			}
+			const orderMongo = await OrderMongodb({
+				status: "payment pending",
+				deliveryAddress,
+				user: userMongo,
+				products: mongoProducts,
+			}).save();
 
-            res.status(201).json(order);
-        } catch (error) {
-            if (error.name == "SequelizeValidationError") {
-                res.status(422).json({
-                    message: `An error occurred while creating the order : ${error.message}`,
-                });
-            } else {
-                res.status(500).json({
-                    message: `An error occurred while creating the order : ${error.message}`,
-                });
-            }
-        }
-    },
+			res.status(201).json(order);
+		} catch (error) {
+			if (error.name == "SequelizeValidationError") {
+				res.status(422).json({
+					message: `An error occurred while creating the order : ${error.message}`,
+				});
+			} else {
+				res.status(500).json({
+					message: `An error occurred while creating the order : ${error.message}`,
+				});
+			}
+		}
+	},
 
-    getUserOrders: async (req, res) => {
-        try {
-            const {id} = req.params;
-            const user = await User.findOne({where: {id: id}});
+	getUserOrders: async (req, res) => {
+		try {
+			const { id } = req.params;
+			let { search } = req.query;
 
-            if (!id) {
-                return res
-                    .status(400)
-                    .json({message: "id parameter is missing"});
-            }
+			if (!id) {
+				return res
+					.status(400)
+					.json({ message: "id parameter is missing" });
+			}
 
-            if (!user) {
-                return res.status(404).json({message: "User not found"});
-            }
+			const user = await User.findOne({ where: { id } });
 
-            const orders = await Order.findAll({
-                where: {userId: user.id},
-                include: [
-                    {
-                        model: Product,
-                        as: "products",
-                        include: "productImages",
-                    }
-                    , "user", "payment"],
-            });
+			if (!user) {
+				return res.status(404).json({ message: "User not found" });
+			}
 
-            if (orders.length === 0) {
-                return res
-                    .status(404)
-                    .json({
-                        message: `No orders found for user with id : ${id} `,
-                    });
-            }
+			const ordersOptions = {
+				where: { userId: user.id },
+				include: [
+					{
+						model: Product,
+						as: "products",
+						include: ["productImages"],
+					},
+					"user",
+					"payment",
+				],
+				order: [["createdAt", "DESC"]],
+			};
 
+			if (search) {
+				search = search.replace(/-/g, " ");
 
-            res.status(200).json(orders);
-        } catch (error) {
-            res.status(500).json({
-                message: `An error occurred while retrieving the orders : ${error.message}`,
-            });
-        }
-    },
+				const searchCondition = {
+					[Op.or]: [
+						{ id: { [Op.iLike]: `%${search}%` } },
+						{ "$products.name$": { [Op.iLike]: `%${search}%` } },
+					],
+				};
 
-    getOrder: async (req, res) => {
-        try {
-            const {id} = req.params;
+				ordersOptions.where = {
+					...ordersOptions.where,
+					[Op.and]: [ordersOptions.where, searchCondition],
+				};
+			}
 
-            const order = await Order.findOne({
-                where: {id: id},
-                include: ["products", "user", "payment"],
-            });
+			const orders = await Order.findAll(ordersOptions);
 
-            if (!id) {
-                return res.status(400).json({message: "id is missing"});
-            }
+			res.status(200).json(orders);
+		} catch (error) {
+			res.status(500).json({
+				message: `An error occurred while retrieving the orders : ${error.message}`,
+			});
+		}
+	},
 
-            if (!order) {
-                return res.status(404).json({message: "Order not found"});
-            }
+	getOrder: async (req, res) => {
+		try {
+			const { id } = req.params;
 
-            res.status(200).json(order);
-        } catch (error) {
-            res.status(500).json({
-                message: `An error occurred while retrieving the order : ${error.message}`,
-            });
-        }
-    },
+			const order = await Order.findOne({
+				where: { id: id },
+				include: ["products", "user", "payment"],
+			});
 
-    getOrders: async (req, res) => {
-        try {
-            const orders = await Order.findAll({include: "products"});
+			if (!id) {
+				return res.status(400).json({ message: "id is missing" });
+			}
 
-            res.status(200).json(orders);
-        } catch (error) {
-            res.status(500).json({
-                message: `An error occurred while retrieving the orders : ${error.message}`,
-            });
-        }
-    },
+			if (!order) {
+				return res.status(404).json({ message: "Order not found" });
+			}
 
-    updateOrder: async (req, res) => {
-        try {
-            const {id} = req.params;
-            if (!id) {
-                return res.status(400).json({message: "id is missing"});
-            }
+			res.status(200).json(order);
+		} catch (error) {
+			res.status(500).json({
+				message: `An error occurred while retrieving the order : ${error.message}`,
+			});
+		}
+	},
 
-            const {status} = req.body;
-            if (!status) {
-                return res.status(400).json({message: "status is missing"});
-            }
+	getOrders: async (req, res) => {
+		try {
+			const orders = await Order.findAll({ include: "products" });
 
-            const order = await Order.findOne({where: {id: id}});
-            if (!order) {
-                return res.status(404).json({message: "Order not found"});
-            }
-            const orderMongo = await OrderMongodb.findOne({
-                _id: new ObjectId(id),
-            });
+			res.status(200).json(orders);
+		} catch (error) {
+			res.status(500).json({
+				message: `An error occurred while retrieving the orders : ${error.message}`,
+			});
+		}
+	},
 
-            order.status = status;
-            await order.save();
+	updateOrder: async (req, res) => {
+		try {
+			const { id } = req.params;
+			if (!id) {
+				return res.status(400).json({ message: "id is missing" });
+			}
 
-            await orderMongo.updateOne({status});
+			const { status } = req.body;
+			if (!status) {
+				return res.status(400).json({ message: "status is missing" });
+			}
 
-            res.status(200).json({message: "Order updated successfully"});
-        } catch (error) {
-            if (error.name == "SequelizeValidationError") {
-                res.status(422).json({
-                    message: `An error occurred while updating the order : ${error.message}`,
-                });
-            } else {
-                res.status(500).json({
-                    message: `An error occurred while updating the order : ${error.message}`,
-                });
-            }
-        }
-    },
+			const order = await Order.findOne({ where: { id: id } });
+			if (!order) {
+				return res.status(404).json({ message: "Order not found" });
+			}
+			const orderMongo = await OrderMongodb.findOne({
+				_id: new ObjectId(id),
+			});
+
+			order.status = status;
+			await order.save();
+
+			await orderMongo.updateOne({ status });
+
+			res.status(200).json({ message: "Order updated successfully" });
+		} catch (error) {
+			if (error.name == "SequelizeValidationError") {
+				res.status(422).json({
+					message: `An error occurred while updating the order : ${error.message}`,
+				});
+			} else {
+				res.status(500).json({
+					message: `An error occurred while updating the order : ${error.message}`,
+				});
+			}
+		}
+	},
 });
