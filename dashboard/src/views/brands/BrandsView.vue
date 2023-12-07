@@ -62,7 +62,7 @@ const closeCreationDrawer = () => {
   state.openCreation = false
   getBrands()
 }
-
+const Host = import.meta.env.VITE_HOST_API
 const exportBrands = async () => {
   try {
     await axiosInstance
@@ -73,7 +73,7 @@ const exportBrands = async () => {
         const fileName = res.data.fileName
 
         const downloadLink = document.createElement('a')
-        downloadLink.href = `${import.meta.env.VITE_HOST_API}/exports/${fileName}`
+        downloadLink.href = `${Host}/exports/${fileName}`
         downloadLink.download = fileName
         document.body.appendChild(downloadLink)
         downloadLink.click()

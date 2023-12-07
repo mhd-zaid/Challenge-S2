@@ -17,6 +17,7 @@ const state = reactive({
   selectedId: '',
   openCreation: false
 })
+const Host = import.meta.env.VITE_HOST_API
 const abortController = new AbortController()
 const getProducts = async () => {
   await axiosInstance.get('/products').then((res) => {
@@ -92,7 +93,7 @@ const exportProducts = async () => {
         const fileName = res.data.fileName
 
         const downloadLink = document.createElement('a')
-        downloadLink.href = `${import.meta.env.VITE_HOST_API}/exports/${fileName}`
+        downloadLink.href = `${Host}/exports/${fileName}`
         downloadLink.download = fileName
         document.body.appendChild(downloadLink)
         downloadLink.click()

@@ -41,7 +41,7 @@ export const columnNames: any = {
   model: 'Modèle',
   models: 'Modèles',
 }
-
+const Host = import.meta.env.VITE_HOST_API
 export const formatDate = (date: string) => {
   const dateObject = new Date(date)
   const year = dateObject.getFullYear()
@@ -60,7 +60,7 @@ const getImages = (productImages: any) => {
   }
 
   return productImages.map((productImage: any) => {
-    return `${import.meta.env.VITE_HOST_API}/images/${productImage.url}`
+    return `${Host}/images/${productImage.url}`
   })
 }
 
@@ -69,7 +69,7 @@ const getFirstImage = (productImages: any) => {
     return ''
   }
 
-  return `${import.meta.env.VITE_HOST_API}/images/${productImages[0].url}`
+  return `${Host}/images/${productImages[0].url}`
 }
 
 const getModel = (model: any) => {

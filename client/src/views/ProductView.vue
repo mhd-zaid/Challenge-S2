@@ -12,6 +12,7 @@ import RedirectModal from '@/components/RedirectModal.vue'
 import checkAuthentication from '@/utils/checkAuthentication'
 import {ExclamationCircleIcon} from '@heroicons/vue/24/outline'
 
+const Host = import.meta.env.VITE_HOST_API
 const product = {
   highlights: [
     'Chaussure 100% originale',
@@ -74,7 +75,7 @@ init()
           class="aspect-h-5 aspect-w-4 lg:aspect-h-4 lg:aspect-w-3 sm:overflow-hidden sm:rounded-lg"
         >
           <img
-            :src="`${import.meta.env.VITE_HOST_API}/images/${image.url}`"
+            :src="`${Host}/images/${image.url}`"
             :alt="state.product.name"
             class="h-full w-full object-cover object-center"
           />
