@@ -48,11 +48,13 @@ const validateAndSubmit = async (isCreation: boolean) => {
     if (isCreation) {
       try {
         const res = await axiosInstance.post('/products', productToSubmit)
-        const data = new FormData();
-        state.images.forEach((fileItem: any) => {
-          data.append('image', fileItem)
-        })
-        await axiosInstance.post('/products/upload/' + res.data.id, data)
+        if (state.images.length > 0) {
+          const data = new FormData();
+          state.images.forEach((fileItem: any) => {
+            data.append('image', fileItem)
+          })
+          await axiosInstance.post('/products/upload/' + res.data.id, data)
+        }
         state.errors = ''
         emit('productCreated')
       } catch (error: any) {
@@ -60,16 +62,21 @@ const validateAndSubmit = async (isCreation: boolean) => {
         console.log(error)
       }
     } else {
-      await axiosInstance
-          .patch(`/products/${props.id}`, productToSubmit)
-          .then(() => {
-            state.errors = ''
-            emit('productUpdated')
+      try {
+        const res = await axiosInstance.patch(`/products/${props.id}`, productToSubmit)
+        if (state.images.length > 0) {
+          const data = new FormData();
+          state.images.forEach((fileItem: any) => {
+            data.append('image', fileItem)
           })
-          .catch((error: any) => {
-            state.errors = error.response.data.message
-            console.log(error)
-          })
+          await axiosInstance.post('/products/upload/' + props.id, data)
+        }
+        state.errors = ''
+        emit('productUpdated')
+      } catch (error: any) {
+        state.errors = error.response.data.message
+        console.log(error)
+      }
     }
   } catch (error: any) {
     state.errors = error.response.data.message

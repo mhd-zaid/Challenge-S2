@@ -260,8 +260,7 @@ export default (
             }
 
             const model = await Model.findOne({
-
-                    where: {id: req.body.model},
+                    where: {id: req.body.modelId},
                     include: ["brand", "category"],
                 }
             );
@@ -283,7 +282,9 @@ export default (
                 modelId: model.id,
             };
 
-            const product = await Product.findOne({where: {id}});
+            const product = await Product.findOne({
+                where: {id},
+            });
 
             if (!product)
                 return res.status(404).json({message: "Product not found"});
